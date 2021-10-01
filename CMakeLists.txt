@@ -5,11 +5,13 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(HEADER_FILES
         src/Window.h
+        src/Application.h
         )
 
 set(SOURCE_FILES
         src/main.cpp
-        src/Window.cpp)
+        src/Window.cpp
+        src/Application.cpp)
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 

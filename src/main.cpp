@@ -1,15 +1,15 @@
 #include <iostream>
 #include "Window.h"
+#include "Application.h"
 
 int main()
 {
-    vis::Window* window = vis::Window::create_window(320, 480, "Chuj");
-    window->show_window();
+    auto app = new vis::Application();
 
-    while(true)
-    {
-        window->pull_events();
-    }
+    app->initialize();
+    app->run();
+
+    delete app;
 
     return 0;
 }
