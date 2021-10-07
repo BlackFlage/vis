@@ -4,7 +4,7 @@
 
 int main()
 {
-    auto app = new vis::Application();
+    auto app = vis::Application::create_instance();
 
     app->initialize();
     app->run();

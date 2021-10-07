@@ -3,34 +3,47 @@
 //
 
 #include "Application.h"
+#include <iostream>
 
 namespace vis
 {
-    vis::Application::Application()
-        : window(nullptr)
+    Application* Application::m_instance = nullptr;
+    Window* Application::m_window = nullptr;
+
+    Application::Application()
     {
 
     }
 
     Application::~Application()
     {
-        delete window;
     }
 
     void Application::run()
     {
         std::optional<int> windowRetValue;
 
-        while(windowRetValue != WM_QUIT)
+        while(windowRetValue != APPLICATION_CLOSED)
         {
-            windowRetValue = window->pull_events();
+            windowRetValue = m_window->pull_events();
         }
     }
 
     void Application::initialize()
     {
-        window = vis::Window::create_window(1280, 720, "App");
-        window->show_window();
+        m_window = vis::Window::create_window(1280, 720, "App");
+        m_window->show_window();
+        m_window->set_window_callback([this](auto && PH1) { on_event(std::forward<decltype(PH1)>(PH1)); });
+    }
+
+    Application *Application::create_instance()
+    {
+        return new Application();
+    }
+
+    void Application::on_event(const Event &a_event)
+    {
+        m_window->change_title(a_event.get_name().c_str());
     }
 }
 
