@@ -41,7 +41,7 @@ namespace vis
         MouseButtonPressEvent(int a_button, int a_x_pos, int a_y_pos)
         : MouseButtonEvent(a_button, a_x_pos, a_y_pos) {}
 
-        virtual inline std::string get_name() const override { return "Mouse button press event, button: " + std::to_string(m_button) + " X: " + std::to_string(m_x_pos) + " Y: " + std::to_string(m_y_pos) + ".\n"; }
+        virtual inline std::string get_name() const override { return "Mouse button press event, button: " + std::to_string(m_button) + " X: " + std::to_string(m_x_pos) + " Y: " + std::to_string(m_y_pos); }
         virtual inline EventType get_event_type() const override { return EventType::MOUSE_BUTTON_PRESS; }
     };
 
@@ -51,7 +51,7 @@ namespace vis
         MouseButtonReleaseEvent(int a_button, int a_x_pos, int a_y_pos)
                 : MouseButtonEvent(a_button, a_x_pos, a_y_pos) {}
 
-        virtual inline std::string get_name() const override { return "Mouse button release event, button: " + std::to_string(m_button) + " X: " + std::to_string(m_x_pos) + " Y: " + std::to_string(m_y_pos) + ".\n"; }
+        virtual inline std::string get_name() const override { return "Mouse button release event, button: " + std::to_string(m_button) + " X: " + std::to_string(m_x_pos) + " Y: " + std::to_string(m_y_pos); }
         virtual inline EventType get_event_type() const override { return EventType::MOUSE_BUTTON_RELEASE; }
     };
 
@@ -61,7 +61,7 @@ namespace vis
         MouseMoveEvent(int a_x_pos, int a_y_pos)
         : MouseEvent(a_x_pos, a_y_pos) {}
 
-        virtual inline std::string get_name() const override { return "Mouse move event, X: " + std::to_string(m_x_pos) + " Y: " + std::to_string(m_y_pos) + ".\n"; }
+        virtual inline std::string get_name() const override { return "Mouse move event, X: " + std::to_string(m_x_pos) + " Y: " + std::to_string(m_y_pos); }
         virtual inline EventType get_event_type() const override { return EventType::MOUSE_MOVE; }
     };
 
@@ -73,7 +73,7 @@ namespace vis
 
         inline int get_offset() const { return m_offset; };
 
-        virtual inline std::string get_name() const override { return "Mouse scroll event, offset: " + std::to_string(m_offset) + " X: " + std::to_string(m_x_pos) + " Y: " + std::to_string(m_y_pos) + ".\n"; }
+        virtual inline std::string get_name() const override { return "Mouse scroll event, offset: " + std::to_string(m_offset) + " X: " + std::to_string(m_x_pos) + " Y: " + std::to_string(m_y_pos); }
         virtual inline EventType get_event_type() const override { return EventType::SCROLL; }
     private:
         int m_offset;

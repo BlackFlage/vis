@@ -10,6 +10,9 @@ set(HEADER_FILES
         src/Event.h
         src/KeyboardEvent.h
         src/MouseEvent.h
+        src/Layer.h
+        src/LayerStack.h
+        src/Sandbox.h
         )
 
 set(SOURCE_FILES

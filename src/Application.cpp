@@ -17,6 +17,7 @@ namespace vis
 
     Application::~Application()
     {
+        m_layer_stack.clear_stack();
     }
 
     void Application::run()
@@ -43,7 +44,10 @@ namespace vis
 
     void Application::on_event(const Event &a_event)
     {
-        m_window->change_title(a_event.get_name().c_str());
+        for(const auto& l : m_layer_stack.get_layers())
+        {
+            l->on_event(a_event);
+        }
     }
 }
 
