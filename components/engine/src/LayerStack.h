@@ -17,10 +17,17 @@ namespace vis
         inline void push_layer(Layer* a_layer) { m_stack.push_back(a_layer); a_layer->on_attach(); }
         inline void detach_layer(Layer* a_layer) { a_layer->on_detach(); std::remove(m_stack.begin(), m_stack.end(), a_layer); }
 
-        inline void clear_stack() {
+        inline void clear_stack()
+        {
             std::for_each(m_stack.begin(), m_stack.end(), [](Layer* a_layer) { a_layer->on_detach(); });
             std::for_each(m_stack.begin(), m_stack.end(), std::default_delete<Layer>());
-            m_stack.clear();}
+            m_stack.clear();
+        }
+
+        inline void update_all_layers()
+        {
+            std::for_each(m_stack.begin(), m_stack.end(), [](Layer* a_layer) { a_layer->on_update(); });
+        }
 
         inline std::vector<Layer*> get_layers() { return m_stack; }
     private:

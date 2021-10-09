@@ -12,7 +12,8 @@ namespace vis
 
     Application::Application()
     {
-
+        recalculate_refresh_interval();
+        std::cout << "Refersh rate: " << m_refresh_interval;
     }
 
     Application::~Application()
@@ -27,6 +28,7 @@ namespace vis
         while(windowRetValue != APPLICATION_CLOSED)
         {
             windowRetValue = m_window->pull_events();
+            on_update();
         }
     }
 
@@ -37,16 +39,23 @@ namespace vis
         m_window->set_window_callback([this](auto && PH1) { on_event(std::forward<decltype(PH1)>(PH1)); });
     }
 
-    Application *Application::create_instance()
-    {
-        return new Application();
-    }
-
     void Application::on_event(const Event &a_event)
     {
         for(const auto& l : m_layer_stack.get_layers())
         {
             l->on_event(a_event);
+        }
+    }
+
+    void Application::on_update()
+    {
+        double time_delta = m_timer.get_delta_time();
+        while(time_delta > m_refresh_interval) {
+            m_window->pull_events();
+            m_layer_stack.update_all_layers();
+
+            time_delta -= m_refresh_interval;
+            m_timer.new_time_stamp();
         }
     }
 }

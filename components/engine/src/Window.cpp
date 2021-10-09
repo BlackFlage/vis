@@ -3,7 +3,7 @@
 //
 
 #include "Window.h"
-#include <Windowsx.h>
+#include <windowsx.h>
 #include <string>
 #include <iostream>
 #include "KeyboardEvent.h"
