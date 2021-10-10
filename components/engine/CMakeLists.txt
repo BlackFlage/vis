@@ -3,23 +3,25 @@ project(VISUAL)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(CORE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/core)
+
 set(HEADER_FILES
-        src/Window.h
-        src/Application.h
-        src/Input.h
-        src/Event.h
-        src/KeyboardEvent.h
-        src/MouseEvent.h
-        src/Layer.h
-        src/LayerStack.h
-        src/Sandbox.h
+        ${CORE_PATH}/Window.h
+        ${CORE_PATH}/Application.h
+        ${CORE_PATH}/Input.h
+        ${CORE_PATH}/Event.h
+        ${CORE_PATH}/KeyboardEvent.h
+        ${CORE_PATH}/MouseEvent.h
+        ${CORE_PATH}/Layer.h
+        ${CORE_PATH}/LayerStack.h
+        ${CORE_PATH}/Sandbox.h
+        ${CORE_PATH}/Macro.h
         )
 
 set(SOURCE_FILES
-        src/EntryPoint.cpp
-        src/Window.cpp
-        src/Application.cpp
-        src/Input.cpp
+        ${CORE_PATH}/EntryPoint.cpp
+        ${CORE_PATH}/Window.cpp
+        ${CORE_PATH}/Application.cpp
         )
 
 set(HEADER_FILES_UTIL
@@ -27,5 +29,8 @@ set(HEADER_FILES_UTIL
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES} ${HEADER_FILES_UTIL})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(${PROJECT_NAME} opengl32)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/core)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/utilities)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics)

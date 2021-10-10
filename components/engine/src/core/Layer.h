@@ -12,7 +12,7 @@ namespace vis
     class Layer
     {
     public:
-        virtual ~Layer() = 0;
+        virtual ~Layer() = default;;
         virtual void on_attach() = 0;
         virtual void on_detach() = 0;
 

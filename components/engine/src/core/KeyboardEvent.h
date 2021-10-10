@@ -27,6 +27,7 @@ namespace vis
         KeyPressEvent(int a_key_code)
         : KeyboardEvent(a_key_code) {}
 
+        static EventType get_static_type() { return EventType::KEY_PRESS; }
         virtual inline std::string get_name() const override { return "Key press event, key code: " + std::to_string(get_key_code()) + " char: " + char(m_key_code); }
         virtual inline EventType get_event_type() const override { return EventType::KEY_PRESS; }
     };
@@ -37,6 +38,7 @@ namespace vis
         KeyReleaseEvent(int a_key_code)
         : KeyboardEvent(a_key_code) {}
 
+        static EventType get_static_type() { return EventType::KEY_RELEASE; }
         virtual inline std::string get_name() const override { return "Key release event, key code: " + std::to_string(get_key_code()) + " char: " + char(m_key_code); }
         virtual inline EventType get_event_type() const override { return EventType::KEY_RELEASE; }
     };

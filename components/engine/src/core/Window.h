@@ -22,6 +22,9 @@ namespace vis
         int m_height;
 
         HWND m_hwnd;
+        HDC m_hdc;
+        HGLRC m_hglrc;
+
         std::function<void(Event&)> m_window_callback;
     };
 
@@ -31,7 +34,7 @@ namespace vis
         Window(const Window_Data& a_window_data);
         ~Window();
 
-        static Window* create_window(int a_width, int a_height, const char*  a_name);
+        static Window* create_window(int a_width, int a_height, const char* a_name);
 
         inline int get_width() const { return m_window_data.m_width; }
         inline int get_height() const { return  m_window_data.m_height; }
@@ -49,6 +52,10 @@ namespace vis
 
         std::optional<int> pull_events();
         void change_title(const char* a_title);
+    private:
+        static void initialize_opengl_extensions();
+        static HGLRC initialize_opengl(HDC a_hdc);
+        static HWND create_window_handler(int a_width, int a_height, const char* a_name);
     private:
         static Window_Data m_window_data;
     };
