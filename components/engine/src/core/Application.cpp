@@ -201,7 +201,7 @@ namespace vis
         glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &profile_mask);
 
         printf(
-                "*temporary*\nGL_RENDERER: %s\nGL_VENDOR: %s\nGL_VERSION: %s\nGL_SHADING_LANGUAGE_VERSION: %s\nProfile mask: %d\n\n",
+                "\n*permanen*\nGL_RENDERER: %s\nGL_VENDOR: %s\nGL_VERSION: %s\nGL_SHADING_LANGUAGE_VERSION: %s\nProfile mask: %d\n\n",
                 glGetString(GL_RENDERER),
                 glGetString(GL_VENDOR),
                 glGetString(GL_VERSION),

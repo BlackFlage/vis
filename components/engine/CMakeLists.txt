@@ -33,11 +33,13 @@ set(HEADER_FILES_UTIL
 
 set(HEADER_FILES_GRAPHICS
         ${GRAPHICS_PATH}/Renderer.h
-        ${GRAPHICS_PATH}/VBO.h)
+        ${GRAPHICS_PATH}/VBO.h
+        ${GRAPHICS_PATH}/Shader.h)
 
 set(SOURCE_FILES_GRAPHICS
         ${GRAPHICS_PATH}/Renderer.cpp
-        ${GRAPHICS_PATH}/VBO.cpp)
+        ${GRAPHICS_PATH}/VBO.cpp
+        ${GRAPHICS_PATH}/Shader.cpp)
 
 
 add_subdirectory(${VENDOR_PATH}/glew/build/cmake ${VENDOR_PATH}/glew/build/cmake)

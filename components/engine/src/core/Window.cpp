@@ -200,7 +200,7 @@ namespace vis
         wglMakeCurrent(temp_dc, temp_gl_context);
         glewInit();
         printf(
-                "*temporary*\nGL_RENDERER: %s\nGL_VENDOR: %s\nGL_VERSION: %s\nGL_SHADING_LANGUAGE_VERSION: %s\n\n",
+                "\n*temporary*\nGL_RENDERER: %s\nGL_VENDOR: %s\nGL_VERSION: %s\nGL_SHADING_LANGUAGE_VERSION: %s\n\n",
                 glGetString(GL_RENDERER),
                 glGetString(GL_VENDOR),
                 glGetString(GL_VERSION),
@@ -254,7 +254,6 @@ namespace vis
         }
 
         HDC dc = GetDC(hwnd);
-        //retrieve_last_error((char*)"GetDC");
         ASSERT(dc, "Failed to retrieve device context from window!");
 
         static const int pixel_attribs[] ={
@@ -290,6 +289,7 @@ namespace vis
 
         HGLRC gl_context = wglCreateContextAttribsARB(dc, nullptr, attribs);
         ASSERT(gl_context, "Failed to create OpenGL context!");
+
 
         return new Context(hwnd, dc, gl_context);
     }
