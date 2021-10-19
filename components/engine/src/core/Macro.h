@@ -7,5 +7,6 @@
 #include <iostream>
 
 #define ASSERT(x, message) { if(!(x)) { std::cout << "Assertion failed! Message: " << message << '\n'; } }
+#define ASSERT_B(x, message) { if(!(x)) { std::cout << "Assertion failed! Message: " << message << '\n'; return false; }}
 
 #endif //MAIN_MACRO_H

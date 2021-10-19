@@ -3,19 +3,14 @@
 //
 
 #include "Window.h"
-#include <windowsx.h>
-#include <string>
-#include <gl/GL.h>
-#include "wglext.h"
+#include <cstdio>
+#include <chrono>
+#include <thread>
+#include <strsafe.h>
 #include "Macro.h"
-#include "KeyboardEvent.h"
-#include "MouseEvent.h"
-
-typedef HGLRC WINAPI wglCreateContextAttribsARB_type(HDC a_hdc, HGLRC a_hShareContext, const int* a_attribList);
-wglCreateContextAttribsARB_type* wglCreateContextAttribsARB;
-
-typedef BOOL WINAPI wglChoosePixelFormatARB_type(HDC a_hdc, const int* a_attribList, const FLOAT* a_attribFList, UINT a_nMaxFormats, int* a_piFormats, UINT* a_nNumFormats);
-wglChoosePixelFormatARB_type* wglChoosePixelFormatARB;
+#include "Logger.h"
+#include "GL/glew.h"
+#include "GL/wglew.h"
 
 #define WGL_DRAW_TO_WINDOW_ARB                    0x2001
 #define WGL_ACCELERATION_ARB                      0x2003
@@ -31,115 +26,77 @@ wglChoosePixelFormatARB_type* wglChoosePixelFormatARB;
 
 namespace vis
 {
-    Window_Data Window::m_window_data;
+    bool Window::m_temp_window_created = false;
+    bool Window::m_window_created = false;
 
-    LRESULT CALLBACK window_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    LRESULT CALLBACK wnd_proc_temp(HWND a_hwnd, UINT a_msg, WPARAM a_wparam, LPARAM a_lparam)
     {
-        switch(uMsg)
+        switch(a_msg)
         {
-            case WM_KEYDOWN:
-            {
-                KeyPressEvent event((int)wParam);
-                Window::get_window_data().m_window_callback(event);
-                break;
-            }
-            case WM_KEYUP:
-            {
-                KeyReleaseEvent event((int)wParam);
-                Window::get_window_data().m_window_callback(event);
-                break;
-            }
-            case WM_LBUTTONUP:
-            {
-                MouseButtonReleaseEvent event(MK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Window::get_window_data().m_window_callback(event);
-                break;
-            }
-            case WM_RBUTTONUP:
-            {
-                MouseButtonReleaseEvent event(MK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Window::get_window_data().m_window_callback(event);
-                break;
-            }
-            case WM_LBUTTONDOWN:
-            {
-                MouseButtonPressEvent event(MK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Window::get_window_data().m_window_callback(event);
-                break;
-            }
-            case WM_RBUTTONDOWN:
-            {
-                MouseButtonPressEvent event(MK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Window::get_window_data().m_window_callback(event);
-                break;
-            }
-            case WM_MOUSEMOVE:
-            {
-                MouseMoveEvent event(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Window::get_window_data().m_window_callback(event);
-                break;
-            }
-            case WM_MBUTTONUP:
-            {
-                MouseButtonReleaseEvent event(MK_MBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Window::get_window_data().m_window_callback(event);
-                break;
-            }
-            case WM_MBUTTONDOWN:
-            {
-                MouseButtonPressEvent event(MK_MBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Window::get_window_data().m_window_callback(event);
-                break;
-            }
-            case WM_XBUTTONDOWN:
-            {
-                MouseButtonPressEvent event(GET_XBUTTON_WPARAM(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Window::get_window_data().m_window_callback(event);
-                break;
-            }
-            case WM_XBUTTONUP:
-            {
-                MouseButtonReleaseEvent event(GET_XBUTTON_WPARAM(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Window::get_window_data().m_window_callback(event);
-                break;
-            }
-            case WM_MOUSEWHEEL:
-            {
-                MouseScrollEvent event(GET_WHEEL_DELTA_WPARAM(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Window::get_window_data().m_window_callback(event);
-                break;
-            }
-            case WM_CLOSE:
-            {
-                PostQuitMessage(APPLICATION_CLOSED);
-                break;
-            }
+            case WM_CREATE:
+                Window::m_temp_window_created = true;
+                return 0;
+            case WM_DESTROY:
+                PostQuitMessage(0);
+                return 0;
         }
 
-        return DefWindowProcA(hwnd, uMsg, wParam, lParam);
+        return DefWindowProcA(a_hwnd, a_msg, a_wparam, a_lparam);
     }
 
-    Window::Window(const Window_Data& a_window_data)
+    void retrieve_last_error(LPTSTR lpsz_function_name)
     {
-        m_window_data = a_window_data;
+        LPVOID lp_msg_buff;
+        LPVOID lp_display_buff;
+        DWORD dw = GetLastError();
+
+        FormatMessage(
+                FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                FORMAT_MESSAGE_FROM_SYSTEM |
+                FORMAT_MESSAGE_IGNORE_INSERTS,
+                nullptr,
+                dw,
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                (LPTSTR) &lp_msg_buff,
+                0, nullptr );
+
+        lp_display_buff = (LPVOID)LocalAlloc(LMEM_ZEROINIT, (lstrlen((LPCSTR)lp_msg_buff) + lstrlen((LPCSTR)lpsz_function_name) + 40) * sizeof(TCHAR));
+        StringCchPrintf((LPTSTR)lp_display_buff,
+                        LocalSize(lp_display_buff) / sizeof(TCHAR),
+                        TEXT("%s failed with error %d: %s"),
+                        lpsz_function_name, dw, lp_msg_buff);
+
+        MessageBox(nullptr, (LPCTSTR)lp_display_buff, TEXT("Error"), MB_OK);
+
+        LocalFree(lp_msg_buff);
+        LocalFree(lp_display_buff);
+        ExitProcess(dw);
+    }
+
+    Window::Window(Context* a_context)
+    : m_context(a_context)
+    {
+
     }
 
     Window::~Window()
     {
-        wglDeleteContext(m_window_data.m_hglrc);
-        ReleaseDC(m_window_data.m_hwnd, m_window_data.m_hdc);
-        DestroyWindow(m_window_data.m_hwnd);
+        wglMakeCurrent(m_context->m_hdc, nullptr);
+        wglDeleteContext(m_context->m_hglrc);
+        ReleaseDC(m_context->m_hwnd, m_context->m_hdc);
+        DestroyWindow(m_context->m_hwnd);
+
+        delete m_context;
     }
 
-    Window *Window::create_window(int a_width, int a_height, const char* a_name)
+    Window *Window::create_window(WNDPROC a_win_proc, const Settings& a_settings)
     {
-        HWND hwnd = create_window_handler(a_width, a_height, a_name);
-        HDC hdc = GetDC(hwnd);
-        HGLRC hglrc = initialize_opengl(hdc);
+        ASSERT(initialize_opengl(), "Failed to initalize OpenGL!");
 
-        UpdateWindow(hwnd);
+        Context* c = create_permanent_window(a_win_proc, a_settings.m_width, a_settings.m_height, a_settings.m_name);
+        ASSERT(c != nullptr, "Failed to create Context!");
 
-        return new Window({a_width, a_height, hwnd, hdc, hglrc, nullptr});
+        return new Window(c);
     }
 
     std::optional<int> Window::pull_events()
@@ -160,139 +117,180 @@ namespace vis
         return {};
     }
 
-    void Window::change_title(const char* a_title)
+    bool Window::initialize_opengl()
     {
-        SetWindowTextA(m_window_data.m_hwnd, a_title);
-    }
+        HINSTANCE h_instance = GetModuleHandle(nullptr);
 
-    void Window::initialize_opengl_extensions()
-    {
-        WNDCLASS tempClass = {
-                .style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
-                .lpfnWndProc = DefWindowProcA,
-                .hInstance = GetModuleHandleA(NULL),
-                .lpszClassName = "Temp_wnd_class"
-        };
+        WNDCLASSEX temp_wc;
+        temp_wc.cbSize = sizeof(WNDCLASSEX);
+        temp_wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
+        temp_wc.lpfnWndProc = &wnd_proc_temp;
+        temp_wc.cbClsExtra = 0;
+        temp_wc.cbWndExtra = 0;
+        temp_wc.hInstance = h_instance;
+        temp_wc.hIcon = nullptr;
+        temp_wc.hCursor = LoadCursorA(nullptr, IDC_ARROW);
+        temp_wc.hbrBackground = (HBRUSH) GetStockObject(BLACK_BRUSH);
+        temp_wc.lpszMenuName = 0;
+        temp_wc.lpszClassName = TEXT("oglTempClass");
+        temp_wc.hIconSm = 0;
 
-        ASSERT(RegisterClassA(&tempClass), "Failed to register temp window class");
+        ASSERT_B(RegisterClassEx(&temp_wc), "Failed to register temporary wnd class!");
 
-        HWND tempWindow = CreateWindowExA(
+        HWND temp_hwnd = CreateWindowEx(
                 0,
-                tempClass.lpszClassName,
-                "Temp window",
-                0,
-                CW_USEDEFAULT,
-                CW_USEDEFAULT,
-                CW_USEDEFAULT,
-                CW_USEDEFAULT,
-                0,
-                0,
-                tempClass.hInstance,
-                0);
+                TEXT("oglTempClass"),
+                TEXT("oglTempWindow"),
+                WS_OVERLAPPEDWINDOW,
+                CW_USEDEFAULT, CW_USEDEFAULT, 640, 480,
+                nullptr,
+                nullptr,
+                h_instance,
+                nullptr);
 
-        ASSERT(tempWindow, "Failed to create temp window!");
+        ASSERT_B(temp_hwnd, "Failed to create window handle!");
 
-        HDC temp_hdc = GetDC(tempWindow);
+        MSG msg = {0};
+        while(!m_temp_window_created && PeekMessageA(&msg, temp_hwnd, 0, 0, PM_NOYIELD | PM_REMOVE))
+        {
+            using namespace std::chrono_literals;
 
-        PIXELFORMATDESCRIPTOR pfd = {
-                .nSize = sizeof(pfd),
-                .nVersion = 1,
-                .dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
-                .iPixelType = PFD_TYPE_RGBA,
-                .cColorBits = 32,
-                .cAlphaBits = 8,
-                .cDepthBits = 24,
-                .cStencilBits = 8,
-                .iLayerType = PFD_MAIN_PLANE,
-        };
+            DispatchMessageA(&msg);
+            std::this_thread::sleep_for(100ms);
+        }
 
-        int pixel_format = ChoosePixelFormat(temp_hdc, &pfd);
-
-        ASSERT(pixel_format, "Failed to find suitable pixel format.")
-        ASSERT(SetPixelFormat(temp_hdc, pixel_format, &pfd), "Failed to set pixel format.")
-
-        HGLRC temp_context = wglCreateContext(temp_hdc);
-        ASSERT(temp_context, "Failed to create temp OpenGL context.")
-        ASSERT(wglMakeCurrent(temp_hdc, temp_context), "Failed to set temp context as current.")
-
-        wglCreateContextAttribsARB = (wglCreateContextAttribsARB_type*)wglGetProcAddress("wglCreateContextAttribsARB");
-        wglChoosePixelFormatARB = (wglChoosePixelFormatARB_type*) wglGetProcAddress("wglChoosePixelFormatARB");
-
-        wglMakeCurrent(temp_hdc, 0);
-        wglDeleteContext(temp_context);
-        ReleaseDC(tempWindow, temp_hdc);
-        DestroyWindow(tempWindow);
-    }
-
-    HGLRC Window::initialize_opengl(HDC a_hdc)
-    {
-        initialize_opengl_extensions();
-
-        int pixel_format_attribs[] = {
-                WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
-                WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
-                WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
-                WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
-                WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
-                WGL_COLOR_BITS_ARB, 32,
-                WGL_DEPTH_BITS_ARB, 24,
-                WGL_STENCIL_BITS_ARB, 8,
-                0
-        };
-
-        int pixel_format;
-        UINT num_formats;
-        wglChoosePixelFormatARB(a_hdc, pixel_format_attribs, 0, 1, &pixel_format, &num_formats);
-        ASSERT(num_formats, "Failed to set OpenGL 3.3 pixel format.");
+        HDC temp_dc = GetDC(temp_hwnd);
+        ASSERT_B(temp_dc, "Failed to get temporary context!");
 
         PIXELFORMATDESCRIPTOR pfd;
-        DescribePixelFormat(a_hdc, pixel_format, sizeof(pfd), &pfd);
-        ASSERT(SetPixelFormat(a_hdc, pixel_format, &pfd), "Failed to set pixel format.");
+        pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+        pfd.nVersion = 1;
+        pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+        pfd.iPixelType = PFD_TYPE_RGBA;
+        pfd.cColorBits = 32;
+        pfd.cRedBits = 0;
+        pfd.cRedShift = 0;
+        pfd.cGreenBits = 0;
+        pfd.cGreenShift = 0;
+        pfd.cBlueBits = 0;
+        pfd.cBlueShift = 0;
+        pfd.cAlphaBits = 0;
+        pfd.cAlphaShift = 0;
+        pfd.cAccumBits = 0;
+        pfd.cAccumRedBits = 0;
+        pfd.cAccumGreenBits = 0;
+        pfd.cAccumBlueBits = 0;
+        pfd.cAccumAlphaBits = 0;
+        pfd.cDepthBits = 24;
+        pfd.cStencilBits = 8;
+        pfd.cAuxBuffers = 0;
+        pfd.iLayerType = PFD_MAIN_PLANE;
+        pfd.bReserved = 0;
+        pfd.dwLayerMask = 0;
+        pfd.dwVisibleMask = 0;
+        pfd.dwDamageMask = 0;
 
-        int gl33_attribs[] = {
-                WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-                WGL_CONTEXT_MINOR_VERSION_ARB, 3,
-                WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-                0,
-        };
+        int pixel_format = ChoosePixelFormat(temp_dc, &pfd);
+        DescribePixelFormat(temp_dc, pixel_format, sizeof(pfd), &pfd);
+        std::printf("Pixel format: %d.\n", pixel_format);
 
-        HGLRC gl33_context = wglCreateContextAttribsARB(a_hdc, 0, gl33_attribs);
-        ASSERT(gl33_context, "Failed to create OpenGL 3.3 context.");
-        ASSERT(wglMakeCurrent(a_hdc, gl33_context), "Failed to make OpenGL 3.3 context current.");
+        ASSERT_B(SetPixelFormat(temp_dc, pixel_format, &pfd), "Failed to set pixel format!");
 
-        return gl33_context;
+        HGLRC temp_gl_context = wglCreateContext(temp_dc);
+        wglMakeCurrent(temp_dc, temp_gl_context);
+        glewInit();
+        printf(
+                "*temporary*\nGL_RENDERER: %s\nGL_VENDOR: %s\nGL_VERSION: %s\nGL_SHADING_LANGUAGE_VERSION: %s\n\n",
+                glGetString(GL_RENDERER),
+                glGetString(GL_VENDOR),
+                glGetString(GL_VERSION),
+                glGetString(GL_SHADING_LANGUAGE_VERSION)
+        );
+
+        wglMakeCurrent(temp_dc, 0);
+        wglDeleteContext(temp_gl_context);
+        ReleaseDC(temp_hwnd, temp_dc);
+        DestroyWindow(temp_hwnd);
+
+        return true;
     }
 
-    HWND Window::create_window_handler(int a_width, int a_height, const char *a_name)
+    Context* Window::create_permanent_window(WNDPROC a_win_proc, int a_width, int a_height, const char* a_name)
     {
-        const char className[] = "Sample Window";
+        HINSTANCE h_instance = GetModuleHandle(nullptr);
 
-        HINSTANCE hInstance = GetModuleHandleA(nullptr);
+        WNDCLASSEX wc;
+        wc.cbSize = sizeof(WNDCLASSEX);
+        wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
+        wc.lpfnWndProc = a_win_proc;
+        wc.cbClsExtra = 0;
+        wc.cbWndExtra = 0;
+        wc.hInstance = h_instance;
+        wc.hIcon = 0;
+        wc.hCursor = LoadCursor(0, IDC_ARROW);
+        wc.hbrBackground = (HBRUSH) GetStockObject(BLACK_BRUSH);
+        wc.lpszMenuName = 0;
+        wc.lpszClassName = TEXT("OpenGLWindow");
+        wc.hIconSm = 0;
 
-        WNDCLASS wndClass = {
-                .style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
-                .lpfnWndProc = window_proc,
-                .hInstance = hInstance,
-                .hCursor = LoadCursorA(0, IDC_ARROW),
-                .hbrBackground = 0,
-                .lpszClassName = className
-        };
+        ASSERT(RegisterClassEx(&wc), "Failed to register window class!");
 
-        ASSERT(RegisterClassA(&wndClass), "Failed to register window class.");
-
-        HWND hwnd = CreateWindowExA(
+        HWND hwnd = CreateWindowEx(
                 0,
-                className,
+                "OpenGLWindow",
                 a_name,
                 WS_OVERLAPPEDWINDOW,
                 CW_USEDEFAULT, CW_USEDEFAULT, a_width, a_height,
-                nullptr,
-                nullptr,
-                hInstance,
-                nullptr
-        );
+                0, 0, h_instance, 0
+                );
 
+        MSG msg = {0};
+        while(!m_window_created && PeekMessageA(&msg, hwnd, 0, 0, PM_NOYIELD | PM_REMOVE))
+        {
+            using namespace std::chrono_literals;
 
-        return hwnd;
+            DispatchMessageA(&msg);
+            std::this_thread::sleep_for(100ms);
+        }
+
+        HDC dc = GetDC(hwnd);
+        //retrieve_last_error((char*)"GetDC");
+        ASSERT(dc, "Failed to retrieve device context from window!");
+
+        static const int pixel_attribs[] ={
+                WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
+                WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
+                WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+                WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
+                WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+                WGL_COLOR_BITS_ARB, 24,
+                WGL_DEPTH_BITS_ARB, 24,
+                WGL_STENCIL_BITS_ARB, 8,
+                WGL_SAMPLE_BUFFERS_ARB, GL_TRUE,
+                WGL_SAMPLES_ARB, 4,
+                0
+        };
+
+        int pixel_format = 0;
+        unsigned int num_pixel_format = 0;
+        wglChoosePixelFormatARB(dc, pixel_attribs, nullptr, 1, &pixel_format, &num_pixel_format);
+
+        PIXELFORMATDESCRIPTOR pfd2;
+        DescribePixelFormat(dc, pixel_format, sizeof(pfd2), &pfd2);
+        ASSERT(SetPixelFormat(dc, pixel_format, &pfd2), "Failed to set pixel format in permanent window!");
+
+        static const int attribs[] = {
+                WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
+                WGL_CONTEXT_MINOR_VERSION_ARB, 6,
+                WGL_CONTEXT_LAYER_PLANE_ARB, 0,
+                WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+                WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+                0
+        };
+
+        HGLRC gl_context = wglCreateContextAttribsARB(dc, nullptr, attribs);
+        ASSERT(gl_context, "Failed to create OpenGL context!");
+
+        return new Context(hwnd, dc, gl_context);
     }
 }

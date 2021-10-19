@@ -38,13 +38,20 @@ namespace vis
 
         inline static Window* get_window_instance() { return m_window; }
         inline static Application* get_instance() { return m_instance; }
+        inline static bool is_running() { return m_running; }
 
-        inline static Application* create_instance() { return new Application(); }
+        inline static void set_running(bool a_running) { m_running = a_running; }
+
+        static Application* create_instance();
     private:
         Application();
+
+        void start_opengl_thread();
+        static DWORD WINAPI opengl_thread(LPVOID a_param);
     private:
         static Window* m_window;
         static Application* m_instance;
+        static bool m_running;
 
         Timer other;
         Timer m_timer;
@@ -53,8 +60,6 @@ namespace vis
         double m_refresh_rate = 60.0; //frames per second
         double m_refresh_interval;
     };
-
-    Application* create_instance();
 }
 
 
