@@ -15,6 +15,7 @@ namespace vis
         Timer()
         {
             m_last_stamp = std::chrono::high_resolution_clock::now();
+            m_beginning = std::chrono::high_resolution_clock::now();
         }
 
         double get_delta_time()
@@ -24,12 +25,21 @@ namespace vis
             return double(std::chrono::duration_cast<std::chrono::milliseconds>(now - m_last_stamp).count() / 1000.0);
         }
 
+        double get_time_passed()
+        {
+            auto now = std::chrono::high_resolution_clock::now();
+
+            return std::chrono::duration_cast<std::chrono::milliseconds>(now - m_beginning).count() / 1000.0;
+        }
+
         void new_time_stamp()
         {
             m_last_stamp = std::chrono::high_resolution_clock::now();
         }
+
     private:
         std::chrono::time_point<std::chrono::steady_clock> m_last_stamp;
+        std::chrono::time_point<std::chrono::steady_clock> m_beginning;
     };
 }
 

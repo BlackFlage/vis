@@ -14,12 +14,16 @@ namespace vis
     class LayerStack
     {
     public:
-        inline void push_layer(Layer* a_layer) { m_stack.push_back(a_layer); a_layer->on_attach(); }
+        inline void push_layer(Layer* a_layer) { m_stack.push_back(a_layer); }
         inline void detach_layer(Layer* a_layer) { a_layer->on_detach(); std::remove(m_stack.begin(), m_stack.end(), a_layer); }
+
+        inline void on_attach_layers() { std::for_each(m_stack.begin(), m_stack.end(), [](Layer* a_layer) { a_layer->on_attach(); }); }
+        inline void on_detach_layers() { std::for_each(m_stack.begin(), m_stack.end(), [](Layer* a_layer) { a_layer->on_detach(); }); }
 
         inline void clear_stack()
         {
-            std::for_each(m_stack.begin(), m_stack.end(), [](Layer* a_layer) { a_layer->on_detach(); });
+            on_detach_layers();
+
             std::for_each(m_stack.begin(), m_stack.end(), std::default_delete<Layer>());
             m_stack.clear();
         }

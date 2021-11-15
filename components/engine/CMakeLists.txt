@@ -26,32 +26,53 @@ set(SOURCE_FILES_CORE
         ${CORE_PATH}/Window.cpp
         ${CORE_PATH}/Application.cpp
         ${CORE_PATH}/Logger.cpp
+        ${CORE_PATH}/Macro.cpp
         )
 
 set(HEADER_FILES_UTIL
-        src/utilities/Timer.h)
+        src/utilities/Timer.h
+        src/utilities/Mesh.h
+        src/utilities/Model.h
+        src/utilities/OBJLoader.h)
+
+set(SOURCE_FILES_UTIL
+        src/utilities/Mesh.cpp
+        src/utilities/Model.cpp
+        src/utilities/OBJLoader.cpp)
 
 set(HEADER_FILES_GRAPHICS
         ${GRAPHICS_PATH}/Renderer.h
         ${GRAPHICS_PATH}/VBO.h
-        ${GRAPHICS_PATH}/Shader.h)
+        ${GRAPHICS_PATH}/Shader.h
+        ${GRAPHICS_PATH}/VAO.h
+        ${GRAPHICS_PATH}/EBO.h
+        )
 
 set(SOURCE_FILES_GRAPHICS
         ${GRAPHICS_PATH}/Renderer.cpp
         ${GRAPHICS_PATH}/VBO.cpp
-        ${GRAPHICS_PATH}/Shader.cpp)
+        ${GRAPHICS_PATH}/Shader.cpp
+        ${GRAPHICS_PATH}/VAO.cpp
+        ${GRAPHICS_PATH}/EBO.cpp)
 
 
 add_subdirectory(${VENDOR_PATH}/glew/build/cmake ${VENDOR_PATH}/glew/build/cmake)
-add_executable(${PROJECT_NAME} ${HEADER_FILES_CORE} ${SOURCE_FILES_CORE} ${HEADER_FILES_UTIL} ${HEADER_FILES_GRAPHICS} ${SOURCE_FILES_GRAPHICS})
-
+add_executable(${PROJECT_NAME} ${HEADER_FILES_CORE} ${SOURCE_FILES_CORE} ${HEADER_FILES_UTIL} ${SOURCE_FILES_UTIL} ${HEADER_FILES_GRAPHICS} ${SOURCE_FILES_GRAPHICS})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/core)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/utilities)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics)
 
 # VENDOR
-target_include_directories(${PROJECT_NAME} PUBLIC ${VENDOR_PATH}/spdlog/include)
 
+#SPDLOG
+target_include_directories(${PROJECT_NAME} PRIVATE ${VENDOR_PATH}/spdlog/include)
+
+#GLEW
 target_include_directories(${PROJECT_NAME} PRIVATE ${VENDOR_PATH}/glew/include)
 target_link_libraries(${PROJECT_NAME} opengl32 glew_s)
+
+#GLM
+add_subdirectory(${VENDOR_PATH}/glm ${VENDOR_PATH}/glm)
+target_link_libraries(${PROJECT_NAME} glm::glm)
+target_include_directories(${PROJECT_NAME} PRIVATE ${VENDOR_PATH}/glm)

@@ -199,6 +199,7 @@ namespace vis
         HGLRC temp_gl_context = wglCreateContext(temp_dc);
         wglMakeCurrent(temp_dc, temp_gl_context);
         glewInit();
+
         printf(
                 "\n*temporary*\nGL_RENDERER: %s\nGL_VENDOR: %s\nGL_VERSION: %s\nGL_SHADING_LANGUAGE_VERSION: %s\n\n",
                 glGetString(GL_RENDERER),
@@ -279,11 +280,11 @@ namespace vis
         ASSERT(SetPixelFormat(dc, pixel_format, &pfd2), "Failed to set pixel format in permanent window!");
 
         static const int attribs[] = {
-                WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-                WGL_CONTEXT_MINOR_VERSION_ARB, 6,
+                WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+                WGL_CONTEXT_MINOR_VERSION_ARB, 3,
                 WGL_CONTEXT_LAYER_PLANE_ARB, 0,
                 WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
-                WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+                WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
                 0
         };
 

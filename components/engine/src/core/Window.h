@@ -28,6 +28,8 @@ namespace vis
 
     struct Settings
     {
+        Settings(int a_width, int a_height, char * a_name)
+        :   m_width(a_width), m_height(a_height), m_name(a_name) {}
         int m_width;
         int m_height;
         char* m_name;

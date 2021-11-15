@@ -12,6 +12,7 @@
 #include "Event.h"
 #include "KeyboardEvent.h"
 #include <iostream>
+#include "Shader.h"
 
 namespace vis
 {
@@ -26,21 +27,21 @@ namespace vis
 
         void on_event(Event& a_event);
         void on_update();
+        void on_render();
 
-        inline void push_layer(Layer* a_layer) { m_layer_stack.push_layer(a_layer); }
-        inline void detach_layer(Layer* a_layer) { m_layer_stack.detach_layer(a_layer); }
+        void push_layer(Layer* a_layer);
+        void detach_layer(Layer* a_layer);
 
-        //Other funcs
-        inline void recalculate_refresh_interval() { m_refresh_interval = 1.0 / m_refresh_rate; }
-        inline void set_refresh_interval(int a_refresh_rate) {
-            if(a_refresh_rate > 24) m_refresh_rate = a_refresh_rate;
-            recalculate_refresh_interval(); }
+        void recalculate_refresh_interval();
+        void set_refresh_interval(int a_refresh_rate);
 
         inline static Window* get_window_instance() { return m_window; }
         inline static Application* get_instance() { return m_instance; }
         inline static bool is_running() { return m_running; }
 
         inline static void set_running(bool a_running) { m_running = a_running; }
+        inline double get_delta_time() { return m_timer.get_delta_time(); }
+        inline double get_time_passed() { return m_timer.get_time_passed();}
 
         static Application* create_instance();
     private:
@@ -49,6 +50,7 @@ namespace vis
         void start_opengl_thread();
         static DWORD WINAPI opengl_thread(LPVOID a_param);
     private:
+        static Shader* m_shader;
         static Window* m_window;
         static Application* m_instance;
         static bool m_running;

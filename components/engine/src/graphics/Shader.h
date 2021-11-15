@@ -16,10 +16,17 @@ namespace vis
     class Shader
     {
     public:
-        Shader(const std::string& a_vertex_path, const std::string& a_fragment_path);
+        ~Shader();
 
         inline void bind() const { glUseProgram(m_id); }
         inline void unbind() const { glUseProgram(0); }
+
+        void set_uniform_2f(const char* a_name, float f1, float f2);
+        void set_uniform_3f(const char* a_name, float f1, float f2, float f3);
+
+        static Shader* create_shader(const std::string &a_vertex_path, const std::string &a_fragment_path);
+    private:
+        Shader();
     private:
         GLuint m_id;
     };

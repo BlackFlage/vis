@@ -12,7 +12,8 @@ namespace vis
     class VBO
     {
     public:
-        VBO(float* a_vertices);
+        VBO(float a_vertices[], unsigned int a_count);
+        ~VBO();
 
         inline void unbind() const { glBindBuffer(GL_ARRAY_BUFFER, m_id); }
 

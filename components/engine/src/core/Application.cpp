@@ -4,19 +4,19 @@
 
 #include "Application.h"
 #include <windowsx.h>
-#include <GL/glew.h>
 #include <GL/wglew.h>
-#include "Logger.h"
-#include "KeyboardEvent.h"
 #include "MouseEvent.h"
-#include "Macro.h"
-#include "Renderer.h"
+#include "VAO.h"
+#include "VBO.h"
+#include "EBO.h"
+#include <exception>
 
 namespace vis
 {
     Application* Application::m_instance = nullptr;
     Window* Application::m_window = nullptr;
     bool Application::m_running = false;
+    Shader* Application::m_shader = nullptr;
 
     LRESULT CALLBACK win_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
@@ -138,8 +138,12 @@ namespace vis
     void Application::initialize()
     {
         Logger::initialize();
+        char* name = new char[1];
+        name[0] = 'A';
+        Settings set(720, 750, name);
+        m_window = Window::create_window(win_proc, set);
 
-        m_window = Window::create_window(win_proc, {1280, 720, TEXT("App")});
+        glDebugMessageControl(GL_DEBUG_SOURCE_WINDOW_SYSTEM, GL_DEBUG_TYPE_OTHER_ARB, 0x826b, 0, nullptr, GL_FALSE);
 
         m_running = true;
     }
@@ -165,9 +169,41 @@ namespace vis
         }
     }
 
+    void Application::on_render()
+    {
+        for(const auto& layer : m_layer_stack.get_layers())
+        {
+            layer->on_render();
+        }
+    }
+
+    void Application::push_layer(Layer *a_layer)
+    {
+        m_layer_stack.push_layer(a_layer);
+    }
+
+    void Application::detach_layer(Layer *a_layer)
+    {
+        m_layer_stack.detach_layer(a_layer);
+    }
+
+    void Application::recalculate_refresh_interval()
+    {
+        m_refresh_interval = 1.0 / m_refresh_rate;
+    }
+
+    void Application::set_refresh_interval(int a_refresh_rate)
+    {
+        if(a_refresh_rate > 24)
+            m_refresh_rate = a_refresh_rate;
+
+        recalculate_refresh_interval();
+    }
+
     Application *Application::create_instance()
     {
         Application* app = new Application();
+
         Application::m_instance = app;
 
         return app;
@@ -201,7 +237,7 @@ namespace vis
         glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &profile_mask);
 
         printf(
-                "\n*permanen*\nGL_RENDERER: %s\nGL_VENDOR: %s\nGL_VERSION: %s\nGL_SHADING_LANGUAGE_VERSION: %s\nProfile mask: %d\n\n",
+                "\n*permanent*\nGL_RENDERER: %s\nGL_VENDOR: %s\nGL_VERSION: %s\nGL_SHADING_LANGUAGE_VERSION: %s\nProfile mask: %d\n\n",
                 glGetString(GL_RENDERER),
                 glGetString(GL_VENDOR),
                 glGetString(GL_VERSION),
@@ -210,7 +246,7 @@ namespace vis
         );
 
         glEnable(GL_DEBUG_OUTPUT);
-        glDebugMessageCallback(opengl_error_callback, 0);
+        //glDebugMessageCallback(opengl_error_callback, 0);
 
         wglSwapIntervalEXT(1);
 
@@ -223,22 +259,32 @@ namespace vis
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
 
-        glViewport(0, 0, 1280, 720);
-        glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
+        RECT contextRect;
+        GetClientRect(m_window->get_context()->m_hwnd, &contextRect);
+
+        glViewport(0, 0, contextRect.right, contextRect.bottom);
+        glClearColor(0.5f, 0.0f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
         SwapBuffers(context->m_hdc);
         ShowWindow(context->m_hwnd, 1);
 
+        Application::get_instance()->m_layer_stack.on_attach_layers();
+
         while(Application::is_running())
         {
+            //Clear
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-            //Rendering goes here
-            Renderer::change_background_color(1.0f, 0.0f, 1.0f, 1.0f);
+            //Render
+            Application::get_instance()->on_render();
 
+            //Flush and swap buffers
             glFlush();
             SwapBuffers(context->m_hdc);
         }
+
+        delete m_shader;
 
         return 0;
     }

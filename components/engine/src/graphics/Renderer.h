@@ -5,12 +5,17 @@
 #ifndef MAIN_RENDERER_H
 #define MAIN_RENDERER_H
 
+#include "Shader.h"
+#include "Model.h"
+
 namespace vis
 {
     class Renderer
     {
     public:
         static void change_background_color(float r, float g, float b, float alpha);
+        static void render(float r, float g, float b, float size, Shader* a_shader);
+        static void render(Model* a_model, Shader* a_shader);
     };
 }
 
