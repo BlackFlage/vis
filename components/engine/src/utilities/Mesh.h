@@ -19,7 +19,13 @@ namespace vis
     class Mesh
     {
     public:
-        Mesh(std::vector<Vertex> a_vertices, std::vector<Index> a_indices, std::vector<Normal> a_normals, std::vector<TextureCoords> a_textureCoords, GLint a_geometryType);
+        Mesh(std::vector<Vertex> a_vertices,
+             std::vector<Index> a_indices,
+             std::vector<Normal> a_normals,
+             std::vector<TextureCoords> a_textureCoords,
+             std::vector<Index> a_vertexNormalIndices,
+             std::vector<Index> a_textureCoordsIndices,
+             GLint a_geometryType);
 
         const std::vector<Vertex>& get_vertices() const;
         const std::vector<Index>& get_indices() const;
@@ -34,6 +40,8 @@ namespace vis
         std::vector<Index> m_indices;
         std::vector<Normal> m_normals;
         std::vector<TextureCoords> m_textureCoords;
+        std::vector<Index> m_vertexNormalIndices;
+        std::vector<Index> m_textureCoordsIndices;
     };
 }
 

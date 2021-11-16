@@ -31,29 +31,32 @@ set(SOURCE_FILES_CORE
 
 set(HEADER_FILES_UTIL
         src/utilities/Timer.h
-        src/utilities/Mesh.h
-        src/utilities/Model.h
         src/utilities/OBJLoader.h)
 
 set(SOURCE_FILES_UTIL
-        src/utilities/Mesh.cpp
-        src/utilities/Model.cpp
         src/utilities/OBJLoader.cpp)
 
 set(HEADER_FILES_GRAPHICS
+        src/utilities/Mesh.h
+        src/utilities/Model.h
         ${GRAPHICS_PATH}/Renderer.h
         ${GRAPHICS_PATH}/VBO.h
         ${GRAPHICS_PATH}/Shader.h
         ${GRAPHICS_PATH}/VAO.h
         ${GRAPHICS_PATH}/EBO.h
+        ${GRAPHICS_PATH}/Camera.h
         )
 
 set(SOURCE_FILES_GRAPHICS
+        src/utilities/Mesh.cpp
+        src/utilities/Model.cpp
         ${GRAPHICS_PATH}/Renderer.cpp
         ${GRAPHICS_PATH}/VBO.cpp
         ${GRAPHICS_PATH}/Shader.cpp
         ${GRAPHICS_PATH}/VAO.cpp
-        ${GRAPHICS_PATH}/EBO.cpp)
+        ${GRAPHICS_PATH}/EBO.cpp
+        ${GRAPHICS_PATH}/Camera.cpp
+        )
 
 
 add_subdirectory(${VENDOR_PATH}/glew/build/cmake ${VENDOR_PATH}/glew/build/cmake)

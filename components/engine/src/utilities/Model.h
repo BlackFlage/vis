@@ -19,8 +19,12 @@ namespace vis
         ~Model();
 
         const Mesh* get_mesh() const;
+
+        const glm::mat4& get_transform() const;
     private:
         Mesh* m_mesh;
+
+        glm::mat4 m_transform;
     };
 }
 

@@ -24,11 +24,12 @@ namespace vis
         std::vector<Index> indices;
         std::vector<Normal> normals;
         std::vector<TextureCoords> textureCoords;
+        std::vector<Index> vertexNormalIndices;
+        std::vector<Index> textureCoordsIndices;
         std::string line;
         float x, y, z;
         while (std::getline(file, line))
         {
-            LOG_INFO(line);
             std::istringstream iss;
             std::string operationType = line.substr(0, 2);
 
@@ -40,8 +41,6 @@ namespace vis
                 vertices.push_back(x);
                 vertices.push_back(y);
                 vertices.push_back(z);
-
-                LOG_INFO("VERTEX: {0}, {1}, {2}", x, y, z);
             }
             else if(operationType == "vn")
             {
@@ -49,8 +48,6 @@ namespace vis
 
                 sscanf_s(data, "vn  %f %f %f", &x, &y, &z);
                 normals.emplace_back(x, y, z);
-
-                LOG_INFO("VERTEX NORMAL: {0}, {1}, {2}", x, y, z);
             }
             else if(operationType == "vt")
             {
@@ -58,25 +55,65 @@ namespace vis
 
                 sscanf_s(data, "vt %f %f", &x, &y);
                 textureCoords.emplace_back(x, y);
-
-                LOG_INFO("VERTEX TEXTURE COORDS: {0}, {1}, {2}", x, y, z);
             }
             else if(operationType == "f ")
             {
-                const char* data = line.c_str();
-                int i_x, i_y, i_z;
-                float t_x, t_y, t_w;
-                float n_x, n_y, n_z;
+                std::string delimiter = "/";
+                std::string data = line;
 
-                sscanf_s(data, "f %i//%f %i//%f %i//%f", &i_x, &n_x, &i_y, &n_y, &i_z, &n_z);
+                size_t pos = 0;
+                while(data.size() > 0)
+                {
+                    while(data.at(0) == ' ' || data.at(0) == 'f')
+                    {
+                        data = data.erase(0, 1);
+                    }
 
-                indices.push_back(i_x);
-                indices.push_back(i_y);
-                indices.push_back(i_z);
-                normals.emplace_back(n_x, n_y, n_z);
+                    pos = data.find(' ');
+                    std::string face = data.substr(0, pos);
+
+                    if(pos == std::string::npos)
+                    {
+                        pos = data.size() - 1;
+                    }
+
+                    data.erase(0, pos + 1);
+
+                    for(int i = 0; i < 3; i++)
+                    {
+                        pos = face.find(delimiter);
+                        if(pos == 0)
+                        {
+                            face = face.erase(0, 1);
+                            continue;
+                        }
+                        else if(pos == std::string::npos)
+                        {
+                            pos = face.size();
+                        }
+
+                        unsigned int value = std::stoi(face.substr(0, pos)) - 1;
+                        face = face.erase(0, pos + delimiter.length());
+
+                        switch(i)
+                        {
+                            case 0:
+                                indices.push_back(value);
+                                break;
+                            case 1:
+                                vertexNormalIndices.push_back(value);
+                                break;
+                            case 2:
+                                textureCoordsIndices.push_back(value);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
             }
         }
 
-        return new Mesh(vertices, indices, normals, textureCoords, GL_TRIANGLES);
+        return new Mesh(vertices, indices, normals, textureCoords, vertexNormalIndices, textureCoordsIndices, GL_QUADS);
     }
 }

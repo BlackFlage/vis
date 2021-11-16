@@ -10,6 +10,7 @@
 #include <fstream>
 #include <Logger.h>
 #include "Macro.h"
+#include "glm/glm.hpp"
 
 namespace vis
 {
@@ -23,6 +24,7 @@ namespace vis
 
         void set_uniform_2f(const char* a_name, float f1, float f2);
         void set_uniform_3f(const char* a_name, float f1, float f2, float f3);
+        void set_uniform_mat4(const char* a_name, glm::mat4 mat4);
 
         static Shader* create_shader(const std::string &a_vertex_path, const std::string &a_fragment_path);
     private:

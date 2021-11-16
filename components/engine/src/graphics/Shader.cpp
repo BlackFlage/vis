@@ -3,6 +3,7 @@
 //
 
 #include "Shader.h"
+#include "glm/gtc/type_ptr.hpp"
 
 namespace vis
 {
@@ -87,6 +88,16 @@ namespace vis
 
         GLuint location = glGetUniformLocation(m_id, a_name);
         glUniform3f(location, f1, f2, f3);
+
+        glUseProgram(0);
+    }
+
+    void Shader::set_uniform_mat4(const char *a_name, glm::mat4 mat4)
+    {
+        glUseProgram(m_id);
+
+        GLuint location = glGetUniformLocation(m_id, a_name);
+        glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat4));
 
         glUseProgram(0);
     }

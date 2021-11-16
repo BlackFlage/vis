@@ -294,4 +294,12 @@ namespace vis
 
         return new Context(hwnd, dc, gl_context);
     }
+
+    RECT Window::get_client_rect() const
+    {
+        RECT rect;
+        GetClientRect(m_context->m_hwnd, &rect);
+
+        return rect;
+    }
 }

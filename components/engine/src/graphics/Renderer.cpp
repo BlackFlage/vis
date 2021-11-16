@@ -40,7 +40,7 @@ namespace vis
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
     }
 
-    void Renderer::render(Model *a_model, Shader *a_shader)
+    void Renderer::render(Model *a_model, Camera* a_camera, Shader *a_shader)
     {
         const Mesh* mesh = a_model->get_mesh();
 
@@ -54,7 +54,9 @@ namespace vis
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
         glEnableVertexAttribArray(0);
 
-        a_shader->set_uniform_3f("u_color", 1.0f, 0.0f, 1.0f);
+        a_shader->set_uniform_mat4("u_view", a_camera->get_transform());
+        a_shader->set_uniform_mat4("u_model", a_model->get_transform());
+        a_shader->set_uniform_3f("u_color", 0.0f, 1.0f, 0.3f);
         a_shader->bind();
 
         glDrawElements(mesh->get_geometry_type(), mesh->get_indices_count(), GL_UNSIGNED_INT, nullptr);

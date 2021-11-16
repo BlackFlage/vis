@@ -12,6 +12,9 @@
 #include "Gl/gl.h"
 #include "Renderer.h"
 #include "OBJLoader.h"
+#include "Camera.h"
+#include "KeyboardEvent.h"
+#include <functional>
 
 namespace vis
 {
@@ -20,54 +23,79 @@ namespace vis
     public:
         Sandbox()
         {
-            std::cout << "Layer created!\n";
+
         }
 
-        ~Sandbox() override { std::cout << "Layer destroyed!\n"; }
-
-        void on_event(const Event& a_event) override
+        ~Sandbox() override
         {
 
+        }
+
+        void on_event(Event& a_event) override
+        {
+            EventDispatcher dispatcher(a_event);
+            dispatcher.dispatch<KeyPressEvent>([this](auto && PH1) { move_camera(std::forward<decltype(PH1)>(PH1)); });
         }
 
         void on_update() override
         {
-            auto delta = Application::get_instance()->get_time_passed();
 
-            r = std::abs(std::sin((float)delta));
-            g = std::abs(std::cos((float)delta));
-            b = std::abs(std::sin(0.5f + (float)delta));
         }
 
         void on_render() override
         {
-            Renderer::change_background_color(r, g, b, 1.0f);
-            CheckGLError();
-            //Renderer::render(b, r, g, 0.3f, m_shader);
-            Renderer::render(m_model, m_shader);
+            Renderer::change_background_color(0.3f, 0.0f, 0.1f, 1.0f);
+
+            Renderer::render(m_model, m_camera, m_shader);
+            glm::vec3 pos = m_camera->get_position();
+            LOG_INFO("CAMERA POS: {0} {1} {2}", pos.x, pos.y, pos.z);
         }
 
         void on_attach() override
         {
-            std::cout << "Layer attached!\n";
             m_shader = Shader::create_shader(R"(C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\Shaders\vertex.glsl)", R"(C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\Shaders\fragment.glsl)");
-            Mesh* mesh = OBJLoader::load_from_file(R"(C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\Pulpit\Cube.obj)");
+            Mesh* mesh = OBJLoader::load_from_file(R"(C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\Pulpit\Flashlight.obj)");
             m_model = new Model(mesh);
+            m_camera = new Camera();
         }
 
         void on_detach() override
         {
-            std::cout << "Layer detached!\n";
             delete m_shader;
             delete m_model;
+            delete m_camera;
+        }
+
+        void move_camera(KeyPressEvent& a_event)
+        {
+            switch(a_event.get_key_code())
+            {
+                case 'W':
+                    m_camera->translate(glm::vec3(0.0f, 0.0f, 0.1f));
+                    break;
+                case 'S':
+                    m_camera->translate(glm::vec3(0.0f, 0.0f, -0.1f));
+                    break;
+                case 'A':
+                    m_camera->translate(glm::vec3(0.1f, 0.0f, 0.0f));
+                    break;
+                case 'D':
+                    m_camera->translate(glm::vec3(-0.1f, 0.0f, 0.0f));
+                    break;
+                case 'U':
+                    m_camera->translate(glm::vec3(0.0f, -0.1f, 0.0f));
+                    break;
+                case 'J':
+                    m_camera->translate(glm::vec3(0.0f, 0.1f, 0.0f));
+                    break;
+
+            }
         }
 
     private:
-        float r;
-        float g;
-        float b;
         Shader* m_shader;
         Model* m_model;
+        Camera* m_camera;
     };
 }
 

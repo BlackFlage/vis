@@ -4,13 +4,20 @@
 
 #include "Mesh.h"
 
-vis::Mesh::Mesh(std::vector<Vertex> a_vertices, std::vector<Index> a_indices, std::vector<Normal> a_normals,
-                std::vector<TextureCoords> a_textureCoords, GLint a_geometryType)
+vis::Mesh::Mesh(std::vector<Vertex> a_vertices,
+                std::vector<Index> a_indices,
+                std::vector<Normal> a_normals,
+                std::vector<TextureCoords> a_textureCoords,
+                std::vector<Index> a_vertexNormalIndices,
+                std::vector<Index> a_textureCoordsIndices,
+                GLint a_geometryType)
 {
     m_vertices = std::move(a_vertices);
     m_indices = std::move(a_indices);
     m_normals = std::move(a_normals);
     m_textureCoords = std::move(a_textureCoords);
+    m_vertexNormalIndices = std::move(a_vertexNormalIndices);
+    m_textureCoordsIndices = std::move(a_textureCoordsIndices);
     m_geometryType = a_geometryType;
 }
 
