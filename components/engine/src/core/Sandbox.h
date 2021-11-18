@@ -13,7 +13,7 @@
 #include "Renderer.h"
 #include "OBJLoader.h"
 #include "Camera.h"
-#include "KeyboardEvent.h"
+#include "event/KeyboardEvent.h"
 #include <functional>
 
 namespace vis
@@ -34,7 +34,7 @@ namespace vis
         void on_event(Event& a_event) override
         {
             EventDispatcher dispatcher(a_event);
-            dispatcher.dispatch<KeyPressEvent>([this](auto && PH1) { move_camera(std::forward<decltype(PH1)>(PH1)); });
+            dispatcher.dispatch<KeyPressEvent>([this](auto&& event) { move_camera(std::forward<decltype(event)>(event)); });
         }
 
         void on_update() override
@@ -44,7 +44,7 @@ namespace vis
 
         void on_render() override
         {
-            Renderer::change_background_color(1.0f, 1.0f, 1.0f, 1.0f);
+            Renderer::change_background_color(0.0f, 0.0f, 0.0f, 1.0f);
 
             for(const auto& m : m_models)
             {

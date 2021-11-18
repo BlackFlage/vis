@@ -6,7 +6,7 @@
 #define MAIN_MODEL_H
 
 #include <vector>
-#include <gl/glew.h>
+#include <GL/glew.h>
 #include "Mesh.h"
 
 namespace vis

@@ -5,7 +5,7 @@
 #ifndef VISUAL_LAYER_H
 #define VISUAL_LAYER_H
 
-#include "Event.h"
+#include "event/Event.h"
 
 namespace vis
 {

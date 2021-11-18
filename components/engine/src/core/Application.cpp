@@ -5,18 +5,17 @@
 #include "Application.h"
 #include <windowsx.h>
 #include <GL/wglew.h>
-#include "MouseEvent.h"
-#include "VAO.h"
-#include "VBO.h"
-#include "EBO.h"
 #include <exception>
+#include "event/MouseEvent.h"
+#include "event/WindowEvent.h"
 
 namespace vis
 {
     Application* Application::m_instance = nullptr;
     Window* Application::m_window = nullptr;
+    WindowResizeEvent* Application::m_resize_event = nullptr;
     bool Application::m_running = false;
-    Shader* Application::m_shader = nullptr;
+    bool Application::m_gl_context_should_resize = false;
 
     LRESULT CALLBACK win_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
@@ -100,6 +99,17 @@ namespace vis
                 PostQuitMessage(APPLICATION_CLOSED);
                 break;
             }
+            case WM_SIZE:
+            {
+                RECT new_client_rect;
+
+                GetClientRect(Application::get_window_instance()->get_context()->m_hwnd, &new_client_rect);
+
+                WindowResizeEvent event(new_client_rect);
+                Application::set_resize_event(new WindowResizeEvent(new_client_rect));
+
+                break;
+            }
         }
 
         return DefWindowProcA(hwnd, uMsg, wParam, lParam);
@@ -121,6 +131,11 @@ namespace vis
     {
         m_layer_stack.clear_stack();
         delete m_window;
+
+        if(!m_resize_event)
+        {
+            delete m_resize_event;
+        }
     }
 
     void Application::run()
@@ -273,6 +288,11 @@ namespace vis
 
         while(Application::is_running())
         {
+            if(m_gl_context_should_resize)
+            {
+                on_resize_event(*m_resize_event);
+            }
+
             //Clear
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -284,9 +304,28 @@ namespace vis
             SwapBuffers(context->m_hdc);
         }
 
-        delete m_shader;
-
         return 0;
+    }
+
+    void Application::on_resize_event(WindowResizeEvent& a_event)
+    {
+        if(a_event.get_width() < 0 || a_event.get_height() < 0)
+        {
+            LOG_ERROR("Invalid OpenGL context size!");
+        }
+
+        glViewport(0, 0, a_event.get_width(), a_event.get_height());
+
+        delete m_resize_event;
+
+        m_gl_context_should_resize = false;
+        m_resize_event = nullptr;
+    }
+
+    void Application::set_resize_event(WindowResizeEvent *a_event)
+    {
+        m_resize_event = a_event;
+        m_gl_context_should_resize = true;
     }
 }
 

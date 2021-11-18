@@ -14,12 +14,14 @@ namespace vis
         MOUSE_BUTTON_PRESS,
         MOUSE_BUTTON_RELEASE,
         MOUSE_MOVE,
-        SCROLL
+        SCROLL,
+        WINDOW_RESIZE_EVENT
     };
 
     class Event
     {
     public:
+        virtual ~Event() {}
         virtual std::string get_name() const = 0;
         virtual EventType get_event_type() const = 0;
     };

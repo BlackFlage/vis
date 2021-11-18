@@ -9,8 +9,9 @@
 #include <functional>
 #include "LayerStack.h"
 #include "Timer.h"
-#include "Event.h"
-#include "KeyboardEvent.h"
+#include "event/Event.h"
+#include "event/KeyboardEvent.h"
+#include "event/WindowEvent.h"
 #include <iostream>
 #include "Shader.h"
 
@@ -44,13 +45,14 @@ namespace vis
         inline double get_time_passed() { return m_timer.get_time_passed();}
 
         static Application* create_instance();
+        static void set_resize_event(WindowResizeEvent* a_event);
     private:
         Application();
 
         void start_opengl_thread();
         static DWORD WINAPI opengl_thread(LPVOID a_param);
+        static void on_resize_event(WindowResizeEvent& a_event);
     private:
-        static Shader* m_shader;
         static Window* m_window;
         static Application* m_instance;
         static bool m_running;
@@ -61,6 +63,9 @@ namespace vis
 
         double m_refresh_rate = 60.0; //frames per second
         double m_refresh_interval;
+
+        static bool m_gl_context_should_resize;
+        static WindowResizeEvent* m_resize_event;
     };
 }
 

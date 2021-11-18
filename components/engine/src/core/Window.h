@@ -10,7 +10,7 @@
 #include <Windows.h>
 #include <optional>
 #include <functional>
-#include "Event.h"
+#include "event/Event.h"
 
 #define APPLICATION_CLOSED 333
 

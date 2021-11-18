@@ -11,9 +11,10 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/Window.h
         ${CORE_PATH}/Application.h
         ${CORE_PATH}/Input.h
-        ${CORE_PATH}/Event.h
-        ${CORE_PATH}/KeyboardEvent.h
-        ${CORE_PATH}/MouseEvent.h
+        ${CORE_PATH}/event/Event.h
+        ${CORE_PATH}/event/KeyboardEvent.h
+        ${CORE_PATH}/event/MouseEvent.h
+        ${CORE_PATH}/event/WindowEvent.h
         ${CORE_PATH}/Layer.h
         ${CORE_PATH}/LayerStack.h
         ${CORE_PATH}/Sandbox.h
@@ -37,8 +38,8 @@ set(SOURCE_FILES_UTIL
         src/utilities/OBJLoader.cpp)
 
 set(HEADER_FILES_GRAPHICS
-        src/utilities/Mesh.h
-        src/utilities/Model.h
+        ${GRAPHICS_PATH}/Mesh.h
+        ${GRAPHICS_PATH}/Model.h
         ${GRAPHICS_PATH}/Renderer.h
         ${GRAPHICS_PATH}/VBO.h
         ${GRAPHICS_PATH}/Shader.h
@@ -49,8 +50,8 @@ set(HEADER_FILES_GRAPHICS
         )
 
 set(SOURCE_FILES_GRAPHICS
-        src/utilities/Mesh.cpp
-        src/utilities/Model.cpp
+        ${GRAPHICS_PATH}/Mesh.cpp
+        ${GRAPHICS_PATH}/Model.cpp
         ${GRAPHICS_PATH}/Renderer.cpp
         ${GRAPHICS_PATH}/VBO.cpp
         ${GRAPHICS_PATH}/Shader.cpp
