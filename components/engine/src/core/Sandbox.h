@@ -23,7 +23,8 @@ namespace vis
     public:
         Sandbox()
         {
-
+            m_shader = nullptr;
+            m_camera = nullptr;
         }
 
         ~Sandbox() override
@@ -35,6 +36,7 @@ namespace vis
         {
             EventDispatcher dispatcher(a_event);
             dispatcher.dispatch<KeyPressEvent>([this](auto&& event) { move_camera(std::forward<decltype(event)>(event)); });
+            dispatcher.dispatch<WindowResizeEvent>([this](auto&& event) { on_window_resize_event(std::forward<decltype(event)>(event)); });
         }
 
         void on_update() override
@@ -51,7 +53,6 @@ namespace vis
                 Renderer::render(m, m_camera, m_shader);
             }
             glm::vec3 pos = m_camera->get_position();
-            LOG_INFO("CAMERA POS: {0} {1} {2}", pos.x, pos.y, pos.z);
         }
 
         void on_attach() override
@@ -100,6 +101,14 @@ namespace vis
             }
         }
 
+        void on_window_resize_event(WindowResizeEvent& a_event)
+        {
+            if(m_camera != nullptr)
+            {
+                m_camera->recalculate_perspective(a_event.get_width(), a_event.get_height());
+                LOG_INFO("Recalculating camera perspective matrix.");
+            }
+        }
     private:
         Shader* m_shader;
         std::vector<Model*> m_models;

@@ -107,6 +107,7 @@ namespace vis
 
                 WindowResizeEvent event(new_client_rect);
                 Application::set_resize_event(new WindowResizeEvent(new_client_rect));
+                Application::get_instance()->on_event(event);
 
                 break;
             }

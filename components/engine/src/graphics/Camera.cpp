@@ -49,4 +49,9 @@ namespace vis
     {
         m_position += a_translation;
     }
+
+    void Camera::recalculate_perspective(unsigned int a_width, unsigned int a_height)
+    {
+        m_projection = glm::perspective(glm::radians(45.0f), (float)a_width / (float)a_height, 0.1f, 100.0f);
+    }
 }

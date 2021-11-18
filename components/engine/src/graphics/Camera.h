@@ -16,8 +16,9 @@ namespace vis
         Camera(glm::vec3 a_position, glm::vec3 a_rotation, glm::vec3 a_scale);
 
         void translate(const glm::vec3& a_translation);
-        glm::vec3 get_position() { return m_position; }
+        void recalculate_perspective(unsigned int a_width, unsigned int a_height);
 
+        glm::vec3 get_position() { return m_position; }
         glm::mat4 get_transform() const;
     private:
         glm::mat4 m_projection;
