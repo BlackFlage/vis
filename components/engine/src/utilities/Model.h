@@ -16,6 +16,7 @@ namespace vis
     public:
         Model() = default;
         Model(Mesh* a_mesh);
+        Model(Mesh* a_mesh, glm::vec3 a_position);
         ~Model();
 
         const Mesh* get_mesh() const;
@@ -24,7 +25,7 @@ namespace vis
     private:
         Mesh* m_mesh;
 
-        glm::mat4 m_transform;
+        glm::vec3 m_position;
     };
 }
 

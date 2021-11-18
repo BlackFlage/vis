@@ -45,6 +45,7 @@ set(HEADER_FILES_GRAPHICS
         ${GRAPHICS_PATH}/VAO.h
         ${GRAPHICS_PATH}/EBO.h
         ${GRAPHICS_PATH}/Camera.h
+        ${GRAPHICS_PATH}/Vertex.h
         )
 
 set(SOURCE_FILES_GRAPHICS

@@ -3,6 +3,7 @@
 //
 
 #include "VAO.h"
+#include "glm/glm.hpp"
 
 namespace vis
 {
@@ -15,6 +16,10 @@ namespace vis
     VAO::~VAO()
     {
         glDeleteVertexArrays(1, &m_id);
+    }
+
+    void VAO::add_layout()
+    {
     }
 }
 

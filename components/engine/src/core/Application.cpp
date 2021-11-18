@@ -246,7 +246,7 @@ namespace vis
         );
 
         glEnable(GL_DEBUG_OUTPUT);
-        //glDebugMessageCallback(opengl_error_callback, 0);
+        glDebugMessageCallback(opengl_error_callback, 0);
 
         wglSwapIntervalEXT(1);
 

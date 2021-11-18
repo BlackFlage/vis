@@ -8,40 +8,32 @@
 #include <vector>
 #include <gl/glew.h>
 #include <glm/glm.hpp>
-
-using Vertex = float;
-using Normal = glm::vec3;
-using Index = unsigned int;
-using TextureCoords = glm::vec2;
+#include "Vertex.h"
 
 namespace vis
 {
     class Mesh
     {
     public:
-        Mesh(std::vector<Vertex> a_vertices,
-             std::vector<Index> a_indices,
-             std::vector<Normal> a_normals,
-             std::vector<TextureCoords> a_textureCoords,
-             std::vector<Index> a_vertexNormalIndices,
-             std::vector<Index> a_textureCoordsIndices,
-             GLint a_geometryType);
+        Mesh(std::vector<Vertex> a_vertices, std::vector<unsigned int> a_indices, GLint a_geometryType);
+        ~Mesh();
 
-        const std::vector<Vertex>& get_vertices() const;
-        const std::vector<Index>& get_indices() const;
-
-        int get_vertices_count() const;
-        int get_indices_count() const;
+        void bind() const;
 
         GLint get_geometry_type() const;
+        GLint get_vertices_count() const;
+        GLint get_indices_count() const;
+        bool setup_mesh();
     private:
-        GLint m_geometryType;
+    private:
         std::vector<Vertex> m_vertices;
-        std::vector<Index> m_indices;
-        std::vector<Normal> m_normals;
-        std::vector<TextureCoords> m_textureCoords;
-        std::vector<Index> m_vertexNormalIndices;
-        std::vector<Index> m_textureCoordsIndices;
+        std::vector<unsigned int> m_indices;
+
+        unsigned int  m_vertexArray;
+        unsigned int  m_vertexBuffer;
+        unsigned int  m_indexBuffer;
+
+        GLint m_geometryType;
     };
 }
 

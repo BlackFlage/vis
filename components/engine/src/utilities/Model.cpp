@@ -10,9 +10,15 @@
 namespace vis
 {
     Model::Model(Mesh *a_mesh)
-    :   m_mesh(a_mesh)
+    :   m_mesh(a_mesh), m_position(glm::vec3(0.0f))
     {
-        m_transform = glm::mat4(1.0f);
+        m_mesh->setup_mesh();
+    }
+
+    Model::Model(Mesh *a_mesh, glm::vec3 a_position)
+            :   m_mesh(a_mesh), m_position(a_position)
+    {
+        m_mesh->setup_mesh();
     }
 
     Model::~Model()
@@ -27,6 +33,9 @@ namespace vis
 
     const glm::mat4& Model::get_transform() const
     {
+        glm::mat4 m_transform = glm::mat4(1.0f);
+        m_transform = glm::translate(m_transform, m_position);
+
         return m_transform;
     }
 }

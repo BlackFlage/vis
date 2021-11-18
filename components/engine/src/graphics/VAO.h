@@ -6,6 +6,7 @@
 #define MAIN_VAO_H
 
 #include "GL/glew.h"
+#include "Vertex.h"
 
 namespace vis
 {
@@ -14,6 +15,8 @@ namespace vis
     public:
         VAO();
         ~VAO();
+
+        void add_layout();
 
         inline void bind() const { glBindVertexArray(m_id); }
         inline void unbind() const { glBindVertexArray(0); }

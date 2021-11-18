@@ -6,13 +6,15 @@
 #define MAIN_VBO_H
 
 #include "GL/glew.h"
+#include <vector>
+#include "Vertex.h"
 
 namespace vis
 {
     class VBO
     {
     public:
-        VBO(float a_vertices[], unsigned int a_count);
+        VBO(const std::vector<Vertex>& a_vertices, unsigned int a_count);
         ~VBO();
 
         inline void unbind() const { glBindBuffer(GL_ARRAY_BUFFER, m_id); }

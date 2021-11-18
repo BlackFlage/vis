@@ -8,7 +8,7 @@
 namespace vis
 {
 
-    EBO::EBO(GLuint a_indices[], unsigned int a_count)
+    EBO::EBO(std::vector<unsigned int> a_indices, unsigned int a_count)
     {
         glGenBuffers(1, &m_id);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);

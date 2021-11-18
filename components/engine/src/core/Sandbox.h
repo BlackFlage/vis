@@ -44,9 +44,12 @@ namespace vis
 
         void on_render() override
         {
-            Renderer::change_background_color(0.3f, 0.0f, 0.1f, 1.0f);
+            Renderer::change_background_color(1.0f, 1.0f, 1.0f, 1.0f);
 
-            Renderer::render(m_model, m_camera, m_shader);
+            for(const auto& m : m_models)
+            {
+                Renderer::render(m, m_camera, m_shader);
+            }
             glm::vec3 pos = m_camera->get_position();
             LOG_INFO("CAMERA POS: {0} {1} {2}", pos.x, pos.y, pos.z);
         }
@@ -55,15 +58,20 @@ namespace vis
         {
             m_shader = Shader::create_shader(R"(C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\Shaders\vertex.glsl)", R"(C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\Shaders\fragment.glsl)");
             Mesh* mesh = OBJLoader::load_from_file(R"(C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\Pulpit\Flashlight.obj)");
-            m_model = new Model(mesh);
+            m_models.push_back(new Model(mesh));
+
             m_camera = new Camera();
         }
 
         void on_detach() override
         {
             delete m_shader;
-            delete m_model;
             delete m_camera;
+
+            for(const auto* m : m_models)
+            {
+                delete m;
+            }
         }
 
         void move_camera(KeyPressEvent& a_event)
@@ -94,7 +102,7 @@ namespace vis
 
     private:
         Shader* m_shader;
-        Model* m_model;
+        std::vector<Model*> m_models;
         Camera* m_camera;
     };
 }

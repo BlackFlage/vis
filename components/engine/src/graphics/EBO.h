@@ -6,13 +6,14 @@
 #define MAIN_EBO_H
 
 #include "GL/glew.h"
+#include <vector>
 
 namespace vis
 {
     class EBO
     {
     public:
-        EBO(GLuint a_indices[], unsigned int a_count);
+        EBO(std::vector<unsigned int> a_indices, unsigned int a_count);
         ~EBO();
 
         inline void bind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id); }

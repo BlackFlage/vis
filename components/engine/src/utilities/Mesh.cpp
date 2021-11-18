@@ -4,44 +4,59 @@
 
 #include "Mesh.h"
 
-vis::Mesh::Mesh(std::vector<Vertex> a_vertices,
-                std::vector<Index> a_indices,
-                std::vector<Normal> a_normals,
-                std::vector<TextureCoords> a_textureCoords,
-                std::vector<Index> a_vertexNormalIndices,
-                std::vector<Index> a_textureCoordsIndices,
-                GLint a_geometryType)
+namespace vis
 {
-    m_vertices = std::move(a_vertices);
-    m_indices = std::move(a_indices);
-    m_normals = std::move(a_normals);
-    m_textureCoords = std::move(a_textureCoords);
-    m_vertexNormalIndices = std::move(a_vertexNormalIndices);
-    m_textureCoordsIndices = std::move(a_textureCoordsIndices);
-    m_geometryType = a_geometryType;
-}
+    Mesh::Mesh(std::vector<Vertex> a_vertices, std::vector<unsigned int> a_indices, GLint a_geometryType)
+    :   m_vertices(std::move(a_vertices)), m_indices(std::move(a_indices)), m_geometryType(a_geometryType)
+    {
 
-const std::vector<Vertex> &vis::Mesh::get_vertices() const
-{
-    return m_vertices;
-}
+    }
 
-const std::vector<Index> &vis::Mesh::get_indices() const
-{
-    return m_indices;
-}
+    Mesh::~Mesh()
+    {
 
-int vis::Mesh::get_vertices_count() const
-{
-    return m_vertices.size();
-}
+    }
 
-int vis::Mesh::get_indices_count() const
-{
-    return m_indices.size();
-}
+    bool Mesh::setup_mesh()
+    {
+        glGenVertexArrays(1, &m_vertexArray);
+        glGenBuffers(1, &m_vertexBuffer);
+        glGenBuffers(1, &m_indexBuffer);
 
-GLint vis::Mesh::get_geometry_type() const
-{
-    return m_geometryType;
+        glBindVertexArray(m_vertexArray);
+        glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
+        glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(Vertex), &m_vertices[0], GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(unsigned int), &m_indices[0], GL_STATIC_DRAW);
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) (sizeof(float) * 3));
+
+        glBindVertexArray(0);
+
+        return true;
+    }
+
+    void Mesh::bind() const
+    {
+        glBindVertexArray(m_vertexArray);
+    }
+
+    GLint Mesh::get_geometry_type() const
+    {
+        return m_geometryType;
+    }
+
+    GLint Mesh::get_vertices_count() const
+    {
+        return m_vertices.size();
+    }
+
+    GLint Mesh::get_indices_count() const
+    {
+        return m_indices.size();
+    }
 }

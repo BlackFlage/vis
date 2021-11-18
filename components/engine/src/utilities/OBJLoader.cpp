@@ -9,7 +9,6 @@
 
 namespace vis
 {
-
     Mesh *OBJLoader::load_from_file(const std::string &a_file_path)
     {
         std::ifstream file(a_file_path);
@@ -20,12 +19,12 @@ namespace vis
             return nullptr;
         }
 
-        std::vector<Vertex> vertices;
-        std::vector<Index> indices;
-        std::vector<Normal> normals;
-        std::vector<TextureCoords> textureCoords;
-        std::vector<Index> vertexNormalIndices;
-        std::vector<Index> textureCoordsIndices;
+        std::vector<glm::vec3> vertices;
+        std::vector<unsigned int> indices;
+        std::vector<glm::vec3> normals;
+        std::vector<glm::vec2> textureCoords;
+        std::vector<unsigned int> vertexNormalIndices;
+        std::vector<unsigned int> textureCoordsIndices;
         std::string line;
         float x, y, z;
         while (std::getline(file, line))
@@ -38,9 +37,7 @@ namespace vis
                 const char* data = line.c_str();
 
                 sscanf_s(data, "v %f %f %f", &x, &y, &z);
-                vertices.push_back(x);
-                vertices.push_back(y);
-                vertices.push_back(z);
+                vertices.emplace_back(x, y, z);
             }
             else if(operationType == "vn")
             {
@@ -101,10 +98,10 @@ namespace vis
                                 indices.push_back(value);
                                 break;
                             case 1:
-                                vertexNormalIndices.push_back(value);
+                                textureCoordsIndices.push_back(value);
                                 break;
                             case 2:
-                                textureCoordsIndices.push_back(value);
+                                vertexNormalIndices.push_back(value);
                                 break;
                             default:
                                 break;
@@ -114,6 +111,13 @@ namespace vis
             }
         }
 
-        return new Mesh(vertices, indices, normals, textureCoords, vertexNormalIndices, textureCoordsIndices, GL_QUADS);
+        std::vector<Vertex> outVertices;
+
+        for(int i = 0; i < indices.size(); i++)
+        {
+            outVertices.emplace_back(vertices.at(indices.at(i)), normals.at(vertexNormalIndices.at(i)));
+        }
+
+        return new Mesh(outVertices, indices, GL_QUADS);
     }
 }
