@@ -58,8 +58,7 @@ namespace vis
         void on_attach() override
         {
             m_shader = Shader::create_shader_name("vertex.glsl", "fragment.glsl");
-            Mesh* mesh = OBJLoader::load_from_models("flashlight\\Flashlight.obj");
-            m_models.push_back(new Model(mesh));
+            m_models.push_back(new Model({"flashlight\\Flashlight.obj"}));
 
             m_camera = new Camera();
         }
