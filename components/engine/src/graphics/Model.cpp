@@ -10,7 +10,7 @@
 namespace vis
 {
     Model::Model(Mesh *a_mesh)
-    :   m_mesh(a_mesh), m_position(glm::vec3(0.0f))
+    :   m_mesh(a_mesh), m_position(glm::vec3(0.0f, 0.0f, -20.0f))
     {
         m_mesh->setup_mesh();
     }

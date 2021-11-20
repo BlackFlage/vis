@@ -13,28 +13,21 @@ namespace vis
     class Input
     {
     public:
-        static bool is_key_pressed(int a_key_code)
-        {
-            return GetKeyState(a_key_code) & 0x0080;
-        }
+        Input();
 
-        static std::pair<int, int> get_mouse_pos()
-        {
-            POINT pos;
-            GetCursorPos(&pos);
+        float get_mouse_pos_x() const;
+        float get_mouse_pos_y() const;
+        float get_mouse_delta_x() const;
+        float get_mouse_delta_y() const;
 
-            return std::make_pair(pos.x, pos.y);
-        }
+        std::pair<float, float> get_mouse_pos() const;
 
-        static int get_mouse_x_pos()
-        {
-            return get_mouse_pos().first;
-        }
-
-        static int get_mouse_y_pos()
-        {
-            return get_mouse_pos().second;
-        }
+        void add_mouse_pos(float a_pos_x, float a_pos_y);
+    private:
+        float m_mouse_pos_x;
+        float m_mouse_pos_y;
+        float m_mouse_delta_x;
+        float m_mouse_delta_y;
     };
 }
 

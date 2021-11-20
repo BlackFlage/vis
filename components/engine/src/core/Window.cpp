@@ -291,15 +291,32 @@ namespace vis
         HGLRC gl_context = wglCreateContextAttribsARB(dc, nullptr, attribs);
         ASSERT(gl_context, "Failed to create OpenGL context!");
 
+        ShowCursor(FALSE);
 
         return new Context(hwnd, dc, gl_context);
     }
 
     RECT Window::get_client_rect() const
     {
-        RECT rect;
-        GetClientRect(m_context->m_hwnd, &rect);
+        RECT client_area;
+        GetClientRect(m_context->m_hwnd, &client_area);
 
-        return rect;
+        return client_area;
+    }
+
+    POINT Window::get_client_center() const
+    {
+        RECT client_area = get_client_rect();
+        POINT client_center = { client_area.right / 2, client_area.bottom / 2 };
+
+        return client_center;
+    }
+
+    POINT Window::get_mapped_client_center() const
+    {
+        POINT mapped_client_center = get_client_center();
+        ClientToScreen(m_context->m_hwnd, &mapped_client_center);
+
+        return mapped_client_center;
     }
 }

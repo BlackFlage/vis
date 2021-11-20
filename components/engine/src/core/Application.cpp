@@ -6,16 +6,16 @@
 #include <windowsx.h>
 #include <GL/wglew.h>
 #include <exception>
-#include "event/MouseEvent.h"
-#include "event/WindowEvent.h"
 
 namespace vis
 {
     Application* Application::m_instance = nullptr;
     Window* Application::m_window = nullptr;
     WindowResizeEvent* Application::m_resize_event = nullptr;
+    Input* Application::m_input = nullptr;
     bool Application::m_running = false;
     bool Application::m_gl_context_should_resize = false;
+    bool Application::m_send_move_event = true;
 
     LRESULT CALLBACK win_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
@@ -59,8 +59,19 @@ namespace vis
             }
             case WM_MOUSEMOVE:
             {
-                MouseMoveEvent event(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Application::get_instance()->on_event(event);
+                    POINT client_center = Application::get_window_instance()->get_client_center();
+                    POINT mouse_point = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+                    ClientToScreen(Application::get_window_instance()->get_context()->m_hwnd, &mouse_point);
+
+                    MouseMoveEvent event(mouse_point.x - client_center.x, mouse_point.y - client_center.y);
+                    if(!SetCursorPos(client_center.x, client_center.y))
+                    {
+                        LOG_ERROR("Failed to set cursor position!");
+                        break;
+                    }
+
+                    Application::get_instance()->on_event(event);
+
                 break;
             }
             case WM_MBUTTONUP:
@@ -154,10 +165,13 @@ namespace vis
     void Application::initialize()
     {
         Logger::initialize();
+
         char* name = new char[1];
         name[0] = 'A';
         Settings set(720, 750, name);
+
         m_window = Window::create_window(win_proc, set);
+        m_input = new Input();
 
         glDebugMessageControl(GL_DEBUG_SOURCE_WINDOW_SYSTEM, GL_DEBUG_TYPE_OTHER_ARB, 0x826b, 0, nullptr, GL_FALSE);
 
@@ -166,6 +180,9 @@ namespace vis
 
     void Application::on_event(Event &a_event)
     {
+        EventDispatcher dispatcher(a_event);
+        dispatcher.dispatch<MouseMoveEvent>([this](auto&& event) { update_input_data(std::forward<decltype(event)>(event)); });
+
         for(const auto& l : m_layer_stack.get_layers())
         {
             l->on_event(a_event);
@@ -327,6 +344,21 @@ namespace vis
     {
         m_resize_event = a_event;
         m_gl_context_should_resize = true;
+    }
+
+    void Application::update_input_data(MouseMoveEvent &a_event)
+    {
+        m_input->add_mouse_pos(a_event.get_x_offset(), a_event.get_y_offset());
+    }
+
+    bool Application::should_send_move_event()
+    {
+        return m_send_move_event;
+    }
+
+    void Application::set_should_send_move_event(bool a_should_send_move_event)
+    {
+        m_send_move_event = a_should_send_move_event;
     }
 }
 

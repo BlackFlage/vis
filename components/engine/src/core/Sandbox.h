@@ -8,13 +8,13 @@
 #include "Layer.h"
 #include <iostream>
 #include <cmath>
-#include "Input.h"
 #include "Gl/gl.h"
 #include "Renderer.h"
 #include "OBJLoader.h"
 #include "Camera.h"
 #include "event/KeyboardEvent.h"
 #include <functional>
+#include "Application.h"
 
 namespace vis
 {
@@ -37,6 +37,7 @@ namespace vis
             EventDispatcher dispatcher(a_event);
             dispatcher.dispatch<KeyPressEvent>([this](auto&& event) { move_camera(std::forward<decltype(event)>(event)); });
             dispatcher.dispatch<WindowResizeEvent>([this](auto&& event) { on_window_resize_event(std::forward<decltype(event)>(event)); });
+            dispatcher.dispatch<MouseMoveEvent>([this](auto&& event) { on_mouse_move_event(std::forward<decltype(event)>(event)); });
         }
 
         void on_update() override
@@ -52,7 +53,6 @@ namespace vis
             {
                 Renderer::render(m, m_camera, m_shader);
             }
-            glm::vec3 pos = m_camera->get_position();
         }
 
         void on_attach() override
@@ -80,22 +80,22 @@ namespace vis
             switch(a_event.get_key_code())
             {
                 case 'W':
-                    m_camera->translate(glm::vec3(0.0f, 0.0f, 0.1f));
+                    m_camera->move(Direction::FRONT);
                     break;
                 case 'S':
-                    m_camera->translate(glm::vec3(0.0f, 0.0f, -0.1f));
+                    m_camera->move(Direction::BACK);
                     break;
                 case 'A':
-                    m_camera->translate(glm::vec3(0.1f, 0.0f, 0.0f));
+                    m_camera->move(Direction::LEFT);
                     break;
                 case 'D':
-                    m_camera->translate(glm::vec3(-0.1f, 0.0f, 0.0f));
+                    m_camera->move(Direction::RIGHT);
                     break;
                 case 'U':
-                    m_camera->translate(glm::vec3(0.0f, -0.1f, 0.0f));
+                    m_camera->move(Direction::UP);
                     break;
                 case 'J':
-                    m_camera->translate(glm::vec3(0.0f, 0.1f, 0.0f));
+                    m_camera->move(Direction::DOWN);
                     break;
 
             }
@@ -108,6 +108,14 @@ namespace vis
                 m_camera->recalculate_perspective(a_event.get_width(), a_event.get_height());
                 LOG_INFO("Recalculating camera perspective matrix.");
             }
+        }
+
+        void on_mouse_move_event(MouseMoveEvent& a_event)
+        {
+            float x_offset = (float)a_event.get_x_offset();
+            float y_offset = (float)-a_event.get_y_offset();
+
+            m_camera->recalculate_direction_vector(x_offset, y_offset);
         }
     private:
         Shader* m_shader;

@@ -51,6 +51,8 @@ namespace vis
         inline void set_title(const char* a_title) const { SetWindowTextA(m_context->m_hwnd, a_title); }
 
         RECT get_client_rect() const;
+        POINT get_client_center() const;
+        POINT get_mapped_client_center() const;
 
         std::optional<int> pull_events();
     private:

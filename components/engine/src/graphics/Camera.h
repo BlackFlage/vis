@@ -9,23 +9,47 @@
 
 namespace vis
 {
+    enum class Direction
+    {
+        LEFT,
+        RIGHT,
+        FRONT,
+        BACK,
+        UP,
+        DOWN
+    };
+
     class Camera
     {
     public:
         Camera();
-        Camera(glm::vec3 a_position, glm::vec3 a_rotation, glm::vec3 a_scale);
+        Camera(glm::vec3 a_position);
 
         void translate(const glm::vec3& a_translation);
+        void move(const Direction& a_direction);
         void recalculate_perspective(unsigned int a_width, unsigned int a_height);
+        void recalculate_direction_vector(float m_x_offset, float m_y_offset);
 
-        glm::vec3 get_position() { return m_position; }
-        glm::mat4 get_transform() const;
+        void set_speed(float a_speed);
+
+        glm::vec3 get_position() const;
+        glm::mat4 get_projection() const;
+        glm::mat4 get_view() const;
+    private:
+        void recalculate_view_matrix();
     private:
         glm::mat4 m_projection;
+        glm::mat4 m_view;
+
+        glm::vec3 m_front;
+        glm::vec3 m_up;
 
         glm::vec3 m_position;
-        glm::vec3 m_rotation;
-        glm::vec3 m_scale;
+
+        float m_sensitivity;
+        float m_yaw;
+        float m_pitch;
+        float m_speed;
     };
 }
 

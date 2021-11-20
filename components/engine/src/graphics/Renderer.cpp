@@ -24,7 +24,8 @@ namespace vis
 
         a_shader->set_uniform_3f("u_light_color", 1.0f, 0.0f, 0.3f);
         a_shader->set_uniform_3f("u_light_position", -10.0f, 5.0f, 4.0f);
-        a_shader->set_uniform_mat4("u_view", a_camera->get_transform());
+        a_shader->set_uniform_mat4("u_projection", a_camera->get_projection());
+        a_shader->set_uniform_mat4("u_view", a_camera->get_view());
         a_shader->set_uniform_mat4("u_model", a_model->get_transform());
         a_shader->set_uniform_3f("u_color", 1.0f, 1.0f, 1.0f);
         a_shader->bind();

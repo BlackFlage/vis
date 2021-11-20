@@ -28,6 +28,7 @@ set(SOURCE_FILES_CORE
         ${CORE_PATH}/Application.cpp
         ${CORE_PATH}/Logger.cpp
         ${CORE_PATH}/Macro.cpp
+        ${CORE_PATH}/Input.cpp
         )
 
 set(HEADER_FILES_UTIL
