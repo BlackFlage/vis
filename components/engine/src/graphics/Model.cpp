@@ -9,26 +9,29 @@
 
 namespace vis
 {
-    Model::Model(Mesh *a_mesh)
-    :   m_mesh(a_mesh), m_position(glm::vec3(0.0f, 0.0f, -20.0f))
+    Model::Model(const std::vector<std::string>& a_file_paths)
+    :   m_position(glm::vec3(0.0f, 0.0f, -20.0f))
     {
-        m_mesh->setup_mesh();
+        load_meshes(a_file_paths);
     }
 
-    Model::Model(Mesh *a_mesh, glm::vec3 a_position)
-            :   m_mesh(a_mesh), m_position(a_position)
+    Model::Model(const std::vector<std::string>& a_file_paths, glm::vec3 a_position)
+            :   m_position(a_position)
     {
-        m_mesh->setup_mesh();
+        load_meshes(a_file_paths);
     }
 
     Model::~Model()
     {
-        delete m_mesh;
+        for(auto& m : m_meshes)
+        {
+            delete m;
+        }
     }
 
-    const Mesh *Model::get_mesh() const
+    const std::vector<Mesh*>& Model::get_meshes() const
     {
-        return m_mesh;
+        return m_meshes;
     }
 
     const glm::mat4& Model::get_transform() const
@@ -37,5 +40,18 @@ namespace vis
         m_transform = glm::translate(m_transform, m_position);
 
         return m_transform;
+    }
+
+    void Model::load_meshes(const std::vector<std::string>& a_file_paths)
+    {
+        for(const auto& s : a_file_paths)
+        {
+            m_meshes.push_back(OBJLoader::load_from_models(s));
+        }
+
+        for(const auto& m : m_meshes)
+        {
+            m->setup_mesh();
+        }
     }
 }
