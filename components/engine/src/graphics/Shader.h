@@ -12,6 +12,8 @@
 #include "Macro.h"
 #include "glm/glm.hpp"
 
+#define SHADER_PATH "C:\\Users\\BlackFlage\\OneDrive - Politechnika Wroclawska\\C++\\visual\\components\\engine\\res\\shaders\\"
+
 namespace vis
 {
     class Shader
@@ -27,6 +29,7 @@ namespace vis
         void set_uniform_mat4(const char* a_name, glm::mat4 mat4);
 
         static Shader* create_shader(const std::string &a_vertex_path, const std::string &a_fragment_path);
+        static Shader* create_shader_name(const std::string& a_vertex_name, const std::string& a_fragment_name);
     private:
         Shader();
     private:

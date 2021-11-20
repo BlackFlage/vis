@@ -111,6 +111,7 @@ namespace vis
             }
         }
 
+        file.close();
         std::vector<Vertex> outVertices;
 
         for(int i = 0; i < indices.size(); i++)
@@ -118,6 +119,14 @@ namespace vis
             outVertices.emplace_back(vertices.at(indices.at(i)), normals.at(vertexNormalIndices.at(i)));
         }
 
+
         return new Mesh(outVertices, indices, GL_QUADS);
+    }
+
+    Mesh *OBJLoader::load_from_models(const std::string& a_path_from_models_dir)
+    {
+        std::string file_path = MODELS_PATH + a_path_from_models_dir;
+
+        return load_from_file(file_path);
     }
 }

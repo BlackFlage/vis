@@ -101,4 +101,9 @@ namespace vis
 
         glUseProgram(0);
     }
+
+    Shader *Shader::create_shader_name(const std::string& a_vertex_name, const std::string& a_fragment_name)
+    {
+        return create_shader(SHADER_PATH + a_vertex_name, SHADER_PATH + a_fragment_name);
+    }
 }
