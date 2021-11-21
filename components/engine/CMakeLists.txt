@@ -33,10 +33,13 @@ set(SOURCE_FILES_CORE
 
 set(HEADER_FILES_UTIL
         src/utilities/Timer.h
-        src/utilities/OBJLoader.h)
+        src/utilities/OBJLoader.h
+        src/utilities/BMPLoader.h
+        )
 
 set(SOURCE_FILES_UTIL
-        src/utilities/OBJLoader.cpp)
+        src/utilities/OBJLoader.cpp
+        src/utilities/BMPLoader.cpp)
 
 set(HEADER_FILES_GRAPHICS
         ${GRAPHICS_PATH}/Mesh.h

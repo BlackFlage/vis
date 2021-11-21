@@ -1,0 +1,22 @@
+//
+// Created by BlackFlage on 20.11.2021.
+//
+
+#ifndef MAIN_BMPLOADER_H
+#define MAIN_BMPLOADER_H
+
+#include <string>
+
+#define TEXTURES_PATH "C:\\Users\\BlackFlage\\OneDrive - Politechnika Wroclawska\\C++\\visual\\components\\engine\\res\\"
+
+namespace vis
+{
+    class BMPLoader
+    {
+    public:
+        static unsigned char* load_from_file(const std::string& a_file_path);
+    };
+}
+
+
+#endif //MAIN_BMPLOADER_H

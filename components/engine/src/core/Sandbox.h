@@ -15,6 +15,7 @@
 #include "event/KeyboardEvent.h"
 #include <functional>
 #include "Application.h"
+#include "BMPLoader.h"
 
 namespace vis
 {
@@ -61,6 +62,7 @@ namespace vis
             m_models.push_back(new Model({"flashlight\\Flashlight.obj"}));
 
             m_camera = new Camera();
+            BMPLoader::load_from_file("C:\\Users\\BlackFlage\\OneDrive - Politechnika Wroclawska\\C++\\visual\\components\\engine\\res\\textures\\t.bmp");
         }
 
         void on_detach() override
