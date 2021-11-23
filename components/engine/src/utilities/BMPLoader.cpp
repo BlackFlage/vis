@@ -6,8 +6,6 @@
 #include <fstream>
 #include "Logger.h"
 #include <Wingdi.h>
-#include "GL/glew.h"
-#include "Macro.h"
 
 #define BMP_ID 0x4D42
 
@@ -43,7 +41,7 @@ namespace vis
 
         bitmapImage = new uint8_t[bitmapInfoHeader->biSizeImage];
 
-        file.seekg(bitmapFileHeader->bfOffBits, file.beg);
+        file.seekg(bitmapFileHeader->bfOffBits, std::ifstream::beg);
         file.read(reinterpret_cast<char*>(bitmapImage), bitmapInfoHeader->biSizeImage);
 
         *a_width = bitmapInfoHeader->biWidth;
@@ -51,7 +49,7 @@ namespace vis
 
         if(!bitmapInfoHeader->biSizeImage)
         {
-            bitmapInfoHeader->biSizeImage = (*a_width) * *(a_height) * 3;
+            bitmapInfoHeader->biSizeImage = (*a_width) * (*a_height) * 3;
         }
         uint8_t tempPixel;
         for(int i = 0; i < bitmapInfoHeader->biSizeImage; i += 3) {

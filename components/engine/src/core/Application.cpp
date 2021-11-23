@@ -15,7 +15,7 @@ namespace vis
     Input* Application::m_input = nullptr;
     bool Application::m_running = false;
     bool Application::m_gl_context_should_resize = false;
-    bool Application::m_send_move_event = true;
+    bool Application::m_opengl_initialized = false;
 
     LRESULT CALLBACK win_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
@@ -117,7 +117,6 @@ namespace vis
                 GetClientRect(Application::get_window_instance()->get_context()->m_hwnd, &new_client_rect);
 
                 WindowResizeEvent event(new_client_rect);
-                Application::set_resize_event(new WindowResizeEvent(new_client_rect));
                 Application::get_instance()->on_event(event);
 
                 break;
@@ -144,7 +143,7 @@ namespace vis
         m_layer_stack.clear_stack();
         delete m_window;
 
-        if(!m_resize_event)
+        if(m_resize_event)
         {
             delete m_resize_event;
         }
@@ -183,9 +182,12 @@ namespace vis
         EventDispatcher dispatcher(a_event);
         dispatcher.dispatch<MouseMoveEvent>([this](auto&& event) { update_input_data(std::forward<decltype(event)>(event)); });
 
-        for(const auto& l : m_layer_stack.get_layers())
+        if(m_opengl_initialized)
         {
-            l->on_event(a_event);
+            for(const auto& l : m_layer_stack.get_layers())
+            {
+                l->on_event(a_event);
+            }
         }
     }
 
@@ -303,6 +305,7 @@ namespace vis
         ShowWindow(context->m_hwnd, 1);
 
         Application::get_instance()->m_layer_stack.on_attach_layers();
+        Application::get_instance()->m_opengl_initialized = true;
 
         while(Application::is_running())
         {
@@ -349,16 +352,6 @@ namespace vis
     void Application::update_input_data(MouseMoveEvent &a_event)
     {
         m_input->add_mouse_pos(a_event.get_x_offset(), a_event.get_y_offset());
-    }
-
-    bool Application::should_send_move_event()
-    {
-        return m_send_move_event;
-    }
-
-    void Application::set_should_send_move_event(bool a_should_send_move_event)
-    {
-        m_send_move_event = a_should_send_move_event;
     }
 }
 

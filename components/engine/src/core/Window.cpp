@@ -292,6 +292,7 @@ namespace vis
         ASSERT(gl_context, "Failed to create OpenGL context!");
 
         ShowCursor(FALSE);
+        SetFocus(hwnd);
 
         return new Context(hwnd, dc, gl_context);
     }

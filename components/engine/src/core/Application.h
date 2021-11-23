@@ -51,8 +51,6 @@ namespace vis
 
         static Application* create_instance();
         static void set_resize_event(WindowResizeEvent* a_event);
-        static void set_should_send_move_event(bool a_should_send_move_event);
-        static bool should_send_move_event();
     private:
         Application();
 
@@ -67,6 +65,8 @@ namespace vis
         static Input* m_input;
         static bool m_running;
         static bool m_send_move_event;
+        static bool m_opengl_initialized;
+        static WindowResizeEvent* m_resize_event;
 
         Timer other;
         Timer m_timer;
@@ -76,7 +76,6 @@ namespace vis
         double m_refresh_interval;
 
         static bool m_gl_context_should_resize;
-        static WindowResizeEvent* m_resize_event;
     };
 }
 
