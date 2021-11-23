@@ -116,11 +116,11 @@ namespace vis
 
         for(int i = 0; i < indices.size(); i++)
         {
-            outVertices.emplace_back(vertices.at(indices.at(i)), normals.at(vertexNormalIndices.at(i)));
+            outVertices.emplace_back(vertices.at(indices.at(i)), normals.at(vertexNormalIndices.at(i)), textureCoords.at(textureCoordsIndices.at(i)));
         }
 
 
-        return new Mesh(outVertices, indices, GL_QUADS);
+        return new Mesh(outVertices, indices, GL_TRIANGLES);
     }
 
     Mesh *OBJLoader::load_from_models(const std::string& a_path_from_models_dir)

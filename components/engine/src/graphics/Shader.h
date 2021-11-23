@@ -24,6 +24,7 @@ namespace vis
         inline void bind() const { glUseProgram(m_id); }
         inline void unbind() const { glUseProgram(0); }
 
+        void set_uniform_1i(const char* a_name, int i1);
         void set_uniform_2f(const char* a_name, float f1, float f2);
         void set_uniform_3f(const char* a_name, float f1, float f2, float f3);
         void set_uniform_mat4(const char* a_name, glm::mat4 mat4);

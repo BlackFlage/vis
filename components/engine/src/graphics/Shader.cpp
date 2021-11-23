@@ -106,4 +106,14 @@ namespace vis
     {
         return create_shader(SHADER_PATH + a_vertex_name, SHADER_PATH + a_fragment_name);
     }
+
+    void Shader::set_uniform_1i(const char *a_name, int i1)
+    {
+        glUseProgram(m_id);
+
+        GLuint location = glGetUniformLocation(m_id, a_name);
+        glUniform1f(location, i1);
+
+        glUseProgram(0);
+    }
 }

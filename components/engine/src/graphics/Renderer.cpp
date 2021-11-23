@@ -18,7 +18,8 @@ namespace vis
 
     void Renderer::render(Model *a_model, Camera* a_camera, Shader *a_shader)
     {
-        a_shader->set_uniform_3f("u_light_color", 1.0f, 0.0f, 0.3f);
+        glActiveTexture(GL_TEXTURE0);
+        a_shader->set_uniform_3f("u_light_color", 1.0f, 1.0f, 1.0f);
         a_shader->set_uniform_3f("u_light_position", -10.0f, 5.0f, 4.0f);
         a_shader->set_uniform_mat4("u_projection", a_camera->get_projection());
         a_shader->set_uniform_mat4("u_view", a_camera->get_view());
@@ -27,6 +28,8 @@ namespace vis
         a_shader->bind();
 
         CheckGLError();
+
+        a_model->bind_texture();
         for(const auto& m : a_model->get_meshes())
         {
             m->bind();

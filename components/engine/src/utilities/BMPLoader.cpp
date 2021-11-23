@@ -6,48 +6,64 @@
 #include <fstream>
 #include "Logger.h"
 #include <Wingdi.h>
+#include "GL/glew.h"
+#include "Macro.h"
 
 #define BMP_ID 0x4D42
 
 namespace vis
 {
-    unsigned char* BMPLoader::load_from_file(const std::string &a_file_path)
+    uint8_t* BMPLoader::load_from_file(const std::string &a_file_path, int* a_width, int* a_height)
     {
-        FILE* filePtr;
-        BITMAPFILEHEADER bitmapFileHeader;
-        BITMAPINFOHEADER bitmapInfoHeader;
-        unsigned char* bitmapImage = nullptr;
+        uint8_t* dataBuffer[2] = {nullptr, nullptr};
+        uint8_t* bitmapImage = nullptr;
+        BITMAPFILEHEADER* bitmapFileHeader;
+        BITMAPINFOHEADER* bitmapInfoHeader;
 
-        fopen_s(&filePtr, a_file_path.c_str(), "rb");
-
-        if(!filePtr)
+        std::ifstream file(a_file_path, std::ios::binary);
+        if(!file)
         {
             LOG_ERROR("Invalid file path: " + a_file_path);
             return nullptr;
         }
 
-        fread(&bitmapFileHeader, sizeof(BITMAPFILEHEADER), 1, filePtr);
-        fread(&bitmapInfoHeader, sizeof(BITMAPINFOHEADER), 1, filePtr);
+        dataBuffer[0] = new uint8_t[sizeof(BITMAPINFOHEADER)];
+        dataBuffer[1] = new uint8_t[sizeof(BITMAPINFOHEADER)];
 
-        if(bitmapFileHeader.bfType != (int)BMP_ID)
+        file.read((char*)dataBuffer[0], sizeof(BITMAPFILEHEADER));
+        file.read((char*)dataBuffer[1], sizeof(BITMAPINFOHEADER));
+        bitmapFileHeader = (BITMAPFILEHEADER*)dataBuffer[0];
+        bitmapInfoHeader = (BITMAPINFOHEADER*)dataBuffer[1];
+
+        if(bitmapFileHeader->bfType != (int)BMP_ID)
         {
             LOG_ERROR("Invalid file type! Expected BMP file.");
             return nullptr;
         }
 
-        bitmapImage = new unsigned char[bitmapInfoHeader.biSizeImage];
+        bitmapImage = new uint8_t[bitmapInfoHeader->biSizeImage];
 
-        fseek(filePtr, (long)bitmapFileHeader.bfOffBits, SEEK_SET);
-        fread(bitmapImage, bitmapInfoHeader.biSizeImage, 1, filePtr);
+        file.seekg(bitmapFileHeader->bfOffBits, file.beg);
+        file.read(reinterpret_cast<char*>(bitmapImage), bitmapInfoHeader->biSizeImage);
 
-        if(bitmapImage == nullptr)
+        *a_width = bitmapInfoHeader->biWidth;
+        *a_height = std::abs(bitmapInfoHeader->biHeight);
+
+        if(!bitmapInfoHeader->biSizeImage)
         {
-            LOG_ERROR("Failed to read pixel data from file: " + a_file_path);
-            fclose(filePtr);
-            return nullptr;
+            bitmapInfoHeader->biSizeImage = (*a_width) * *(a_height) * 3;
+        }
+        uint8_t tempPixel;
+        for(int i = 0; i < bitmapInfoHeader->biSizeImage; i += 3) {
+            tempPixel = bitmapImage[i];
+            bitmapImage[i] = bitmapImage[i + 2];
+            bitmapImage[i + 2] = tempPixel;
         }
 
-        fclose(filePtr);
+        file.close();
+        delete[] dataBuffer[0];
+        delete[] dataBuffer[1];
+
         return bitmapImage;
     }
 }

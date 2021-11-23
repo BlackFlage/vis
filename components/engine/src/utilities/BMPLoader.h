@@ -14,7 +14,7 @@ namespace vis
     class BMPLoader
     {
     public:
-        static unsigned char* load_from_file(const std::string& a_file_path);
+        static uint8_t* load_from_file(const std::string& a_file_path, int* a_width, int* a_height);
     };
 }
 

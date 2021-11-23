@@ -15,7 +15,7 @@
 #include "event/KeyboardEvent.h"
 #include <functional>
 #include "Application.h"
-#include "BMPLoader.h"
+#include "Texture.h"
 
 namespace vis
 {
@@ -59,10 +59,9 @@ namespace vis
         void on_attach() override
         {
             m_shader = Shader::create_shader_name("vertex.glsl", "fragment.glsl");
-            m_models.push_back(new Model({"flashlight\\Flashlight.obj"}));
+            m_models.push_back(new Model({"cube\\cube.obj"}, "C:\\Users\\BlackFlage\\OneDrive - Politechnika Wroclawska\\C++\\visual\\components\\engine\\res\\textures\\tex.bmp"));
 
             m_camera = new Camera();
-            BMPLoader::load_from_file("C:\\Users\\BlackFlage\\OneDrive - Politechnika Wroclawska\\C++\\visual\\components\\engine\\res\\textures\\t.bmp");
         }
 
         void on_detach() override
@@ -122,6 +121,7 @@ namespace vis
         Shader* m_shader;
         std::vector<Model*> m_models;
         Camera* m_camera;
+        Texture* m_texture;
     };
 }
 

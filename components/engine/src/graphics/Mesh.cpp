@@ -9,7 +9,7 @@ namespace vis
     Mesh::Mesh(std::vector<Vertex> a_vertices, std::vector<unsigned int> a_indices, GLint a_geometryType)
     :   m_vertices(std::move(a_vertices)), m_indices(std::move(a_indices)), m_geometryType(a_geometryType)
     {
-
+        setup_mesh();
     }
 
     Mesh::~Mesh()
@@ -34,6 +34,8 @@ namespace vis
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) (sizeof(float) * 3));
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) (sizeof(float) * 6));
 
         glBindVertexArray(0);
 

@@ -11,11 +11,12 @@ namespace vis
 {
     struct Vertex
     {
-        Vertex(glm::vec3 a_position, glm::vec3 a_normal)
-        :   m_position(a_position), m_normal(a_normal) {}
+        Vertex(glm::vec3 a_position, glm::vec3 a_normal, glm::vec2 a_textureCoords)
+        :   m_position(a_position), m_normal(a_normal), m_textureCoords(a_textureCoords) {}
 
         glm::vec3 m_position;
         glm::vec3 m_normal;
+        glm::vec2 m_textureCoords;
     };
 }
 

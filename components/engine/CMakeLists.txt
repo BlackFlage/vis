@@ -51,6 +51,7 @@ set(HEADER_FILES_GRAPHICS
         ${GRAPHICS_PATH}/EBO.h
         ${GRAPHICS_PATH}/Camera.h
         ${GRAPHICS_PATH}/Vertex.h
+        ${GRAPHICS_PATH}/Texture.h
         )
 
 set(SOURCE_FILES_GRAPHICS
@@ -62,6 +63,7 @@ set(SOURCE_FILES_GRAPHICS
         ${GRAPHICS_PATH}/VAO.cpp
         ${GRAPHICS_PATH}/EBO.cpp
         ${GRAPHICS_PATH}/Camera.cpp
+        ${GRAPHICS_PATH}/Texture.cpp
         )
 
 

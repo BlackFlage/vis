@@ -23,8 +23,8 @@ namespace vis
         GLint get_geometry_type() const;
         GLint get_vertices_count() const;
         GLint get_indices_count() const;
-        bool setup_mesh();
     private:
+        bool setup_mesh();
     private:
         std::vector<Vertex> m_vertices;
         std::vector<unsigned int> m_indices;
