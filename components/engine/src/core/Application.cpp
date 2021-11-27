@@ -116,8 +116,9 @@ namespace vis
 
                 GetClientRect(Application::get_window_instance()->get_context()->m_hwnd, &new_client_rect);
 
-                WindowResizeEvent event(new_client_rect);
-                Application::get_instance()->on_event(event);
+                WindowResizeEvent* event = new WindowResizeEvent(new_client_rect);
+                Application::get_instance()->on_event(*event);
+                Application::set_resize_event(event);
 
                 break;
             }
@@ -305,7 +306,7 @@ namespace vis
         ShowWindow(context->m_hwnd, 1);
 
         Application::get_instance()->m_layer_stack.on_attach_layers();
-        Application::get_instance()->m_opengl_initialized = true;
+        Application::m_opengl_initialized = true;
 
         while(Application::is_running())
         {

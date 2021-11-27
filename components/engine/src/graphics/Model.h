@@ -26,6 +26,7 @@ namespace vis
 
         const glm::mat4& get_transform() const;
 
+        void scale(glm::vec3 a_to_add);
         void bind_texture() const;
         void unbind_texture() const;
     private:
@@ -35,6 +36,7 @@ namespace vis
         Texture* m_texture;
 
         glm::vec3 m_position;
+        glm::vec3 m_scale;
     };
 }
 

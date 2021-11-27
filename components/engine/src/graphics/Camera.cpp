@@ -21,7 +21,7 @@ namespace vis
         m_yaw = -90.0f;
         m_pitch = 0.0f;
         m_sensitivity = 0.1f;
-        m_speed = 40.0f;
+        m_speed = 400.0f;
 
         recalculate_view_matrix();
     }
@@ -39,7 +39,7 @@ namespace vis
         m_yaw = -90.0f;
         m_pitch = 0.0f;
         m_sensitivity = 0.1f;
-        m_speed = 40.0f;
+        m_speed = 400.0f;
 
         recalculate_view_matrix();
     }

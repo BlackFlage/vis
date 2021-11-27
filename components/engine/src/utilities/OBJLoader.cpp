@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include "Logger.h"
+#include "GL/glew.h"
 
 namespace vis
 {
@@ -119,8 +120,9 @@ namespace vis
             outVertices.emplace_back(vertices.at(indices.at(i)), normals.at(vertexNormalIndices.at(i)), textureCoords.at(textureCoordsIndices.at(i)));
         }
 
+        LOG_INFO("Successfully loaded file: {0}.", a_file_path);
 
-        return new Mesh(outVertices, indices, GL_TRIANGLES);
+        return new Mesh(outVertices, indices, GL_QUADS);
     }
 
     Mesh *OBJLoader::load_from_models(const std::string& a_path_from_models_dir)

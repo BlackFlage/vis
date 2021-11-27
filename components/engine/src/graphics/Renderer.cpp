@@ -3,6 +3,8 @@
 //
 
 #include "Renderer.h"
+#include "Application.h"
+#include "Macro.h"
 
 namespace vis
 {
@@ -19,8 +21,11 @@ namespace vis
     void Renderer::render(Model *a_model, Camera* a_camera, Shader *a_shader)
     {
         glActiveTexture(GL_TEXTURE0);
+        float radius = 40.0f;
+        float light_x = std::sin(Application::get_instance()->get_time_passed()) * radius;
+        float light_z = std::cos(Application::get_instance()->get_time_passed()) * radius;
         a_shader->set_uniform_3f("u_light_color", 1.0f, 1.0f, 1.0f);
-        a_shader->set_uniform_3f("u_light_position", -10.0f, 5.0f, 4.0f);
+        a_shader->set_uniform_3f("u_light_position", light_x, 1.0f, light_z);
         a_shader->set_uniform_mat4("u_projection", a_camera->get_projection());
         a_shader->set_uniform_mat4("u_view", a_camera->get_view());
         a_shader->set_uniform_mat4("u_model", a_model->get_transform());
@@ -33,7 +38,7 @@ namespace vis
         for(const auto& m : a_model->get_meshes())
         {
             m->bind();
-            glDrawArrays(m->get_geometry_type(), 0, m->get_vertices_count());
+            glDrawArrays(GL_QUADS, 0, m->get_vertices_count());
         }
     }
 }

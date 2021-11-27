@@ -63,10 +63,10 @@ namespace vis
         static Window* m_window;
         static Application* m_instance;
         static Input* m_input;
-        static bool m_running;
-        static bool m_send_move_event;
-        static bool m_opengl_initialized;
         static WindowResizeEvent* m_resize_event;
+        static bool m_running;
+        static bool m_opengl_initialized;
+        static bool m_gl_context_should_resize;
 
         Timer other;
         Timer m_timer;
@@ -74,8 +74,6 @@ namespace vis
 
         double m_refresh_rate = 120.0; //frames per second
         double m_refresh_interval;
-
-        static bool m_gl_context_should_resize;
     };
 }
 

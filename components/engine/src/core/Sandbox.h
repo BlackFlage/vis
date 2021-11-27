@@ -59,7 +59,7 @@ namespace vis
         void on_attach() override
         {
             m_shader = Shader::create_shader_name("vertex.glsl", "fragment.glsl");
-            m_models.push_back(new Model({"cube\\cube.obj"}, "C:\\Users\\BlackFlage\\OneDrive - Politechnika Wroclawska\\C++\\visual\\components\\engine\\res\\textures\\tex.bmp"));
+            m_models.push_back(new Model({"mario\\mario.obj"}, "C:\\Users\\BlackFlage\\OneDrive - Politechnika Wroclawska\\C++\\visual\\components\\engine\\res\\textures\\marioD.bmp"));
 
             m_camera = new Camera();
         }
@@ -97,7 +97,18 @@ namespace vis
                 case 'J':
                     m_camera->move(Direction::DOWN);
                     break;
-
+                case 'F':
+                    for(auto& m : m_models)
+                    {
+                        m->scale(glm::vec3(-0.01f, -0.01f, -0.01f));
+                    }
+                    break;
+                case 'G':
+                    for(auto& m : m_models)
+                    {
+                        m->scale(glm::vec3(0.01f, 0.01f, 0.01f));
+                    }
+                    break;
             }
         }
 
@@ -121,7 +132,6 @@ namespace vis
         Shader* m_shader;
         std::vector<Model*> m_models;
         Camera* m_camera;
-        Texture* m_texture;
     };
 }
 
