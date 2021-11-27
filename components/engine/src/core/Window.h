@@ -10,6 +10,7 @@
 #include <Windows.h>
 #include <optional>
 #include <functional>
+#include <utility>
 #include "event/Event.h"
 
 #define APPLICATION_CLOSED 333
@@ -28,11 +29,11 @@ namespace vis
 
     struct Settings
     {
-        Settings(int a_width, int a_height, char * a_name)
+        Settings(int a_width, int a_height, std::string a_name)
         :   m_width(a_width), m_height(a_height), m_name(a_name) {}
         int m_width;
         int m_height;
-        char* m_name;
+        std::string m_name;
     };
 
     class Window

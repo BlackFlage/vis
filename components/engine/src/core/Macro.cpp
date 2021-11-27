@@ -4,7 +4,7 @@
 
 #include "Macro.h"
 
-void _CheckGLError(const char* file, int line)
+void mCheckGLError(const char* file, int line)
 {
     GLenum err ( glGetError() );
 

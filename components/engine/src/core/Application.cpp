@@ -164,18 +164,18 @@ namespace vis
 
     void Application::initialize()
     {
-        Logger::initialize();
+        m_window = Window::create_window(win_proc, {720, 750, "App"});
 
-        char* name = new char[1];
-        name[0] = 'A';
-        Settings set(720, 750, name);
+        if(!m_window)
+        {
+            LOG_ERROR("Failed to initialize application!");
+            return;
+        }
 
-        m_window = Window::create_window(win_proc, set);
         m_input = new Input();
-
-        glDebugMessageControl(GL_DEBUG_SOURCE_WINDOW_SYSTEM, GL_DEBUG_TYPE_OTHER_ARB, 0x826b, 0, nullptr, GL_FALSE);
-
         m_running = true;
+
+        LOG_INFO("Successfully initialized application!");
     }
 
     void Application::on_event(Event &a_event)
@@ -215,12 +215,26 @@ namespace vis
 
     void Application::push_layer(Layer *a_layer)
     {
-        m_layer_stack.push_layer(a_layer);
+        if(a_layer != nullptr)
+        {
+            m_layer_stack.push_layer(a_layer);
+        }
+        else
+        {
+            LOG_ERROR("Failed to push layer! Layer can't be nullptr.");
+        }
     }
 
     void Application::detach_layer(Layer *a_layer)
     {
-        m_layer_stack.detach_layer(a_layer);
+        if(a_layer != nullptr)
+        {
+            m_layer_stack.detach_layer(a_layer);
+        }
+        else
+        {
+            LOG_ERROR("Failed to detach layer. Layer can't be nullptr!");
+        }
     }
 
     void Application::recalculate_refresh_interval()
@@ -238,9 +252,14 @@ namespace vis
 
     Application *Application::create_instance()
     {
-        Application* app = new Application();
+        if(m_instance != nullptr)
+        {
+            return nullptr;
+        }
 
+        Application* app = new Application();
         Application::m_instance = app;
+        Logger::initialize();
 
         return app;
     }
@@ -272,14 +291,12 @@ namespace vis
         GLint profile_mask = 0;
         glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &profile_mask);
 
-        printf(
-                "\n*permanent*\nGL_RENDERER: %s\nGL_VENDOR: %s\nGL_VERSION: %s\nGL_SHADING_LANGUAGE_VERSION: %s\nProfile mask: %d\n\n",
-                glGetString(GL_RENDERER),
-                glGetString(GL_VENDOR),
-                glGetString(GL_VERSION),
-                glGetString(GL_SHADING_LANGUAGE_VERSION),
-                profile_mask
-        );
+        LOG_INFO("\nGL_RENDERER: {0}\nGL_VENDOR: {1}\nGL_VERSION: {2}\nGL_SHADING_LANGUAGE_VERSION: {3}\nProfile mask: {4}\n\n",
+                 glGetString(GL_RENDERER),
+                 glGetString(GL_VENDOR),
+                 glGetString(GL_VERSION),
+                 glGetString(GL_SHADING_LANGUAGE_VERSION),
+                 profile_mask);
 
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback(opengl_error_callback, 0);

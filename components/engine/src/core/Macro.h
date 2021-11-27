@@ -10,10 +10,10 @@
 #define ASSERT(x, message) { if(!(x)) { std::cout << "Assertion failed! Message: " << message << '\n'; } }
 #define ASSERT_B(x, message) { if(!(x)) { std::cout << "Assertion failed! Message: " << message << '\n'; return false; }}
 
-void _CheckGLError(const char* file, int line);
+void mCheckGLError(const char* file, int line);
 
 #ifdef _DEBUG
-    #define CheckGLError() _CheckGLError(__FILE__, __LINE__)
+    #define CheckGLError() mCheckGLError(__FILE__, __LINE__)
 #elif
     #define CheckGLError() {}
 #endif

@@ -91,12 +91,20 @@ namespace vis
 
     Window *Window::create_window(WNDPROC a_win_proc, const Settings& a_settings)
     {
-        ASSERT(initialize_opengl(), "Failed to initalize OpenGL!");
+        if(!initialize_opengl())
+        {
+            LOG_ERROR("Failed to initialize OpenGL!");
+            return nullptr;
+        }
 
-        Context* c = create_permanent_window(a_win_proc, a_settings.m_width, a_settings.m_height, a_settings.m_name);
-        ASSERT(c != nullptr, "Failed to create Context!");
+        Context* context = create_permanent_window(a_win_proc, a_settings.m_width, a_settings.m_height, a_settings.m_name.c_str());
+        if(!context)
+        {
+            LOG_ERROR("Failed to create Window Context!");
+            return nullptr;
+        }
 
-        return new Window(c);
+        return new Window(context);
     }
 
     std::optional<int> Window::pull_events()
@@ -192,21 +200,17 @@ namespace vis
 
         int pixel_format = ChoosePixelFormat(temp_dc, &pfd);
         DescribePixelFormat(temp_dc, pixel_format, sizeof(pfd), &pfd);
-        std::printf("Pixel format: %d.\n", pixel_format);
 
         ASSERT_B(SetPixelFormat(temp_dc, pixel_format, &pfd), "Failed to set pixel format!");
 
         HGLRC temp_gl_context = wglCreateContext(temp_dc);
         wglMakeCurrent(temp_dc, temp_gl_context);
-        glewInit();
 
-        printf(
-                "\n*temporary*\nGL_RENDERER: %s\nGL_VENDOR: %s\nGL_VERSION: %s\nGL_SHADING_LANGUAGE_VERSION: %s\n\n",
-                glGetString(GL_RENDERER),
-                glGetString(GL_VENDOR),
-                glGetString(GL_VERSION),
-                glGetString(GL_SHADING_LANGUAGE_VERSION)
-        );
+        if(glewInit() != GLEW_OK)
+        {
+            LOG_ERROR("Failed to initialize GLEW!");
+            return false;
+        }
 
         wglMakeCurrent(temp_dc, 0);
         wglDeleteContext(temp_gl_context);
