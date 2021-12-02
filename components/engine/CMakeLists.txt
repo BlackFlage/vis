@@ -20,7 +20,7 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/Sandbox.h
         ${CORE_PATH}/Macro.h
         ${CORE_PATH}/Logger.h
-        )
+        src/core/ecs/Types.h)
 
 set(SOURCE_FILES_CORE
         ${CORE_PATH}/EntryPoint.cpp
