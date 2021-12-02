@@ -20,7 +20,10 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/Sandbox.h
         ${CORE_PATH}/Macro.h
         ${CORE_PATH}/Logger.h
-        src/core/ecs/Types.h)
+        ${CORE_PATH}/ecs/Types.h
+        ${CORE_PATH}/ecs/EntityManager.h
+        ${CORE_PATH}/EntityComponentSystemLayer.h
+        )
 
 set(SOURCE_FILES_CORE
         ${CORE_PATH}/EntryPoint.cpp
@@ -29,7 +32,9 @@ set(SOURCE_FILES_CORE
         ${CORE_PATH}/Logger.cpp
         ${CORE_PATH}/Macro.cpp
         ${CORE_PATH}/Input.cpp
-        src/core/ecs/EntityManager.h src/core/ecs/EntityManager.cpp)
+        ${CORE_PATH}/ecs/EntityManager.cpp
+        ${CORE_PATH}/EntityComponentSystemLayer.cpp
+        )
 
 set(HEADER_FILES_UTIL
         src/utilities/Timer.h
@@ -63,8 +68,7 @@ set(SOURCE_FILES_GRAPHICS
         ${GRAPHICS_PATH}/VAO.cpp
         ${GRAPHICS_PATH}/EBO.cpp
         ${GRAPHICS_PATH}/Camera.cpp
-        ${GRAPHICS_PATH}/Texture.cpp
-        )
+        ${GRAPHICS_PATH}/Texture.cpp)
 
 
 add_subdirectory(${VENDOR_PATH}/glew/build/cmake ${VENDOR_PATH}/glew/build/cmake)

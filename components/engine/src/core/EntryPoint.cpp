@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "Application.h"
 #include "Sandbox.h"
+#include "EntityComponentSystemLayer.h"
 
 int main()
 {
@@ -10,6 +11,9 @@ int main()
     if(app != nullptr)
     {
         vis::Layer* sandbox = new vis::Sandbox();
+        vis::Layer* entity_component_system_layer = new vis::EntityComponentSystemLayer();
+
+        app->push_layer(entity_component_system_layer);
         app->push_layer(sandbox);
 
         app->initialize();

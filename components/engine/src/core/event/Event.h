@@ -5,6 +5,9 @@
 #ifndef VISUAL_EVENT_H
 #define VISUAL_EVENT_H
 
+#include <iostream>
+#include <functional>
+
 namespace vis
 {
     enum class EventType
