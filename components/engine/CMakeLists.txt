@@ -25,6 +25,8 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/ecs/ComponentManager.h
         ${CORE_PATH}/ecs/ComponentArray.h
         ${CORE_PATH}/EntityComponentSystemLayer.h
+        ${CORE_PATH}/ecs/System.h
+        ${CORE_PATH}/ecs/SystemManager.h
         )
 
 set(SOURCE_FILES_CORE

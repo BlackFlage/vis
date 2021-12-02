@@ -10,13 +10,14 @@
 #include "Layer.h"
 #include "ecs/EntityManager.h"
 #include "ecs/ComponentManager.h"
+#include "ecs/SystemManager.h"
 
 namespace vis
 {
     class EntityComponentSystemLayer : public Layer
     {
     public:
-        ~EntityComponentSystemLayer() override;
+        ~EntityComponentSystemLayer() override = default;
 
         void on_attach() override;
         void on_detach() override;
@@ -27,6 +28,7 @@ namespace vis
     private:
         std::unique_ptr<EntityManager> m_entity_manager;
         std::unique_ptr<ComponentManager> m_component_manager;
+        std::unique_ptr<SystemManager> m_system_manager;
     };
 }
 

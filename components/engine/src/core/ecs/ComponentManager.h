@@ -18,8 +18,8 @@ namespace vis
     public:
         void init()
         {
-            m_component_arrays = std::unordered_map<const char*, std::shared_ptr<IComponentArray>>{};
-            m_component_types = std::unordered_map<const char*, ComponentType>{};
+            m_component_arrays = std::unordered_map<const char*, std::shared_ptr<IComponentArray>>();
+            m_component_types = std::unordered_map<const char*, ComponentType>();
             m_next_component_type = 0;
         }
 
