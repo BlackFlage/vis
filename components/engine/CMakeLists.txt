@@ -29,7 +29,7 @@ set(SOURCE_FILES_CORE
         ${CORE_PATH}/Logger.cpp
         ${CORE_PATH}/Macro.cpp
         ${CORE_PATH}/Input.cpp
-        )
+        src/core/ecs/EntityManager.h src/core/ecs/EntityManager.cpp)
 
 set(HEADER_FILES_UTIL
         src/utilities/Timer.h
