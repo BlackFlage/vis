@@ -10,21 +10,24 @@
 
 #include "Types.h"
 
-class EntityManager
+namespace vis
 {
-public:
-    void init();
+    class EntityManager
+    {
+    public:
+        void init();
 
-    Entity create_entity();
-    void on_entity_destroyed(const Entity& a_entity);
+        Entity create_entity();
+        void on_entity_destroyed(const Entity& a_entity);
 
-    Signature get_signature(const Entity& a_entity);
-    void set_signature(const Entity& a_entity, const Signature& a_signature);
-private:
-    std::queue<Entity> m_available_entities;
-    std::array<Signature, MAX_ENTITIES> m_signatures;
+        Signature get_signature(const Entity& a_entity);
+        void set_signature(const Entity& a_entity, const Signature& a_signature);
+    private:
+        std::queue<Entity> m_available_entities;
+        std::array<Signature, MAX_ENTITIES> m_signatures;
 
-    std::uint16_t m_living_entities;
-};
+        std::uint16_t m_living_entities;
+    };
+}
 
 #endif //MAIN_ENTITYMANAGER_H
