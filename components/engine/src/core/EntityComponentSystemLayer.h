@@ -9,6 +9,7 @@
 
 #include "Layer.h"
 #include "ecs/EntityManager.h"
+#include "ecs/ComponentManager.h"
 
 namespace vis
 {
@@ -25,6 +26,7 @@ namespace vis
         void on_render() override;
     private:
         std::unique_ptr<EntityManager> m_entity_manager;
+        std::unique_ptr<ComponentManager> m_component_manager;
     };
 }
 

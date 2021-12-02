@@ -20,7 +20,7 @@ namespace vis
     };
 
     template<typename T>
-    class ComponentArray
+    class ComponentArray : public IComponentArray
     {
     public:
         ComponentArray();

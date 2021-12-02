@@ -17,6 +17,9 @@ namespace vis
     {
         m_entity_manager = std::make_unique<EntityManager>();
         m_entity_manager->init();
+
+        m_component_manager = std::make_unique<ComponentManager>();
+        m_component_manager->init();
     }
 
     void EntityComponentSystemLayer::on_detach()

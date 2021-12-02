@@ -22,6 +22,7 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/Logger.h
         ${CORE_PATH}/ecs/Types.h
         ${CORE_PATH}/ecs/EntityManager.h
+        ${CORE_PATH}/ecs/ComponentManager.h
         ${CORE_PATH}/ecs/ComponentArray.h
         ${CORE_PATH}/EntityComponentSystemLayer.h
         )

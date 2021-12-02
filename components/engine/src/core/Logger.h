@@ -10,7 +10,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #define LOG_INFO(...) vis::Logger::get_instance()->info(__VA_ARGS__)
-#define LOG_WARNING(...) vis::Logger::get_instance()->warning(__VA_ARGS__)
+#define LOG_WARNING(...) vis::Logger::get_instance()->warn(__VA_ARGS__)
 #define LOG_ERROR(...) vis::Logger::get_instance()->error(__VA_ARGS__)
 #define LOG_TRACE(...) vis::Logger::get_instance()->trace(__VA_ARGS__)
 #define LOG_CRITICAL(...) vis::Logger::get_instance()->critical(__VA_ARGS__)
