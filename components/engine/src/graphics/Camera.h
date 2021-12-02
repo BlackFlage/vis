@@ -26,7 +26,7 @@ namespace vis
         Camera(glm::vec3 a_position);
 
         void translate(const glm::vec3& a_translation);
-        void move(const Direction& a_direction);
+        void move(const Direction& a_direction, float a_delta_time);
         void recalculate_perspective(unsigned int a_width, unsigned int a_height);
         void recalculate_direction_vector(float m_x_offset, float m_y_offset);
 

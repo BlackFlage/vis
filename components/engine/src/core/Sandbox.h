@@ -26,6 +26,7 @@ namespace vis
         {
             m_shader = nullptr;
             m_camera = nullptr;
+            m_model = nullptr;
         }
 
         ~Sandbox() override
@@ -36,80 +37,64 @@ namespace vis
         void on_event(Event& a_event) override
         {
             EventDispatcher dispatcher(a_event);
-            dispatcher.dispatch<KeyPressEvent>([this](auto&& event) { move_camera(std::forward<decltype(event)>(event)); });
             dispatcher.dispatch<WindowResizeEvent>([this](auto&& event) { on_window_resize_event(std::forward<decltype(event)>(event)); });
             dispatcher.dispatch<MouseMoveEvent>([this](auto&& event) { on_mouse_move_event(std::forward<decltype(event)>(event)); });
         }
 
-        void on_update() override
+        void on_update(float a_delta_time) override
         {
-
+            if(GetKeyState('A') & 0x8000)
+            {
+                m_camera->move(Direction::LEFT, a_delta_time);
+            }
+            if(GetKeyState('D') & 0x8000)
+            {
+                m_camera->move(Direction::RIGHT, a_delta_time);
+            }
+            if(GetKeyState('W') & 0x8000)
+            {
+                m_camera->move(Direction::FRONT, a_delta_time);
+            }
+            if(GetKeyState('S') & 0x8000)
+            {
+                m_camera->move(Direction::BACK, a_delta_time);
+            }
+            if(GetKeyState('U') & 0x8000)
+            {
+                m_camera->move(Direction::UP, a_delta_time);
+            }
+            if(GetKeyState('J') & 0x8000)
+            {
+                m_camera->move(Direction::DOWN, a_delta_time);
+            }
+            if(GetKeyState('F') & 0x8000)
+            {
+                m_model->scale(glm::vec3(-0.1f, -0.1f, -0.1f) * a_delta_time);
+            }
+            if(GetKeyState('G') & 0x8000)
+            {
+                m_model->scale(glm::vec3(0.1f, 0.1f, 0.1f) * a_delta_time);
+            }
         }
 
         void on_render() override
         {
             Renderer::change_background_color(0.0f, 0.0f, 0.0f, 1.0f);
-
-            for(const auto& m : m_models)
-            {
-                Renderer::render(m, m_camera, m_shader);
-            }
+            Renderer::render(m_model, m_camera, m_shader);
         }
 
         void on_attach() override
         {
             m_shader = Shader::create_shader_name("vertex.glsl", "fragment.glsl");
-            m_models.push_back(new Model({"mario\\mario.obj"}, "C:\\Users\\BlackFlage\\OneDrive - Politechnika Wroclawska\\C++\\visual\\components\\engine\\res\\textures\\marioD.bmp"));
-
             m_camera = new Camera();
+            m_model = new Model({"mario\\mario.obj"},
+                                 "C:\\Users\\BlackFlage\\OneDrive - Politechnika Wroclawska\\C++\\visual\\components\\engine\\res\\textures\\marioD.bmp");
         }
 
         void on_detach() override
         {
             delete m_shader;
             delete m_camera;
-
-            for(const auto* m : m_models)
-            {
-                delete m;
-            }
-        }
-
-        void move_camera(KeyPressEvent& a_event)
-        {
-            switch(a_event.get_key_code())
-            {
-                case 'W':
-                    m_camera->move(Direction::FRONT);
-                    break;
-                case 'S':
-                    m_camera->move(Direction::BACK);
-                    break;
-                case 'A':
-                    m_camera->move(Direction::LEFT);
-                    break;
-                case 'D':
-                    m_camera->move(Direction::RIGHT);
-                    break;
-                case 'U':
-                    m_camera->move(Direction::UP);
-                    break;
-                case 'J':
-                    m_camera->move(Direction::DOWN);
-                    break;
-                case 'F':
-                    for(auto& m : m_models)
-                    {
-                        m->scale(glm::vec3(-0.01f, -0.01f, -0.01f));
-                    }
-                    break;
-                case 'G':
-                    for(auto& m : m_models)
-                    {
-                        m->scale(glm::vec3(0.01f, 0.01f, 0.01f));
-                    }
-                    break;
-            }
         }
 
         void on_window_resize_event(WindowResizeEvent& a_event)
@@ -130,8 +115,8 @@ namespace vis
         }
     private:
         Shader* m_shader;
-        std::vector<Model*> m_models;
         Camera* m_camera;
+        Model* m_model;
     };
 }
 

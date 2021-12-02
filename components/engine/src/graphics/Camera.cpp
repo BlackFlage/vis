@@ -21,7 +21,7 @@ namespace vis
         m_yaw = -90.0f;
         m_pitch = 0.0f;
         m_sensitivity = 0.1f;
-        m_speed = 400.0f;
+        m_speed = 5.0f;
 
         recalculate_view_matrix();
     }
@@ -92,24 +92,23 @@ namespace vis
         return m_view;
     }
 
-    void Camera::move(const Direction& a_direction)
+    void Camera::move(const Direction& a_direction, float a_delta_time)
     {
-        float speed_with_delta = m_speed * (float)Application::get_instance()->get_delta_time();
+        float speed_with_delta = m_speed * a_delta_time;
 
         if(a_direction == Direction::LEFT)
             m_position -= glm::normalize(glm::cross(m_front, m_up)) * speed_with_delta;
         if(a_direction == Direction::RIGHT)
             m_position += glm::normalize(glm::cross(m_front, m_up)) * speed_with_delta;
         if(a_direction == Direction::FRONT)
-            m_position += speed_with_delta * m_front;
+            m_position += m_front * speed_with_delta;
         if(a_direction == Direction::BACK)
-            m_position -= speed_with_delta * m_front;
+            m_position -= m_front * speed_with_delta;
         if(a_direction == Direction::UP)
-            m_position += speed_with_delta * m_up;
+            m_position += m_up * speed_with_delta;
         if(a_direction == Direction::DOWN)
-            m_position -= speed_with_delta * m_up;
+            m_position -= m_up * speed_with_delta;
 
-        recalculate_view_matrix();
     }
 
     glm::mat4 Camera::get_projection() const

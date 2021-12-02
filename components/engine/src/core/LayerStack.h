@@ -28,9 +28,9 @@ namespace vis
             m_stack.clear();
         }
 
-        inline void update_all_layers()
+        inline void update_all_layers(float a_delta_time)
         {
-            std::for_each(m_stack.begin(), m_stack.end(), [](Layer* a_layer) { a_layer->on_update(); });
+            std::for_each(m_stack.begin(), m_stack.end(), [&a_delta_time](Layer* a_layer) { a_layer->on_update(a_delta_time); });
         }
 
         inline std::vector<Layer*> get_layers() { return m_stack; }

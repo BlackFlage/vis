@@ -194,13 +194,13 @@ namespace vis
 
     void Application::on_update()
     {
-        double time_delta = m_timer.get_delta_time();
-        while(time_delta > m_refresh_interval) {
-            m_window->set_title(std::to_string(time_delta).c_str());
+        double delta_time = m_timer.get_delta_time();
+        while(delta_time > m_refresh_interval) {
+            m_window->set_title(std::to_string(delta_time).c_str());
 
-            m_layer_stack.update_all_layers();
+            m_layer_stack.update_all_layers(delta_time);
 
-            time_delta -= m_refresh_interval;
+            delta_time -= m_refresh_interval;
             m_timer.new_time_stamp();
         }
     }
