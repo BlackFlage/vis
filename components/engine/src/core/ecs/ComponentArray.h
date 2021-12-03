@@ -87,7 +87,8 @@ namespace vis
         if(m_entity_to_index.find(a_entity) == m_entity_to_index.end())
         {
             LOG_WARNING("Trying to pull non existing data from entity: {0}", a_entity);
-            return T{};
+            T ret = T{};
+            return ret;
         }
 
         return m_component_array[m_entity_to_index[a_entity]];

@@ -5,6 +5,8 @@
 #ifndef MAIN_WINDOWEVENT_H
 #define MAIN_WINDOWEVENT_H
 
+#include <Windows.h>
+
 #include "Event.h"
 
 namespace vis

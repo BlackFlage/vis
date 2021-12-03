@@ -27,6 +27,9 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/EntityComponentSystemLayer.h
         ${CORE_PATH}/ecs/System.h
         ${CORE_PATH}/ecs/SystemManager.h
+        ${CORE_PATH}/ecs/MainManager.h
+        ${CORE_PATH}/ecs/systems/BasicSystems.h
+        ${CORE_PATH}/ecs/components/BasicComponents.h
         )
 
 set(SOURCE_FILES_CORE
@@ -51,7 +54,6 @@ set(SOURCE_FILES_UTIL
         src/utilities/BMPLoader.cpp)
 
 set(HEADER_FILES_GRAPHICS
-        ${GRAPHICS_PATH}/Mesh.h
         ${GRAPHICS_PATH}/Model.h
         ${GRAPHICS_PATH}/Renderer.h
         ${GRAPHICS_PATH}/VBO.h
@@ -64,7 +66,6 @@ set(HEADER_FILES_GRAPHICS
         )
 
 set(SOURCE_FILES_GRAPHICS
-        ${GRAPHICS_PATH}/Mesh.cpp
         ${GRAPHICS_PATH}/Model.cpp
         ${GRAPHICS_PATH}/Renderer.cpp
         ${GRAPHICS_PATH}/VBO.cpp

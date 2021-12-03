@@ -50,7 +50,7 @@ namespace vis
 
     Signature EntityManager::get_signature(const Entity &a_entity)
     {
-        if(a_entity <= 0 || a_entity > MAX_ENTITIES)
+        if(a_entity < 0 || a_entity > MAX_ENTITIES)
         {
             LOG_ERROR("Can't get entity signature! Passed ID out of range.");
             return {};
@@ -59,9 +59,9 @@ namespace vis
         return m_signatures[a_entity];
     }
 
-    void EntityManager::set_signature(const Entity &a_entity, const Signature &a_signature)
+    void EntityManager::set_signature(const Entity &a_entity, Signature& a_signature)
     {
-        if(a_entity <= 0 || a_entity > MAX_ENTITIES)
+        if(a_entity < 0 || a_entity > MAX_ENTITIES)
         {
             LOG_ERROR("Can't set entity signature! Passed ID out of range.");
             return;

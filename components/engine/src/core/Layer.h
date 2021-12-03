@@ -6,6 +6,9 @@
 #define VISUAL_LAYER_H
 
 #include "event/Event.h"
+#include "event/MouseEvent.h"
+#include "event/KeyboardEvent.h"
+#include "event/WindowEvent.h"
 
 namespace vis
 {

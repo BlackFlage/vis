@@ -16,6 +16,7 @@ namespace vis
     bool Application::m_running = false;
     bool Application::m_gl_context_should_resize = false;
     bool Application::m_opengl_initialized = false;
+    bool Application::m_layers_attached = false;
 
     LRESULT CALLBACK win_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
@@ -158,7 +159,11 @@ namespace vis
         while(windowRetValue != APPLICATION_CLOSED)
         {
             windowRetValue = m_window->pull_events();
-            on_update();
+
+            if(m_layers_attached)
+            {
+                on_update();
+            }
         }
     }
 
@@ -299,7 +304,7 @@ namespace vis
                  profile_mask);
 
         glEnable(GL_DEBUG_OUTPUT);
-        glDebugMessageCallback(opengl_error_callback, 0);
+        //glDebugMessageCallback(opengl_error_callback, 0);
 
         wglSwapIntervalEXT(1);
 
@@ -324,6 +329,7 @@ namespace vis
 
         Application::get_instance()->m_layer_stack.on_attach_layers();
         Application::m_opengl_initialized = true;
+        Application::m_layers_attached = true;
 
         while(Application::is_running())
         {

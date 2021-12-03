@@ -1,23 +1,23 @@
 //
 // Created by BlackFlage on 13.11.2021.
 //
-
-#include "OBJLoader.h"
 #include <fstream>
 #include <sstream>
+
+#include "OBJLoader.h"
 #include "Logger.h"
 #include "GL/glew.h"
 
 namespace vis
 {
-    Mesh *OBJLoader::load_from_file(const std::string &a_file_path)
+    Mesh OBJLoader::load_from_file(const std::string &a_file_path)
     {
         std::ifstream file(a_file_path);
 
         if(!file)
         {
             LOG_ERROR("Failed to open file: {0} while loading .obj file!", a_file_path);
-            return nullptr;
+            return Mesh{ std::vector<Vertex>(), std::vector<unsigned int>(), 0 };
         }
 
         std::vector<glm::vec3> vertices;
@@ -117,15 +117,15 @@ namespace vis
 
         for(int i = 0; i < indices.size(); i++)
         {
-            outVertices.emplace_back(vertices.at(indices.at(i)), normals.at(vertexNormalIndices.at(i)), textureCoords.at(textureCoordsIndices.at(i)));
+            outVertices.emplace_back(Vertex{ vertices.at(indices.at(i)), normals.at(vertexNormalIndices.at(i)), textureCoords.at(textureCoordsIndices.at(i)) });
         }
 
         LOG_INFO("Successfully loaded file: {0}.", a_file_path);
 
-        return new Mesh(outVertices, indices, GL_QUADS);
+        return Mesh{ outVertices, indices, GL_TRIANGLES };
     }
 
-    Mesh *OBJLoader::load_from_models(const std::string& a_path_from_models_dir)
+    Mesh OBJLoader::load_from_models(const std::string& a_path_from_models_dir)
     {
         std::string file_path = MODELS_PATH + a_path_from_models_dir;
 

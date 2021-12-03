@@ -21,7 +21,7 @@ namespace vis
         void on_entity_destroyed(const Entity& a_entity);
 
         Signature get_signature(const Entity& a_entity);
-        void set_signature(const Entity& a_entity, const Signature& a_signature);
+        void set_signature(const Entity& a_entity, Signature& a_signature);
     private:
         std::queue<Entity> m_available_entities;
         std::array<Signature, MAX_ENTITIES> m_signatures;

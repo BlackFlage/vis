@@ -12,7 +12,7 @@ using Entity = std::uint16_t;
 using Component = std::uint8_t;
 using ComponentType = std::uint8_t;
 
-#define MAX_ENTITIES 1024
+#define MAX_ENTITIES 2048
 #define MAX_COMPONENTS 128
 
 using Signature = std::bitset<MAX_COMPONENTS>;

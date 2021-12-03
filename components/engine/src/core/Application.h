@@ -67,6 +67,7 @@ namespace vis
         static bool m_running;
         static bool m_opengl_initialized;
         static bool m_gl_context_should_resize;
+        static bool m_layers_attached;
 
         Timer other;
         Timer m_timer;

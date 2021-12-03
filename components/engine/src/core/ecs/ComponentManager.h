@@ -50,7 +50,7 @@ namespace vis
         }
 
         template<typename T>
-        ComponentType get_component_type() const
+        ComponentType get_component_type()
         {
             const char* component_name = typeid(T).name();
 
@@ -68,14 +68,7 @@ namespace vis
         {
             auto component_array = get_component_array<T>();
 
-            if(component_array != nullptr)
-            {
-                component_array->add_data(a_entity, a_component);
-            }
-            else
-            {
-                LOG_WARNING("Component: {0} not registered before use!", typeid(T).name());
-            }
+            component_array->add_data(a_entity, a_component);
         }
 
         template<typename T>
@@ -83,33 +76,19 @@ namespace vis
         {
             auto component_array = get_component_array<T>();
 
-            if(component_array != nullptr)
-            {
-                component_array->remove_data(a_entity);
-            }
-            else
-            {
-                LOG_WARNING("Component: {0} not registered before use!", typeid(T).name());
-            }
+            component_array->remove_data(a_entity);
         }
 
         template<typename T>
-        T& get_component(const Entity& a_entity) const
+        T& get_component(const Entity& a_entity)
         {
             auto component_array = get_component_array<T>();
 
-            if(component_array != nullptr)
-            {
-                component_array->get_data(a_entity);
-            }
-            else
-            {
-                LOG_WARNING("Component: {0} not registered before use!", typeid(T).name());
-            }
+            return component_array->get_data(a_entity);
         }
     private:
         template<typename T>
-        std::shared_ptr<ComponentArray<T>> get_component_array() const
+        std::shared_ptr<ComponentArray<T>> get_component_array()
         {
             const char* component_name = typeid(T).name();
 

@@ -3,13 +3,11 @@
 //
 
 #include "Window.h"
-#include <cstdio>
 #include <chrono>
 #include <thread>
 #include <strsafe.h>
 #include "Macro.h"
 #include "Logger.h"
-#include "GL/glew.h"
 #include "GL/wglew.h"
 
 #define WGL_DRAW_TO_WINDOW_ARB                    0x2001

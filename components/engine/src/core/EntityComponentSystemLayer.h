@@ -6,11 +6,15 @@
 #define MAIN_ENTITYCOMPONENTSYSTEMLAYER_H
 
 #include <memory>
+#include <array>
 
 #include "Layer.h"
-#include "ecs/EntityManager.h"
-#include "ecs/ComponentManager.h"
-#include "ecs/SystemManager.h"
+#include "ecs/MainManager.h"
+#include "ecs/components/BasicComponents.h"
+#include "ecs/systems/BasicSystems.h"
+#include "OBJLoader.h"
+#include "Camera.h"
+#include "Shader.h"
 
 namespace vis
 {
@@ -21,14 +25,26 @@ namespace vis
 
         void on_attach() override;
         void on_detach() override;
-
-        void on_event(Event& a_event) override;
+        void on_event(Event &a_event) override;
         void on_update(float a_delta_time) override;
         void on_render() override;
+        void on_mouse_move_event(MouseMoveEvent& a_event);
+        void on_window_resize_event(WindowResizeEvent& a_event);
     private:
-        std::unique_ptr<EntityManager> m_entity_manager;
-        std::unique_ptr<ComponentManager> m_component_manager;
-        std::unique_ptr<SystemManager> m_system_manager;
+        void register_components();
+        void register_systems();
+        void set_signatures();
+
+        std::shared_ptr<PhysicsSystem> m_physics_system;
+        std::shared_ptr<RendererSystem> m_renderer_system;
+        std::shared_ptr<EntityTrackSystem> m_entity_track_system;
+
+        std::array<Entity, 1500> my_entities;
+
+        static MainManager* m_main_manager;
+
+        Camera* m_camera;
+        Shader* m_shader;
     };
 }
 

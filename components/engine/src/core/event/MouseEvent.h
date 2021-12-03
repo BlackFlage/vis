@@ -5,6 +5,8 @@
 #ifndef VISUAL_MOUSEEVENT_H
 #define VISUAL_MOUSEEVENT_H
 
+#include <string>
+
 #include "Event.h"
 #include "utility"
 

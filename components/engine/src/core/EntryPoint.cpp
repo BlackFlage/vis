@@ -6,7 +6,6 @@
 int main()
 {
     vis::Application* app = vis::Application::create_instance();
-    auto app2 = vis::Application::create_instance();
 
     if(app != nullptr)
     {
