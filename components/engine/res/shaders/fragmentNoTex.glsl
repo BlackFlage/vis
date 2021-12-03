@@ -13,7 +13,7 @@ in vec3 v_color;
 
 void main()
 {
-  float ambient_strength = 0.17;
+  float ambient_strength = 0.05;
   vec3 ambient = ambient_strength * u_light_color;
 
   vec3 norm = normalize(v_normal);

@@ -39,7 +39,7 @@ namespace vis
         std::shared_ptr<RendererSystem> m_renderer_system;
         std::shared_ptr<EntityTrackSystem> m_entity_track_system;
 
-        std::array<Entity, 1500> my_entities;
+        std::array<Entity, 800> my_entities;
 
         static MainManager* m_main_manager;
 

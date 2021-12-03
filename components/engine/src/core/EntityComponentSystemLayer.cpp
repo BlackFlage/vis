@@ -31,9 +31,9 @@ namespace vis
         std::uniform_real_distribution<float> randPositionY(-40.0f, 10.0f);
         std::uniform_real_distribution<float> randPositionZ(-40.0f, -10.0f);
         std::uniform_real_distribution<float> randColor(0.0f, 1.0f);
-        std::uniform_real_distribution<float> randSpeed(1.0f, 2.0f);
+        std::uniform_real_distribution<float> randSpeed(3.0f, 7.0f);
 
-        for(int i = 0; i < 1500; i++)
+        for(int i = 0; i < 800; i++)
         {
             my_entities[i] = main_manager->create_entity();
 
@@ -94,7 +94,7 @@ namespace vis
 
     void EntityComponentSystemLayer::on_render()
     {
-        Renderer::change_background_color(0.1f, 0.0f, 0.4f, 1.0f);
+        Renderer::change_background_color(0.0f, 0.0f, 0.0f, 1.0f);
         m_renderer_system->on_render();
     }
 
