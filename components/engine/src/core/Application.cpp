@@ -63,6 +63,13 @@ namespace vis
             }
             case WM_MOUSEMOVE:
             {
+                if(Application::get_window_instance()->get_show_cursor())
+                {
+                    MouseMoveEvent event(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+                    Application::get_instance()->on_event(event);
+                }
+                else
+                {
                     POINT client_center = Application::get_window_instance()->get_client_center();
                     POINT mouse_point = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
                     ClientToScreen(Application::get_window_instance()->get_context()->m_hwnd, &mouse_point);
@@ -75,6 +82,7 @@ namespace vis
                     }
 
                     Application::get_instance()->on_event(event);
+                }
 
                 break;
             }
@@ -190,6 +198,7 @@ namespace vis
     {
         EventDispatcher dispatcher(a_event);
         dispatcher.dispatch<MouseMoveEvent>([this](auto&& event) { update_input_data(std::forward<decltype(event)>(event)); });
+        dispatcher.dispatch<KeyPressEvent>([this](auto&& event) { on_key_press_event(std::forward<decltype(event)>(event)); });
 
         if(m_opengl_initialized)
         {
@@ -400,6 +409,14 @@ namespace vis
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
+
+    void Application::on_key_press_event(KeyPressEvent &a_event)
+    {
+        if(a_event.get_key_code() == 'F')
+        {
+            m_window->set_show_cursor(!m_window->get_show_cursor());
+        }
     }
 }
 

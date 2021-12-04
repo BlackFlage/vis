@@ -8,7 +8,7 @@
 #include "Layer.h"
 #include <iostream>
 #include <cmath>
-#include "Gl/gl.h"
+#include "gl/GL.h"
 #include "Renderer.h"
 #include "OBJLoader.h"
 #include "Camera.h"

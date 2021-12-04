@@ -47,15 +47,16 @@ namespace vis
         inline void hide_window() const { ShowWindow(m_context->m_hwnd,  0); }
         inline void show_fullscreen() const { ShowWindow(m_context->m_hwnd, 3); }
         inline void set_title(const char* a_title) const { SetWindowTextA(m_context->m_hwnd, a_title); }
-
         inline Context* get_context() const { return m_context; }
-
         inline int get_width() const { return m_settings.m_width; }
         inline int get_height() const { return m_settings.m_height; }
+        inline bool get_show_cursor() const { return m_show_cursor; }
 
         RECT get_client_rect() const;
         POINT get_client_center() const;
         POINT get_mapped_client_center() const;
+
+        void set_show_cursor(bool a_show_cursor);
 
         std::optional<int> pull_events();
     private:
@@ -65,6 +66,8 @@ namespace vis
     private:
         Context* m_context;
         Settings m_settings;
+
+        bool m_show_cursor;
     public:
         static bool m_temp_window_created;
         static bool m_window_created;

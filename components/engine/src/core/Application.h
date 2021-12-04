@@ -7,7 +7,7 @@
 
 #include "Window.h"
 #include <functional>
-#include "LayerStack.h"
+#include "layers/LayerStack.h"
 #include "Timer.h"
 #include "event/Event.h"
 #include "event/KeyboardEvent.h"
@@ -57,6 +57,7 @@ namespace vis
 
         void start_opengl_thread();
         void update_input_data(MouseMoveEvent& a_event);
+        void on_key_press_event(KeyPressEvent& a_event);
 
         static DWORD WINAPI opengl_thread(LPVOID a_param);
         static void on_resize_event(WindowResizeEvent& a_event);

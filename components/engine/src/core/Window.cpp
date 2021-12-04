@@ -72,7 +72,7 @@ namespace vis
     }
 
     Window::Window(Context* a_context, Settings a_settings)
-    : m_context(a_context), m_settings(a_settings)
+    : m_context(a_context), m_settings(a_settings), m_show_cursor(true)
     {
 
     }
@@ -293,7 +293,6 @@ namespace vis
         HGLRC gl_context = wglCreateContextAttribsARB(dc, nullptr, attribs);
         ASSERT(gl_context, "Failed to create OpenGL context!");
 
-        ShowCursor(FALSE);
         SetFocus(hwnd);
 
         return new Context(hwnd, dc, gl_context);
@@ -321,5 +320,12 @@ namespace vis
         ClientToScreen(m_context->m_hwnd, &mapped_client_center);
 
         return mapped_client_center;
+    }
+
+    void Window::set_show_cursor(bool a_show_cursor)
+    {
+        m_show_cursor = a_show_cursor;
+
+        ShowCursor(a_show_cursor);
     }
 }

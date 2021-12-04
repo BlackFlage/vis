@@ -15,22 +15,22 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/event/KeyboardEvent.h
         ${CORE_PATH}/event/MouseEvent.h
         ${CORE_PATH}/event/WindowEvent.h
-        ${CORE_PATH}/Layer.h
-        ${CORE_PATH}/LayerStack.h
-        ${CORE_PATH}/Sandbox.h
         ${CORE_PATH}/Macro.h
         ${CORE_PATH}/Logger.h
+        ${CORE_PATH}/layers/Layer.h
+        ${CORE_PATH}/layers/LayerStack.h
+        ${CORE_PATH}/layers/Sandbox.h
+        ${CORE_PATH}/layers/EntityComponentSystemLayer.h
+        ${CORE_PATH}/layers/ImGuiLayer.h
         ${CORE_PATH}/ecs/Types.h
         ${CORE_PATH}/ecs/EntityManager.h
         ${CORE_PATH}/ecs/ComponentManager.h
         ${CORE_PATH}/ecs/ComponentArray.h
-        ${CORE_PATH}/EntityComponentSystemLayer.h
         ${CORE_PATH}/ecs/System.h
         ${CORE_PATH}/ecs/SystemManager.h
         ${CORE_PATH}/ecs/MainManager.h
         ${CORE_PATH}/ecs/systems/BasicSystems.h
         ${CORE_PATH}/ecs/components/BasicComponents.h
-        ${CORE_PATH}/ImGuiLayer.h
         )
 
 set(SOURCE_FILES_CORE
@@ -41,8 +41,8 @@ set(SOURCE_FILES_CORE
         ${CORE_PATH}/Macro.cpp
         ${CORE_PATH}/Input.cpp
         ${CORE_PATH}/ecs/EntityManager.cpp
-        ${CORE_PATH}/EntityComponentSystemLayer.cpp
-        ${CORE_PATH}/ImGuiLayer.cpp
+        ${CORE_PATH}/layers/EntityComponentSystemLayer.cpp
+        ${CORE_PATH}/layers/ImGuiLayer.cpp
         )
 
 set(HEADER_FILES_UTIL

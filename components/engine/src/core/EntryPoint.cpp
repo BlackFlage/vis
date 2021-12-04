@@ -1,8 +1,8 @@
 #include "Window.h"
 #include "Application.h"
-#include "Sandbox.h"
-#include "EntityComponentSystemLayer.h"
-#include "ImGuiLayer.h"
+#include "layers/Sandbox.h"
+#include "layers/EntityComponentSystemLayer.h"
+#include "layers/ImGuiLayer.h"
 
 int main()
 {
