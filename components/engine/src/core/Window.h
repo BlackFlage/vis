@@ -46,10 +46,12 @@ namespace vis
         inline void show_window() const { ShowWindow(m_context->m_hwnd, 5); }
         inline void hide_window() const { ShowWindow(m_context->m_hwnd,  0); }
         inline void show_fullscreen() const { ShowWindow(m_context->m_hwnd, 3); }
+        inline void set_title(const char* a_title) const { SetWindowTextA(m_context->m_hwnd, a_title); }
 
         inline Context* get_context() const { return m_context; }
 
-        inline void set_title(const char* a_title) const { SetWindowTextA(m_context->m_hwnd, a_title); }
+        inline int get_width() const { return m_settings.m_width; }
+        inline int get_height() const { return m_settings.m_height; }
 
         RECT get_client_rect() const;
         POINT get_client_center() const;
@@ -57,11 +59,12 @@ namespace vis
 
         std::optional<int> pull_events();
     private:
-        Window(Context* a_context);
+        Window(Context* a_context, Settings a_settings);
         static bool initialize_opengl();
         static Context* create_permanent_window(WNDPROC a_win_proc, int a_width, int a_height, const char* a_name);
     private:
         Context* m_context;
+        Settings m_settings;
     public:
         static bool m_temp_window_created;
         static bool m_window_created;

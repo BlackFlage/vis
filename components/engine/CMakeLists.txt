@@ -30,6 +30,7 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/ecs/MainManager.h
         ${CORE_PATH}/ecs/systems/BasicSystems.h
         ${CORE_PATH}/ecs/components/BasicComponents.h
+        ${CORE_PATH}/ImGuiLayer.h
         )
 
 set(SOURCE_FILES_CORE
@@ -41,6 +42,7 @@ set(SOURCE_FILES_CORE
         ${CORE_PATH}/Input.cpp
         ${CORE_PATH}/ecs/EntityManager.cpp
         ${CORE_PATH}/EntityComponentSystemLayer.cpp
+        ${CORE_PATH}/ImGuiLayer.cpp
         )
 
 set(HEADER_FILES_UTIL
@@ -96,3 +98,8 @@ target_link_libraries(${PROJECT_NAME} opengl32 glew_s)
 add_subdirectory(${VENDOR_PATH}/glm ${VENDOR_PATH}/glm)
 target_link_libraries(${PROJECT_NAME} glm::glm)
 target_include_directories(${PROJECT_NAME} PRIVATE ${VENDOR_PATH}/glm)
+
+#ImGui
+add_subdirectory(${VENDOR_PATH}/ImGui ${VENDOR_PATH}/ImGui)
+target_link_libraries(${PROJECT_NAME} ImGui)
+target_include_directories(${PROJECT_NAME} PRIVATE ${VENDOR_PATH}/ImGui)

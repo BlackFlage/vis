@@ -23,6 +23,7 @@ namespace vis
         virtual void on_event(Event& a_event) = 0;
         virtual void on_update(float a_delta_time) = 0;
         virtual void on_render() = 0;
+        virtual void on_imgui_render() = 0;
     };
 }
 

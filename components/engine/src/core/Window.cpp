@@ -71,8 +71,8 @@ namespace vis
         ExitProcess(dw);
     }
 
-    Window::Window(Context* a_context)
-    : m_context(a_context)
+    Window::Window(Context* a_context, Settings a_settings)
+    : m_context(a_context), m_settings(a_settings)
     {
 
     }
@@ -102,7 +102,7 @@ namespace vis
             return nullptr;
         }
 
-        return new Window(context);
+        return new Window(context, a_settings);
     }
 
     std::optional<int> Window::pull_events()

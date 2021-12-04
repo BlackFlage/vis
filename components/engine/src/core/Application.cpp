@@ -7,6 +7,9 @@
 #include <GL/wglew.h>
 #include <exception>
 
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_opengl3.h"
+
 namespace vis
 {
     Application* Application::m_instance = nullptr;
@@ -199,7 +202,7 @@ namespace vis
 
     void Application::on_update()
     {
-        double delta_time = m_timer.get_delta_time();
+        float delta_time = m_timer.get_delta_time();
         while(delta_time > m_refresh_interval) {
             m_window->set_title(std::to_string(delta_time).c_str());
 
@@ -343,6 +346,7 @@ namespace vis
 
             //Render
             Application::get_instance()->on_render();
+            Application::get_instance()->on_imgui_render();
 
             //Flush and swap buffers
             glFlush();
@@ -376,6 +380,26 @@ namespace vis
     void Application::update_input_data(MouseMoveEvent &a_event)
     {
         m_input->add_mouse_pos(a_event.get_x_offset(), a_event.get_y_offset());
+    }
+
+    void Application::on_imgui_render()
+    {
+        ImGuiIO& io = ImGui::GetIO();
+
+        float dt = get_delta_time();
+        if(dt > 0.0f)
+        {
+            io.DeltaTime = dt;
+        }
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui::NewFrame();
+
+        const auto& layers = m_layer_stack.get_layers();
+        std::for_each(layers.begin(), layers.end(), [](Layer* a_layer) { a_layer->on_imgui_render(); });
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 }
 

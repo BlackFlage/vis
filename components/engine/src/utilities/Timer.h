@@ -18,14 +18,14 @@ namespace vis
             m_beginning = std::chrono::high_resolution_clock::now();
         }
 
-        double get_delta_time()
+        float get_delta_time()
         {
             auto now = std::chrono::high_resolution_clock::now();
 
-            return double(std::chrono::duration_cast<std::chrono::milliseconds>(now - m_last_stamp).count() / 1000.0);
+            return std::chrono::duration_cast<std::chrono::milliseconds>(now - m_last_stamp).count() / 1000.0;
         }
 
-        double get_time_passed()
+        float get_time_passed()
         {
             auto now = std::chrono::high_resolution_clock::now();
 

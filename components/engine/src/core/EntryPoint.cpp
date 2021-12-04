@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "Sandbox.h"
 #include "EntityComponentSystemLayer.h"
+#include "ImGuiLayer.h"
 
 int main()
 {
@@ -11,7 +12,9 @@ int main()
     {
         vis::Layer* sandbox = new vis::Sandbox();
         vis::Layer* entity_component_system_layer = new vis::EntityComponentSystemLayer();
+        vis::Layer* im_gui_layer = new vis::ImGuiLayer();
 
+        app->push_layer(im_gui_layer);
         app->push_layer(entity_component_system_layer);
         app->push_layer(sandbox);
 

@@ -4,6 +4,7 @@
 
 #include <EntityComponentSystemLayer.h>
 #include <random>
+#include "ImGui/imgui.h"
 
 namespace vis
 {
@@ -11,6 +12,8 @@ namespace vis
 
     void EntityComponentSystemLayer::on_attach()
     {
+        m_show_demo_window = true;
+
         main_manager->init();
 
         register_components();
@@ -151,6 +154,14 @@ namespace vis
         {
             m_camera->recalculate_perspective(a_event.get_width(), a_event.get_height());
             LOG_INFO("Recalculating camera perspective matrix.");
+        }
+    }
+
+    void EntityComponentSystemLayer::on_imgui_render()
+    {
+        if(m_show_demo_window)
+        {
+            ImGui::ShowDemoWindow(&m_show_demo_window);
         }
     }
 }

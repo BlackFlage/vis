@@ -33,6 +33,7 @@ namespace vis
         void on_event(Event& a_event);
         void on_update();
         void on_render();
+        void on_imgui_render();
 
         void push_layer(Layer* a_layer);
         void detach_layer(Layer* a_layer);
@@ -46,8 +47,8 @@ namespace vis
         inline static bool is_running() { return m_running; }
 
         inline static void set_running(bool a_running) { m_running = a_running; }
-        inline double get_delta_time() { return m_timer.get_delta_time(); }
-        inline double get_time_passed() { return m_timer.get_time_passed();}
+        inline float get_delta_time() { return m_timer.get_delta_time(); }
+        inline float get_time_passed() { return m_timer.get_time_passed();}
 
         static Application* create_instance();
         static void set_resize_event(WindowResizeEvent* a_event);

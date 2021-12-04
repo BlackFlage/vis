@@ -55,6 +55,11 @@ namespace vis
         {
 
         }
+
+        void on_imgui_render() override
+        {
+
+        }
     };
 }
 

@@ -21,6 +21,7 @@ namespace vis
     class EntityComponentSystemLayer : public Layer
     {
     public:
+        EntityComponentSystemLayer() = default;
         ~EntityComponentSystemLayer() override = default;
 
         void on_attach() override;
@@ -28,6 +29,8 @@ namespace vis
         void on_event(Event &a_event) override;
         void on_update(float a_delta_time) override;
         void on_render() override;
+        void on_imgui_render() override;
+
         void on_mouse_move_event(MouseMoveEvent& a_event);
         void on_window_resize_event(WindowResizeEvent& a_event);
     private:
@@ -45,6 +48,8 @@ namespace vis
 
         Camera* m_camera;
         Shader* m_shader;
+
+        bool m_show_demo_window;
     };
 }
 
