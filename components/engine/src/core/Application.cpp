@@ -29,6 +29,7 @@ namespace vis
             {
                 KeyPressEvent event((int)wParam);
                 Application::get_instance()->on_event(event);
+                LOG_INFO(event.get_name());
                 break;
             }
             case WM_KEYUP:
@@ -37,51 +38,57 @@ namespace vis
                 Application::get_instance()->on_event(event);
                 break;
             }
+            case WM_CHAR:
+            {
+                CharInputEvent event((char)wParam);
+                Application::get_instance()->on_event(event);
+                break;
+            }
             case WM_LBUTTONUP:
             {
                 MouseButtonReleaseEvent event(MK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
                 Application::get_instance()->on_event(event);
+                INPUT->set_button_state(0, false);
                 break;
             }
             case WM_RBUTTONUP:
             {
                 MouseButtonReleaseEvent event(MK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
                 Application::get_instance()->on_event(event);
+                INPUT->set_button_state(1, false);
                 break;
             }
             case WM_LBUTTONDOWN:
             {
                 MouseButtonPressEvent event(MK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
                 Application::get_instance()->on_event(event);
+                INPUT->set_button_state(0, true);
+
                 break;
             }
             case WM_RBUTTONDOWN:
             {
                 MouseButtonPressEvent event(MK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
                 Application::get_instance()->on_event(event);
+                INPUT->set_button_state(1, true);
+
                 break;
             }
             case WM_MOUSEMOVE:
             {
-                if(Application::get_window_instance()->get_show_cursor())
-                {
-                    MouseMoveEvent event(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                    Application::get_instance()->on_event(event);
-                }
-                else
+                POINT mouse_point = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+
+                MouseMoveEvent event(mouse_point.x, mouse_point.y);
+                Application::get_instance()->on_event(event);
+
+                if(!Application::get_window_instance()->get_show_cursor())
                 {
                     POINT client_center = Application::get_window_instance()->get_client_center();
-                    POINT mouse_point = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-                    ClientToScreen(Application::get_window_instance()->get_context()->m_hwnd, &mouse_point);
-
-                    MouseMoveEvent event(mouse_point.x - client_center.x, mouse_point.y - client_center.y);
                     if(!SetCursorPos(client_center.x, client_center.y))
                     {
                         LOG_ERROR("Failed to set cursor position!");
                         break;
                     }
-
-                    Application::get_instance()->on_event(event);
                 }
 
                 break;
@@ -131,6 +138,20 @@ namespace vis
                 WindowResizeEvent* event = new WindowResizeEvent(new_client_rect);
                 Application::get_instance()->on_event(*event);
                 Application::set_resize_event(event);
+
+                break;
+            }
+            case WM_SETFOCUS:
+            {
+                WindowFocusEvent event(false);
+                Application::get_instance()->on_event(event);
+
+                break;
+            }
+            case WM_KILLFOCUS:
+            {
+                WindowFocusEvent event(true);
+                Application::get_instance()->on_event(event);
 
                 break;
             }
@@ -188,13 +209,16 @@ namespace vis
             return;
         }
 
-        m_input = new Input();
+        POINT cursor_pos;
+        GetCursorPos(&cursor_pos);
+
+        m_input = new Input((float)cursor_pos.x, (float)cursor_pos.y);
         m_running = true;
 
         LOG_INFO("Successfully initialized application!");
     }
 
-    void Application::on_event(Event &a_event)
+    void Application::on_event(Event& a_event)
     {
         EventDispatcher dispatcher(a_event);
         dispatcher.dispatch<MouseMoveEvent>([this](auto&& event) { update_input_data(std::forward<decltype(event)>(event)); });
@@ -388,7 +412,7 @@ namespace vis
 
     void Application::update_input_data(MouseMoveEvent &a_event)
     {
-        m_input->add_mouse_pos(a_event.get_x_offset(), a_event.get_y_offset());
+        m_input->set_mouse_pos(a_event.get_x_pos(), a_event.get_y_pos());
     }
 
     void Application::on_imgui_render()
@@ -419,5 +443,3 @@ namespace vis
         }
     }
 }
-
-
