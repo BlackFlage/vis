@@ -10,10 +10,10 @@
 
 namespace vis
 {
-    class KeyboardEvent : public Event
+    class KeyEvent : public Event
     {
     public:
-        KeyboardEvent(int a_key_code)
+        explicit KeyEvent(int a_key_code)
         :   m_key_code(a_key_code) {}
 
         int get_key_code() const { return m_key_code; }
@@ -21,26 +21,41 @@ namespace vis
         int m_key_code;
     };
 
-    class KeyPressEvent : public KeyboardEvent
+    class KeyPressEvent : public KeyEvent
     {
     public:
-        KeyPressEvent(int a_key_code)
-        : KeyboardEvent(a_key_code) {}
+        explicit KeyPressEvent(int a_key_code)
+        : KeyEvent(a_key_code) {}
 
-        static EventType get_static_type() { return EventType::KEY_PRESS; }
-        virtual inline std::string get_name() const override { return "Key press event, key code: " + std::to_string(get_key_code()) + " char: " + char(m_key_code); }
+        inline static EventType get_static_type() { return EventType::KEY_PRESS; }
+        virtual inline std::string get_name() const override { return "KeyPressEvent: " + std::to_string(m_key_code); }
         virtual inline EventType get_event_type() const override { return EventType::KEY_PRESS; }
     };
 
-    class KeyReleaseEvent : public KeyboardEvent
+    class KeyReleaseEvent : public KeyEvent
     {
     public:
-        KeyReleaseEvent(int a_key_code)
-        : KeyboardEvent(a_key_code) {}
+        explicit KeyReleaseEvent(int a_key_code)
+        : KeyEvent(a_key_code) {}
 
-        static EventType get_static_type() { return EventType::KEY_RELEASE; }
-        virtual inline std::string get_name() const override { return "Key release event, key code: " + std::to_string(get_key_code()) + " char: " + char(m_key_code); }
+        inline static EventType get_static_type() { return EventType::KEY_RELEASE; }
+        virtual inline std::string get_name() const override { return "KeyReleaseEvent: " + std::to_string(m_key_code); }
         virtual inline EventType get_event_type() const override { return EventType::KEY_RELEASE; }
+    };
+
+    class CharInputEvent : public Event
+    {
+    public:
+        explicit CharInputEvent(char a_char)
+        : m_char(a_char) {}
+
+        inline char get_char() const { return m_char; }
+
+        inline static EventType get_static_type() { return EventType::CHAR_INPUT; }
+        virtual inline std::string get_name() const override { return "CharInputEvent: " + std::to_string(m_char); }
+        virtual inline EventType get_event_type() const override { return EventType::CHAR_INPUT; }
+    private:
+        char m_char;
     };
 }
 
