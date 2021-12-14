@@ -31,21 +31,16 @@ namespace vis
         void on_render() override;
         void on_imgui_render() override;
 
+    private:
         void on_mouse_move_event(MouseMoveEvent& a_event);
         void on_window_resize_event(WindowResizeEvent& a_event);
-    private:
+
         void register_components();
         void register_systems();
         void set_signatures();
 
-        std::array<Entity, 100> my_entities;
-
+    private:
         static MainManager* m_main_manager;
-
-        Camera* m_camera;
-        Shader* m_shader;
-
-        bool m_show_demo_window;
 
         std::shared_ptr<PhysicsSystem> m_physics_system;
         std::shared_ptr<RendererSystem> m_renderer_system;
