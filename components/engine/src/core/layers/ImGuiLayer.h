@@ -22,6 +22,17 @@ namespace vis
         void on_update(float a_delta_time) override;
         void on_render() override;
         void on_imgui_render() override;
+
+    private:
+        void on_char_input(CharInputEvent& a_event);
+        void on_key_press_event(KeyPressEvent& a_event);
+        void on_key_release_event(KeyReleaseEvent& a_event);
+        void on_window_resize_event(WindowResizeEvent& a_event);
+        void on_window_focus_event(WindowFocusEvent& a_event);
+        void on_scroll_event(MouseScrollEvent& a_event);
+        void on_mouse_button_press_event(MouseButtonPressEvent& a_event);
+        void on_mouse_button_release_event(MouseButtonReleaseEvent& a_event);
+        void update_mouse_pos();
     };
 }
 
