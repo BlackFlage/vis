@@ -14,11 +14,13 @@ namespace vis
     {
         KEY_PRESS,
         KEY_RELEASE,
+        CHAR_INPUT,
         MOUSE_BUTTON_PRESS,
         MOUSE_BUTTON_RELEASE,
         MOUSE_MOVE,
         SCROLL,
-        WINDOW_RESIZE_EVENT
+        WINDOW_RESIZE_EVENT,
+        WINDOW_FOCUS_EVENT
     };
 
     class Event
