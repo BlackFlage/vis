@@ -109,6 +109,7 @@ namespace vis
         if(a_direction == Direction::DOWN)
             m_position -= m_up * speed_with_delta;
 
+        recalculate_view_matrix();
     }
 
     glm::mat4 Camera::get_projection() const
@@ -120,7 +121,7 @@ namespace vis
     {
         if(a_speed < 0.0f || a_speed > 1000.0f)
         {
-            LOG_ERROR("Invalid argument! Camera speed must be between 0.0f and 10000.0f!");
+            LOG_ERROR("Invalid argument! Camera speed must be between 0.0f and 1000.0f!");
             return;
         }
 

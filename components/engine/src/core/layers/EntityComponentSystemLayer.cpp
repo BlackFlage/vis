@@ -5,6 +5,7 @@
 #include <layers/EntityComponentSystemLayer.h>
 #include <random>
 #include "ImGui/imgui.h"
+#include "Application.h"
 
 namespace vis
 {
@@ -30,24 +31,24 @@ namespace vis
 
         std::random_device rd;
         std::default_random_engine generator(rd());
-        std::uniform_real_distribution<float> randPositionX(-10.0f, 10.0f);;
+        std::uniform_real_distribution<float> randPositionX(-30.0f, 30.0f);;
         std::uniform_real_distribution<float> randPositionY(-40.0f, 10.0f);
-        std::uniform_real_distribution<float> randPositionZ(-40.0f, -10.0f);
+        std::uniform_real_distribution<float> randPositionZ(-40.0f, 10.0f);
         std::uniform_real_distribution<float> randColor(0.0f, 1.0f);
         std::uniform_real_distribution<float> randSpeed(3.0f, 7.0f);
 
-        for(int i = 0; i < 800; i++)
+        for(int i = 0; i < 100; i++)
         {
             my_entities[i] = main_manager->create_entity();
 
             main_manager->add_component(my_entities[i], Transform{
-                    .m_position = glm::vec3(randPositionX(rd), randPositionY(rd), randPositionZ(rd)),
+                    .m_position = glm::vec3(randPositionX(generator), randPositionY(generator), randPositionZ(generator)),
                     .m_rotation = glm::vec3(0.0f),
                     .m_scale = glm::vec3(1.0f)
             });
 
             main_manager->add_component(my_entities[i], Color{
-                .m_color = glm::vec3(randColor(rd), randColor(rd), randColor(rd))
+                .m_color = glm::vec3(randColor(generator), randColor(generator), randColor(generator))
             });
 
             main_manager->add_component(my_entities[i], mesh);
@@ -142,10 +143,7 @@ namespace vis
 
     void EntityComponentSystemLayer::on_mouse_move_event(MouseMoveEvent &a_event)
     {
-        float x_offset = (float)a_event.get_x_offset();
-        float y_offset = (float)-a_event.get_y_offset();
-
-        m_camera->recalculate_direction_vector(x_offset, y_offset);
+        m_camera->recalculate_direction_vector(INPUT->get_mouse_delta_x(), INPUT->get_mouse_delta_y());
     }
 
     void EntityComponentSystemLayer::on_window_resize_event(WindowResizeEvent& a_event)

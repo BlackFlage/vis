@@ -38,11 +38,7 @@ namespace vis
         void register_systems();
         void set_signatures();
 
-        std::shared_ptr<PhysicsSystem> m_physics_system;
-        std::shared_ptr<RendererSystem> m_renderer_system;
-        std::shared_ptr<EntityTrackSystem> m_entity_track_system;
-
-        std::array<Entity, 800> my_entities;
+        std::array<Entity, 100> my_entities;
 
         static MainManager* m_main_manager;
 
@@ -50,6 +46,10 @@ namespace vis
         Shader* m_shader;
 
         bool m_show_demo_window;
+
+        std::shared_ptr<PhysicsSystem> m_physics_system;
+        std::shared_ptr<RendererSystem> m_renderer_system;
+        std::shared_ptr<EntityTrackSystem> m_entity_track_system;
     };
 }
 

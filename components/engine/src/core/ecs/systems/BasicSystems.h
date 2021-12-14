@@ -40,7 +40,6 @@ namespace vis
             Renderer::begin();
 
             auto it = m_entities.begin();
-
             while(it != m_entities.end())
             {
                 auto& transform = main_manager->get_component<Transform>(*it);
