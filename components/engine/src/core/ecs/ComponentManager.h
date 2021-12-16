@@ -66,25 +66,19 @@ namespace vis
         template<typename T>
         void add_component(const Entity& a_entity, T& a_component)
         {
-            auto component_array = get_component_array<T>();
-
-            component_array->add_data(a_entity, a_component);
+            get_component_array<T>()->add_data(a_entity, a_component);
         }
 
         template<typename T>
         void remove_component(const Entity& a_entity)
         {
-            auto component_array = get_component_array<T>();
-
-            component_array->remove_data(a_entity);
+            get_component_array<T>()->remove_data(a_entity);
         }
 
         template<typename T>
         T& get_component(const Entity& a_entity)
         {
-            auto component_array = get_component_array<T>();
-
-            return component_array->get_data(a_entity);
+            return get_component_array<T>()->get_data(a_entity);
         }
     private:
         template<typename T>

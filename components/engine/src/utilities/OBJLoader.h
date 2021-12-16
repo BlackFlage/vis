@@ -16,8 +16,8 @@ namespace vis
     class OBJLoader
     {
     public:
-        static Mesh load_from_file(const std::string& a_file_path);
-        static Mesh load_from_models(const std::string& a_path_from_models_dir);
+        static Mesh load_from_file(const std::string& a_file_path, const std::string& a_name);
+        static Mesh load_from_models(const std::string& a_path_from_models_dir, const std::string& a_name);
     };
 }
 

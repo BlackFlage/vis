@@ -357,7 +357,6 @@ namespace vis
         GetClientRect(m_window->get_context()->m_hwnd, &contextRect);
 
         glViewport(0, 0, contextRect.right, contextRect.bottom);
-        glClearColor(0.5f, 0.0f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         SwapBuffers(context->m_hdc);
@@ -366,6 +365,7 @@ namespace vis
         Application::get_instance()->m_layer_stack.on_attach_layers();
         Application::m_opengl_initialized = true;
         Application::m_layers_attached = true;
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
         while(Application::is_running())
         {

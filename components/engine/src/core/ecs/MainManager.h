@@ -80,6 +80,11 @@ namespace vis
         {
             m_system_manager->set_signature<T>(a_signature);
         }
+
+        Signature get_entity_signature(const Entity& a_entity)
+        {
+            return m_entity_manager->get_signature(a_entity);
+        }
     private:
         std::unique_ptr<EntityManager> m_entity_manager;
         std::unique_ptr<ComponentManager> m_component_manager;

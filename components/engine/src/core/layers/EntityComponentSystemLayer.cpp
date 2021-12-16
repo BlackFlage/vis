@@ -4,8 +4,9 @@
 
 #include <layers/EntityComponentSystemLayer.h>
 #include <random>
+#include <optional>
+
 #include "ImGui/imgui.h"
-#include "Application.h"
 
 namespace vis
 {
@@ -18,6 +19,28 @@ namespace vis
         register_components();
         register_systems();
         set_signatures();
+
+        m_entity = main_manager->create_entity();
+
+        m_camera = new Camera(glm::vec3(1.0f, 1.0f, 1.0f));
+        m_shader = Shader::create_shader_name("vertex.glsl", "fragmentNoTex.glsl");
+
+        Renderer::set_camera(m_camera);
+        Renderer::set_shader(m_shader);
+
+        Mesh mesh = OBJLoader::load_from_models("cube/cube.obj", "Cube");
+
+        main_manager->add_component(m_entity, Transform{
+            .m_position = glm::vec3(0.0f, 0.0f, -10.0f),
+            .m_rotation = glm::vec3(1.0f, 1.0f, 1.0f),
+            .m_scale = glm::vec3(1.0f, 1.0f, 1.0f)
+        });
+
+        main_manager->add_component(m_entity, mesh);
+
+        main_manager->add_component(m_entity, Color{
+            .m_color = glm::vec3(1.0f, 0.0f, 0.5f)
+        });
     }
 
     void EntityComponentSystemLayer::on_detach()
@@ -41,6 +64,20 @@ namespace vis
     void EntityComponentSystemLayer::on_render()
     {
         m_renderer_system->on_render();
+    }
+
+    void EntityComponentSystemLayer::on_imgui_render()
+    {
+        ImGui::Begin("Properties");
+
+        show_transform_component(m_entity);
+        show_color_component(m_entity);
+        show_mesh_component(m_entity);
+
+        ImGui::End();
+
+        bool show = true;
+        ImGui::ShowDemoWindow(&show);
     }
 
     void EntityComponentSystemLayer::register_components()
@@ -89,11 +126,59 @@ namespace vis
 
     void EntityComponentSystemLayer::on_window_resize_event(WindowResizeEvent& a_event)
     {
-
+        m_camera->recalculate_perspective(a_event.get_width(), a_event.get_height());
     }
 
-    void EntityComponentSystemLayer::on_imgui_render()
+    void EntityComponentSystemLayer::show_transform_component(const Entity& a_entity)
     {
+        Signature sig = main_manager->get_entity_signature(a_entity);
 
+        if(sig[main_manager->get_component_type<Transform>()])
+        {
+            if(ImGui::CollapsingHeader("Transform")) {
+                auto& transform = main_manager->get_component<Transform>(a_entity);
+
+                //Position
+                ImGui::DragFloat3("Position", &transform.m_position[0], 0.1f);
+
+                //Rotation
+                ImGui::DragFloat3("Rotation", &transform.m_rotation[0]);
+
+                //Scale
+                ImGui::DragFloat3("Scale", &transform.m_scale[0], 0.01f, 0.0f);
+            }
+        }
+    }
+
+    void EntityComponentSystemLayer::show_color_component(const Entity &a_entity)
+    {
+        Signature sig = main_manager->get_entity_signature(a_entity);
+
+        if(sig[main_manager->get_component_type<Color>()])
+        {
+            if(ImGui::CollapsingHeader("Color"))
+            {
+                auto& color = main_manager->get_component<Color>(a_entity);
+
+                ImGui::ColorEdit3("Mesh color", &color.m_color[0]);
+            }
+        }
+    }
+
+    void EntityComponentSystemLayer::show_mesh_component(const Entity &a_entity)
+    {
+        Signature sig = main_manager->get_entity_signature(a_entity);
+
+        if(sig[main_manager->get_component_type<Mesh>()])
+        {
+            if(ImGui::CollapsingHeader("Mesh"))
+            {
+                auto& mesh = main_manager->get_component<Mesh>(a_entity);
+
+                ImGui::Text("Mesh: ");
+                ImGui::SameLine();
+                ImGui::Text("%s", mesh.m_name.c_str());
+            }
+        }
     }
 }

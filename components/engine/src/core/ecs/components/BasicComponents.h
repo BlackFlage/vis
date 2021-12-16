@@ -51,6 +51,7 @@ namespace vis
     {
         std::vector<Vertex> m_vertices;
         std::vector<unsigned int> m_indices;
+        std::string m_name;
         unsigned int m_geometry_type;
     };
 

@@ -10,7 +10,7 @@
 
 namespace vis
 {
-    Mesh OBJLoader::load_from_file(const std::string &a_file_path)
+    Mesh OBJLoader::load_from_file(const std::string &a_file_path, const std::string& a_name)
     {
         std::ifstream file(a_file_path);
 
@@ -122,13 +122,13 @@ namespace vis
 
         LOG_INFO("Successfully loaded file: {0}.", a_file_path);
 
-        return Mesh{ outVertices, indices, GL_TRIANGLES };
+        return Mesh{ outVertices, indices, a_name, GL_TRIANGLES };
     }
 
-    Mesh OBJLoader::load_from_models(const std::string& a_path_from_models_dir)
+    Mesh OBJLoader::load_from_models(const std::string& a_path_from_models_dir, const std::string& a_name)
     {
         std::string file_path = MODELS_PATH + a_path_from_models_dir;
 
-        return load_from_file(file_path);
+        return load_from_file(file_path, a_name);
     }
 }

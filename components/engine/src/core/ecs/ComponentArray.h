@@ -6,6 +6,7 @@
 #define MAIN_COMPONENTARRAY_H
 
 #include "unordered_map"
+#include "optional"
 
 #include "Types.h"
 #include "Logger.h"
@@ -86,9 +87,8 @@ namespace vis
     {
         if(m_entity_to_index.find(a_entity) == m_entity_to_index.end())
         {
-            LOG_WARNING("Trying to pull non existing data from entity: {0}", a_entity);
-            T ret = T{};
-            return ret;
+            T t;
+            return t;
         }
 
         return m_component_array[m_entity_to_index[a_entity]];
