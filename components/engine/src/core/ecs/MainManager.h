@@ -25,6 +25,8 @@ namespace vis
             m_component_manager->init();
             m_system_manager = std::make_unique<SystemManager>();
             m_system_manager->init();
+
+            m_current_entity = {0, "unititialized_entity"};
         }
 
         Entity create_entity()
@@ -37,6 +39,16 @@ namespace vis
             m_entity_manager->on_entity_destroyed(a_entity);
             m_component_manager->on_entity_destroyed(a_entity);
             m_system_manager->on_entity_destroyed(a_entity);
+        }
+
+        void set_current_entity(Entity a_entity)
+        {
+            m_current_entity = a_entity;
+        }
+
+        Entity get_current_entity()
+        {
+            return m_current_entity;
         }
 
         template<typename T>
@@ -89,6 +101,8 @@ namespace vis
         std::unique_ptr<EntityManager> m_entity_manager;
         std::unique_ptr<ComponentManager> m_component_manager;
         std::unique_ptr<SystemManager> m_system_manager;
+
+        Entity m_current_entity;
     };
 
     extern MainManager* main_manager;

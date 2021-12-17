@@ -8,7 +8,6 @@
 #include <bitset>
 #include <cstdint>
 
-using Entity = std::uint16_t;
 using Component = std::uint8_t;
 using ComponentType = std::uint8_t;
 

@@ -14,9 +14,9 @@ namespace vis
         m_signatures = std::array<Signature, MAX_ENTITIES>();
         m_living_entities = 0;
 
-        for(Entity entity = 0; entity < MAX_ENTITIES; entity++)
+        for(std::uint16_t i = 0; i < MAX_ENTITIES; i++)
         {
-            m_available_entities.push(entity);
+            m_available_entities.push({i, "e" + std::to_string(i)});
         }
     }
 
@@ -25,7 +25,7 @@ namespace vis
         if(m_living_entities >= MAX_ENTITIES)
         {
             LOG_ERROR("Maximum entities count reached!");
-            return 0;
+            return {0, "error"};
         }
 
         Entity entity = m_available_entities.front();
@@ -37,36 +37,36 @@ namespace vis
 
     void EntityManager::on_entity_destroyed(const Entity &a_entity)
     {
-        if(a_entity <= 0 || a_entity > MAX_ENTITIES)
+        if(a_entity.m_id <= 0 || a_entity.m_id > MAX_ENTITIES)
         {
             LOG_ERROR("Can't destroy entity! Passed ID out of range.");
             return;
         }
 
         m_available_entities.push(a_entity);
-        m_signatures[a_entity].reset();
+        m_signatures[a_entity.m_id].reset();
         m_living_entities--;
     }
 
     Signature EntityManager::get_signature(const Entity &a_entity)
     {
-        if(a_entity < 0 || a_entity > MAX_ENTITIES)
+        if(a_entity.m_id < 0 || a_entity.m_id > MAX_ENTITIES)
         {
             LOG_ERROR("Can't get entity signature! Passed ID out of range.");
             return {};
         }
 
-        return m_signatures[a_entity];
+        return m_signatures[a_entity.m_id];
     }
 
     void EntityManager::set_signature(const Entity &a_entity, Signature& a_signature)
     {
-        if(a_entity < 0 || a_entity > MAX_ENTITIES)
+        if(a_entity.m_id < 0 || a_entity.m_id > MAX_ENTITIES)
         {
             LOG_ERROR("Can't set entity signature! Passed ID out of range.");
             return;
         }
 
-        m_signatures[a_entity] = a_signature;
+        m_signatures[a_entity.m_id] = a_signature;
     }
 }

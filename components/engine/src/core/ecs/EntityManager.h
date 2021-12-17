@@ -12,6 +12,17 @@
 
 namespace vis
 {
+    struct Entity
+    {
+        std::uint16_t m_id;
+        std::string m_name;
+
+        bool operator<(const Entity& rhs) const
+        {
+            return m_id > rhs.m_id;
+        }
+    };
+
     class EntityManager
     {
     public:

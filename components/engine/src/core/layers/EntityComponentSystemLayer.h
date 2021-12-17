@@ -49,7 +49,6 @@ namespace vis
         std::shared_ptr<PhysicsSystem> m_physics_system;
         std::shared_ptr<RendererSystem> m_renderer_system;
         std::shared_ptr<EntityTrackSystem> m_entity_track_system;
-        Entity m_entity;
 
         Shader* m_shader;
         Camera* m_camera;

@@ -31,6 +31,9 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/ecs/MainManager.h
         ${CORE_PATH}/ecs/systems/BasicSystems.h
         ${CORE_PATH}/ecs/components/BasicComponents.h
+        ${CORE_PATH}/scene/SceneManager.h
+        ${CORE_PATH}/scene/Scene.h
+        ${CORE_PATH}/layers/SceneLayer.h
         )
 
 set(SOURCE_FILES_CORE
@@ -43,6 +46,9 @@ set(SOURCE_FILES_CORE
         ${CORE_PATH}/ecs/EntityManager.cpp
         ${CORE_PATH}/layers/EntityComponentSystemLayer.cpp
         ${CORE_PATH}/layers/ImGuiLayer.cpp
+        ${CORE_PATH}/scene/SceneManager.cpp
+        ${CORE_PATH}/scene/Scene.cpp
+        ${CORE_PATH}/layers/SceneLayer.cpp
         )
 
 set(HEADER_FILES_UTIL

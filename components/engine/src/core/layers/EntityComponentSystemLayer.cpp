@@ -3,7 +3,6 @@
 //
 
 #include <layers/EntityComponentSystemLayer.h>
-#include <random>
 #include <optional>
 
 #include "ImGui/imgui.h"
@@ -20,27 +19,11 @@ namespace vis
         register_systems();
         set_signatures();
 
-        m_entity = main_manager->create_entity();
-
         m_camera = new Camera(glm::vec3(1.0f, 1.0f, 1.0f));
         m_shader = Shader::create_shader_name("vertex.glsl", "fragmentNoTex.glsl");
 
         Renderer::set_camera(m_camera);
         Renderer::set_shader(m_shader);
-
-        Mesh mesh = OBJLoader::load_from_models("cube/cube.obj", "Cube");
-
-        main_manager->add_component(m_entity, Transform{
-            .m_position = glm::vec3(0.0f, 0.0f, -10.0f),
-            .m_rotation = glm::vec3(1.0f, 1.0f, 1.0f),
-            .m_scale = glm::vec3(1.0f, 1.0f, 1.0f)
-        });
-
-        main_manager->add_component(m_entity, mesh);
-
-        main_manager->add_component(m_entity, Color{
-            .m_color = glm::vec3(1.0f, 0.0f, 0.5f)
-        });
     }
 
     void EntityComponentSystemLayer::on_detach()
@@ -68,11 +51,16 @@ namespace vis
 
     void EntityComponentSystemLayer::on_imgui_render()
     {
+        Entity current_entity = main_manager->get_current_entity();
+
         ImGui::Begin("Properties");
 
-        show_transform_component(m_entity);
-        show_color_component(m_entity);
-        show_mesh_component(m_entity);
+        if(current_entity.m_name != "unititialized_entity")
+        {
+            show_transform_component(current_entity);
+            show_color_component(current_entity);
+            show_mesh_component(current_entity);
+        }
 
         ImGui::End();
 
