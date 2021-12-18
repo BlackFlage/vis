@@ -10,6 +10,7 @@
 
 #include "Types.h"
 #include "ComponentArray.h"
+#include "Entity.h"
 
 namespace vis
 {
@@ -23,12 +24,12 @@ namespace vis
             m_next_component_type = 0;
         }
 
-        void on_entity_destroyed(const Entity& a_entity)
+        void on_entity_destroyed(std::uint16_t a_id)
         {
             for(auto& comp_pair : m_component_arrays)
             {
                 auto& array = comp_pair.second;
-                array->on_entity_destroyed(a_entity);
+                array->on_entity_destroyed(a_id);
             }
         }
 
@@ -64,21 +65,21 @@ namespace vis
         }
 
         template<typename T>
-        void add_component(const Entity& a_entity, T& a_component)
+        void add_component(std::uint16_t a_id, T& a_component)
         {
-            get_component_array<T>()->add_data(a_entity, a_component);
+            get_component_array<T>()->add_data(a_id, a_component);
         }
 
         template<typename T>
-        void remove_component(const Entity& a_entity)
+        void remove_component(std::uint16_t a_id)
         {
-            get_component_array<T>()->remove_data(a_entity);
+            get_component_array<T>()->remove_data(a_id);
         }
 
         template<typename T>
-        T& get_component(const Entity& a_entity)
+        T& get_component(std::uint16_t a_id)
         {
-            return get_component_array<T>()->get_data(a_entity);
+            return get_component_array<T>()->get_data(a_id);
         }
     private:
         template<typename T>

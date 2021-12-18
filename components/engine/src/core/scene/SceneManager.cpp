@@ -35,7 +35,7 @@ namespace vis
 
     bool SceneManager::save_current_scene()
     {
-
+        return true;
     }
 
     Scene *SceneManager::get_scene(const std::string& a_name)

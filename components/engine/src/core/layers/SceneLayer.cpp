@@ -41,10 +41,11 @@ namespace vis
 
     void SceneLayer::on_imgui_render()
     {
-        ImGui::Begin("Scene");
+        ImGui::Begin("Scene Hierarchy");
 
-        std::set<Entity>& m_scene_entities = m_current_scene->get_entities();
+        auto& m_scene_entities = m_current_scene->get_entities();
         ImGuiTreeNodeFlags current_flags;
+
         auto it = m_scene_entities.begin();
         if(ImGui::TreeNode("Scene Hierarchy"))
         {
@@ -57,7 +58,7 @@ namespace vis
                 }
 
 
-                ImGui::TreeNodeEx(it->m_name.c_str(), current_flags);
+                ImGui::TreeNodeEx(main_manager->get_entity(*it).get_name().c_str(), current_flags);
                 if(ImGui::IsItemClicked())
                 {
                     m_selected = i;

@@ -14,7 +14,7 @@ namespace vis
     class System
     {
     public:
-        std::set<Entity> m_entities;
+        std::set<std::uint16_t> m_entities;
     };
 }
 

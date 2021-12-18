@@ -15,19 +15,17 @@ namespace vis
     {
     public:
         Scene();
-        Scene(const std::string& a_name, std::set<Entity> a_entities);
+        Scene(const std::string& a_name, std::set<std::uint16_t> a_entities);
 
-        void add_entity(const Entity& a_entity);
-        void remove_entity(const Entity& a_entity);
+        void add_entity(std::uint16_t a_id);
+        void remove_entity(std::uint16_t a_id);
         void add_default_entity();
 
-        std::set<Entity>& get_entities();
+        std::set<std::uint16_t>& get_entities();
         const std::string& get_name() const;
     private:
         std::string m_name;
-        std::set<Entity> m_entities;
-
-        static int m_next_id;
+        std::set<std::uint16_t> m_entities;
     };
 }
 

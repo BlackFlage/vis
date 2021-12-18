@@ -27,6 +27,7 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/ecs/ComponentManager.h
         ${CORE_PATH}/ecs/ComponentArray.h
         ${CORE_PATH}/ecs/System.h
+        ${CORE_PATH}/ecs/Entity.h
         ${CORE_PATH}/ecs/SystemManager.h
         ${CORE_PATH}/ecs/MainManager.h
         ${CORE_PATH}/ecs/systems/BasicSystems.h
@@ -43,6 +44,7 @@ set(SOURCE_FILES_CORE
         ${CORE_PATH}/Logger.cpp
         ${CORE_PATH}/Macro.cpp
         ${CORE_PATH}/Input.cpp
+        ${CORE_PATH}/ecs/Entity.cpp
         ${CORE_PATH}/ecs/EntityManager.cpp
         ${CORE_PATH}/layers/EntityComponentSystemLayer.cpp
         ${CORE_PATH}/layers/ImGuiLayer.cpp

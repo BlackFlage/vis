@@ -20,10 +20,10 @@ namespace vis
     public:
         void on_update(float a_dt)
         {
-            for(const Entity& entity : m_entities)
+            for(const std::uint16_t& id : m_entities)
             {
-                auto& rigid_body = main_manager->get_component<RigidBody>(entity);
-                auto& transf = main_manager->get_component<Transform>(entity);
+                auto& rigid_body = main_manager->get_component<RigidBody>(id);
+                auto& transf = main_manager->get_component<Transform>(id);
 
                 transf.m_position.x += rigid_body.vel_x * a_dt;
                 transf.m_position.y += rigid_body.vel_y * a_dt;

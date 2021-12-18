@@ -40,9 +40,9 @@ namespace vis
         void set_signatures();
 
         //ImGui components pulling
-        void show_transform_component(const Entity& a_entity);
-        void show_color_component(const Entity& a_entity);
-        void show_mesh_component(const Entity& a_entity);
+        void show_transform_component(std::uint16_t a_id);
+        void show_color_component(std::uint16_t a_id);
+        void show_mesh_component(std::uint16_t a_id);
     private:
         static MainManager* m_main_manager;
 

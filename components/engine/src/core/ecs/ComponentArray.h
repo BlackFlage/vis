@@ -17,7 +17,7 @@ namespace vis
     {
     public:
         virtual ~IComponentArray() = default;
-        virtual void on_entity_destroyed(const Entity& a_entity) = 0;
+        virtual void on_entity_destroyed(std::uint16_t a_id) = 0;
     };
 
     template<typename T>
@@ -26,11 +26,11 @@ namespace vis
     public:
         ComponentArray();
 
-        void add_data(const Entity& a_entity, T& a_data);
-        void remove_data(const Entity& a_entity);
+        void add_data(std::uint16_t a_id, T& a_data);
+        void remove_data(std::uint16_t a_id);
 
-        T& get_data(const Entity& a_entity);
-        void on_entity_destroyed(const Entity& a_entity) override;
+        T& get_data(std::uint16_t a_id);
+        void on_entity_destroyed(std::uint16_t a_id) override;
     private:
         std::array<T, MAX_ENTITIES> m_component_array;
         std::unordered_map<std::uint16_t, size_t> m_entity_to_index;
@@ -46,60 +46,60 @@ namespace vis
     }
 
     template<typename T>
-    void ComponentArray<T>::add_data(const Entity &a_entity, T& a_data)
+    void ComponentArray<T>::add_data(std::uint16_t a_id, T& a_data)
     {
-        if(m_entity_to_index.find(a_entity.m_id) != m_entity_to_index.end())
+        if(m_entity_to_index.find(a_id) != m_entity_to_index.end())
         {
-            LOG_WARNING("Trying to add data to entity: {0} more than once!", a_entity.m_id);
+            LOG_WARNING("Trying to add data to entity: {0} more than once!", a_id);
             return;
         }
 
         size_t data_index = m_current_size;
         m_component_array[data_index] = a_data;
-        m_entity_to_index[a_entity.m_id] = data_index;
-        m_index_to_entity[data_index] = a_entity.m_id;
+        m_entity_to_index[a_id] = data_index;
+        m_index_to_entity[data_index] = a_id;
         m_current_size++;
     }
 
     template<typename T>
-    void ComponentArray<T>::remove_data(const Entity &a_entity)
+    void ComponentArray<T>::remove_data(std::uint16_t a_id)
     {
-        if(m_entity_to_index.find(a_entity.m_id) == m_entity_to_index.end())
+        if(m_entity_to_index.find(a_id) == m_entity_to_index.end())
         {
-            LOG_WARNING("Trying to remove non existing data from entity: {0}", a_entity.m_id);
+            LOG_WARNING("Trying to remove non existing data from entity: {0}", a_id);
             return;
         }
 
-        size_t index_of_removed_entity = m_entity_to_index[a_entity.m_id];
+        size_t index_of_removed_entity = m_entity_to_index[a_id];
 
         m_component_array[index_of_removed_entity] = m_component_array[m_current_size - 1];
         m_entity_to_index[m_current_size - 1] = index_of_removed_entity;
         m_index_to_entity[index_of_removed_entity] = m_current_size - 1;
 
-        m_entity_to_index.erase(a_entity.m_id);
+        m_entity_to_index.erase(a_id);
         m_index_to_entity.erase(m_current_size - 1);
 
         m_current_size--;
     }
 
     template<typename T>
-    T& ComponentArray<T>::get_data(const Entity &a_entity)
+    T& ComponentArray<T>::get_data(std::uint16_t a_id)
     {
-        if(m_entity_to_index.find(a_entity.m_id) == m_entity_to_index.end())
+        if(m_entity_to_index.find(a_id) == m_entity_to_index.end())
         {
             T t;
             return t;
         }
 
-        return m_component_array[m_entity_to_index[a_entity.m_id]];
+        return m_component_array[m_entity_to_index[a_id]];
     }
 
     template<typename T>
-    void ComponentArray<T>::on_entity_destroyed(const Entity &a_entity)
+    void ComponentArray<T>::on_entity_destroyed(std::uint16_t a_id)
     {
-        if(m_entity_to_index.find(a_entity.m_id) != m_entity_to_index.end())
+        if(m_entity_to_index.find(a_id) != m_entity_to_index.end())
         {
-            remove_data(a_entity);
+            remove_data(a_id);
         }
     }
 }

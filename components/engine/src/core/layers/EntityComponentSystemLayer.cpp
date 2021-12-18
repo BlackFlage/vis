@@ -51,15 +51,15 @@ namespace vis
 
     void EntityComponentSystemLayer::on_imgui_render()
     {
-        Entity current_entity = main_manager->get_current_entity();
+        std::uint16_t id = main_manager->get_current_entity();
 
         ImGui::Begin("Properties");
 
-        if(current_entity.m_name != "unititialized_entity")
+        if(id != MAX_ENTITIES)
         {
-            show_transform_component(current_entity);
-            show_color_component(current_entity);
-            show_mesh_component(current_entity);
+            show_transform_component(id);
+            show_color_component(id);
+            show_mesh_component(id);
         }
 
         ImGui::End();
@@ -117,14 +117,14 @@ namespace vis
         m_camera->recalculate_perspective(a_event.get_width(), a_event.get_height());
     }
 
-    void EntityComponentSystemLayer::show_transform_component(const Entity& a_entity)
+    void EntityComponentSystemLayer::show_transform_component(std::uint16_t a_id)
     {
-        Signature sig = main_manager->get_entity_signature(a_entity);
+        Signature sig = main_manager->get_entity_signature(a_id);
 
         if(sig[main_manager->get_component_type<Transform>()])
         {
             if(ImGui::CollapsingHeader("Transform")) {
-                auto& transform = main_manager->get_component<Transform>(a_entity);
+                auto& transform = main_manager->get_component<Transform>(a_id);
 
                 //Position
                 ImGui::DragFloat3("Position", &transform.m_position[0], 0.1f);
@@ -138,30 +138,30 @@ namespace vis
         }
     }
 
-    void EntityComponentSystemLayer::show_color_component(const Entity &a_entity)
+    void EntityComponentSystemLayer::show_color_component(std::uint16_t a_id)
     {
-        Signature sig = main_manager->get_entity_signature(a_entity);
+        Signature sig = main_manager->get_entity_signature(a_id);
 
         if(sig[main_manager->get_component_type<Color>()])
         {
             if(ImGui::CollapsingHeader("Color"))
             {
-                auto& color = main_manager->get_component<Color>(a_entity);
+                auto& color = main_manager->get_component<Color>(a_id);
 
                 ImGui::ColorEdit3("Mesh color", &color.m_color[0]);
             }
         }
     }
 
-    void EntityComponentSystemLayer::show_mesh_component(const Entity &a_entity)
+    void EntityComponentSystemLayer::show_mesh_component(std::uint16_t a_id)
     {
-        Signature sig = main_manager->get_entity_signature(a_entity);
+        Signature sig = main_manager->get_entity_signature(a_id);
 
         if(sig[main_manager->get_component_type<Mesh>()])
         {
             if(ImGui::CollapsingHeader("Mesh"))
             {
-                auto& mesh = main_manager->get_component<Mesh>(a_entity);
+                auto& mesh = main_manager->get_component<Mesh>(a_id);
 
                 ImGui::Text("Mesh: ");
                 ImGui::SameLine();

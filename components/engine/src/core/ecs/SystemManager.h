@@ -11,6 +11,7 @@
 #include "Types.h"
 #include "System.h"
 #include "Logger.h"
+#include "Entity.h"
 
 namespace vis
 {
@@ -54,16 +55,16 @@ namespace vis
             m_signatures.insert({system_name, a_signature});
         }
 
-        void on_entity_destroyed(const Entity& a_entity)
+        void on_entity_destroyed(std::uint16_t a_id)
         {
             for(auto& system_pair : m_systems)
             {
                 auto& system = system_pair.second;
-                system->m_entities.erase(a_entity);
+                system->m_entities.erase(a_id);
             }
         }
 
-        void on_entity_signature_changed(const Entity& a_entity, const Signature& a_signature)
+        void on_entity_signature_changed(std::uint16_t a_id, const Signature& a_signature)
         {
             for(auto& system_pair : m_systems)
             {
@@ -73,11 +74,11 @@ namespace vis
 
                 if((a_signature & sys_signature) == sys_signature)
                 {
-                    system->m_entities.insert(a_entity);
+                    system->m_entities.insert(a_id);
                 }
                 else
                 {
-                    system->m_entities.erase(a_entity);
+                    system->m_entities.erase(a_id);
                 }
             }
         }
