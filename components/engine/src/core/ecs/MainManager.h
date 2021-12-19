@@ -41,6 +41,11 @@ namespace vis
             m_entity_manager->on_entity_destroyed(a_id);
             m_component_manager->on_entity_destroyed(a_id);
             m_system_manager->on_entity_destroyed(a_id);
+
+            if(m_current_entity == a_id)
+            {
+                m_current_entity = MAX_ENTITIES + 1;
+            }
         }
 
         void set_current_entity(std::uint16_t a_id)

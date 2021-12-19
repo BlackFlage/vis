@@ -42,13 +42,16 @@ namespace vis
     {
         ImGui::Begin("Scene Hierarchy");
 
+        ImVec2 size = ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() / 2.0f);
+        ImGui::BeginChild("hierarchy_child", size, true);
         auto& m_scene_entities = m_current_scene->get_entities();
+        auto m_end = m_current_scene->get_entities().end();
         ImGuiTreeNodeFlags current_flags;
 
-        auto it = m_scene_entities.begin();
+        std::uint16_t i = 0;
         if(ImGui::TreeNode("Scene Hierarchy"))
         {
-            for(std::uint16_t i = 0; i < m_scene_entities.size(); i++, it++)
+            for(auto it = m_scene_entities.begin(); it != m_end; i++, it++)
             {
                 current_flags = m_tree_node_flags;
                 if(m_selected == i)
@@ -56,23 +59,41 @@ namespace vis
                     current_flags |= ImGuiTreeNodeFlags_Selected;
                 }
 
-
                 ImGui::TreeNodeEx(main_manager->get_entity(*it).get_name().c_str(), current_flags);
                 if(ImGui::IsItemClicked())
                 {
                     m_selected = i;
                     main_manager->set_current_entity(*it);
                 }
+
+                if(ImGui::BeginPopupContextItem())
+                {
+                    ImGui::MenuItem("Copy");
+                    if(ImGui::MenuItem("Delete"))
+                    {
+                        remove_entity(*it);
+
+                        it = m_current_scene->get_entities().begin();
+                        m_end = m_current_scene->get_entities().end();
+                        i--;
+                    }
+
+                    ImGui::EndPopup();
+                }
             }
 
             ImGui::TreePop();
         }
 
-        if(ImGui::IsWindowHovered(ImGuiFocusedFlags_RootWindow) && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+        ImGui::EndChild();
+
+
+        if(ImGui::IsWindowHovered( ImGuiFocusedFlags_RootWindow)
+                                    &&  ImGui::IsMouseReleased(ImGuiMouseButton_Right))
             ImGui::OpenPopup("Action");
         if(ImGui::BeginPopup("Action"))
         {
-            ImGui::MenuItem("Menu items", NULL, false, false);
+            ImGui::MenuItem("Menu items", nullptr, false, false);
             if(ImGui::BeginMenu("3D"))
             {
                 if(ImGui::MenuItem("Empty"))
@@ -100,5 +121,11 @@ namespace vis
     void SceneLayer::on_entity_created()
     {
 
+    }
+
+    void SceneLayer::remove_entity(std::uint16_t a_id)
+    {
+        m_current_scene->remove_entity(a_id);
+        main_manager->destroy_entity(a_id);
     }
 };
