@@ -43,6 +43,7 @@ namespace vis
         void show_transform_component(std::uint16_t a_id);
         void show_color_component(std::uint16_t a_id);
         void show_mesh_component(std::uint16_t a_id);
+        void show_add_component_button(std::uint16_t a_id);
     private:
         static MainManager* m_main_manager;
 

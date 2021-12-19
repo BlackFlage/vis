@@ -11,7 +11,7 @@ namespace vis
 
     vis::SceneManager::SceneManager()
     {
-        m_current_scene = load_scene("default.scene");
+        m_current_scene = load_scene("default");
     }
 
     SceneManager::~SceneManager()
@@ -26,7 +26,7 @@ namespace vis
 
     Scene* SceneManager::load_scene(const std::string &a_name)
     {
-        Scene* scene = new Scene();
+        Scene* scene = new Scene(a_name);
 
         m_scenes.push_back(scene);
 

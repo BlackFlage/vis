@@ -177,10 +177,7 @@ namespace vis
         m_layer_stack.clear_stack();
         delete m_window;
 
-        if(m_resize_event)
-        {
-            delete m_resize_event;
-        }
+        delete m_resize_event;
     }
 
     void Application::run()
@@ -201,7 +198,7 @@ namespace vis
 
     void Application::initialize()
     {
-        m_window = Window::create_window(win_proc, {720, 750, "App"});
+        m_window = Window::create_window(win_proc, {1920, 1080, "Shark"});
 
         if(!m_window)
         {

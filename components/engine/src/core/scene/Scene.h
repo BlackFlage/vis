@@ -15,6 +15,7 @@ namespace vis
     {
     public:
         Scene();
+        Scene(const std::string& a_name);
         Scene(const std::string& a_name, std::set<std::uint16_t> a_entities);
 
         void add_entity(std::uint16_t a_id);

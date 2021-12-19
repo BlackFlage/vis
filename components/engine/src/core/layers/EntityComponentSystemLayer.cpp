@@ -60,6 +60,8 @@ namespace vis
             show_transform_component(id);
             show_color_component(id);
             show_mesh_component(id);
+
+            show_add_component_button(id);
         }
 
         ImGui::End();
@@ -167,6 +169,15 @@ namespace vis
                 ImGui::SameLine();
                 ImGui::Text("%s", mesh.m_name.c_str());
             }
+        }
+    }
+
+    void EntityComponentSystemLayer::show_add_component_button(std::uint16_t a_id)
+    {
+        ImVec2 button_size = ImVec2(-FLT_MIN, ImGui::GetWindowHeight() * 0.025);
+        if(ImGui::Button("Add Component", button_size))
+        {
+
         }
     }
 }

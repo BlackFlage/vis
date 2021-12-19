@@ -16,6 +16,12 @@ namespace vis
 
     }
 
+    Scene::Scene(const std::string &a_name)
+    : Scene(a_name, {})
+    {
+
+    }
+
     Scene::Scene(const std::string& a_name, std::set<std::uint16_t> a_entities)
     {
         m_name = a_name;

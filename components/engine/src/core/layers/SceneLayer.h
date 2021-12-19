@@ -29,14 +29,21 @@ namespace vis
     private:
         void draw_scene_hierarchy();
         void on_entity_created();
-        void remove_entity(std::uint16_t a_id);
+        void draw_menu_popup();
+
+        void copy(std::uint16_t a_id);
+        void paste();
+        void rename();
+        void delete_entity(std::uint16_t a_id);
     private:
         std::unique_ptr<SceneManager> m_scene_manager;
         Scene* m_current_scene;
-
-        ImGuiTreeNodeFlags m_tree_node_flags;
-        bool m_test_drag_and_drop;
         std::uint16_t m_selected;
+        std::uint16_t m_id_to_perform_action;
+
+        ImVec2 m_scene_hierarchy_size;
+        ImGuiTreeNodeFlags m_tree_node_flags;
+        bool m_entity_clicked;
     };
 }
 

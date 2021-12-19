@@ -14,8 +14,9 @@ namespace vis
         m_current_scene = m_scene_manager->get_current_scene();
 
         m_tree_node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-        m_test_drag_and_drop = false;
-        m_selected = 0;
+        m_selected = MAX_ENTITIES;
+        m_id_to_perform_action = MAX_ENTITIES;
+        m_entity_clicked = false;
     }
 
     void SceneLayer::on_detach()
@@ -43,12 +44,72 @@ namespace vis
 
         draw_scene_hierarchy();
 
-        if(ImGui::IsWindowHovered( ImGuiFocusedFlags_RootWindow)
-                                    &&  ImGui::IsMouseReleased(ImGuiMouseButton_Right))
-            ImGui::OpenPopup("Action");
-        if(ImGui::BeginPopup("Action"))
+        ImGui::End();
+    }
+
+    void SceneLayer::on_entity_created()
+    {
+
+    }
+
+    void SceneLayer::draw_scene_hierarchy()
+    {
+        bool selected = false;
+        ImGuiTreeNodeFlags flags = m_tree_node_flags;
+        std::uint16_t i = 0;
+
+        if(ImGui::TreeNode(m_current_scene->get_name().c_str()))
         {
-            ImGui::MenuItem("Menu items", nullptr, false, false);
+            auto &m_scene_entities = m_current_scene->get_entities();
+            for (auto it = m_scene_entities.begin(); it != m_scene_entities.end(); it++, i++) {
+                if (m_selected == i) {
+                    selected = true;
+                    main_manager->set_current_entity(*it);
+                } else
+                    selected = false;
+
+                if (ImGui::Selectable(main_manager->get_entity(*it).get_name().c_str(), selected)) {
+                    m_selected = i;
+                    m_id_to_perform_action = MAX_ENTITIES;
+                }
+                if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+                    m_id_to_perform_action = *it;
+                }
+            }
+
+            ImGui::TreePop();
+        }
+
+        draw_menu_popup();
+    }
+
+    void SceneLayer::draw_menu_popup()
+    {
+        if(ImGui::IsWindowHovered( ImGuiFocusedFlags_RootWindow)
+        &&  ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+            ImGui::OpenPopup("Options");
+
+        if(ImGui::BeginPopup("Options"))
+        {
+            if(ImGui::MenuItem("Copy"))
+            {
+
+            }
+            if(ImGui::MenuItem("Paste"))
+            {
+
+            }
+            if(ImGui::MenuItem("Rename"))
+            {
+
+            }
+            if(ImGui::MenuItem("Delete"))
+            {
+                delete_entity(m_id_to_perform_action);
+            }
+
+            ImGui::Separator();
+
             if(ImGui::BeginMenu("3D"))
             {
                 if(ImGui::MenuItem("Empty"))
@@ -69,75 +130,32 @@ namespace vis
 
             ImGui::EndPopup();
         }
-
-        ImGui::End();
     }
 
-    void SceneLayer::on_entity_created()
+    void SceneLayer::copy(std::uint16_t a_id)
     {
-
+        LOG_INFO("COPY");
     }
 
-    void SceneLayer::remove_entity(std::uint16_t a_id)
+    void SceneLayer::paste()
     {
-        m_current_scene->remove_entity(a_id);
-        main_manager->destroy_entity(a_id);
+        LOG_INFO("PASTE");
     }
 
-    void SceneLayer::draw_scene_hierarchy()
+    void SceneLayer::rename()
     {
-        ImGuiTreeNodeFlags current_flags;
+        LOG_INFO("RENAME");
+    }
 
-        auto& scene_entities = m_current_scene->get_entities();
-        auto begin = scene_entities.begin();
-        auto end = scene_entities.end();
-
-        ImVec2 size = ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() / 2.0f);
-        ImGui::BeginChild("hierarchy_child", size, true);
-        if(ImGui::TreeNode("Scene Hierarchy"))
+    void SceneLayer::delete_entity(std::uint16_t a_id)
+    {
+        if(a_id != MAX_ENTITIES)
         {
-            for(std::uint16_t i = 0; begin != end; i++, begin++)
-            {
-                current_flags = m_tree_node_flags;
-                if(m_selected == i)
-                {
-                    current_flags |= ImGuiTreeNodeFlags_Selected;
-                }
-
-                ImGui::TreeNodeEx(main_manager->get_entity(*begin).get_name().c_str(), current_flags);
-                if(ImGui::IsItemClicked())
-                {
-                    m_selected = i;
-                    main_manager->set_current_entity(*begin);
-                }
-
-                if(ImGui::BeginPopupContextItem())
-                {
-                    if(ImGui::MenuItem("Copy"))
-                    {
-
-                    }
-
-                    if(ImGui::MenuItem("Delete"))
-                    {
-                        remove_entity(*begin);
-                        m_selected = MAX_ENTITIES;
-
-                        main_manager->set_current_entity(MAX_ENTITIES);
-
-                        ImGui::EndPopup();
-                        ImGui::TreePop();
-                        ImGui::EndChild();
-                        return;
-                    }
-
-                    ImGui::EndPopup();
-                }
-            }
-
-            ImGui::TreePop();
+            m_current_scene->remove_entity(a_id);
+            main_manager->destroy_entity(a_id);
+            main_manager->set_current_entity(MAX_ENTITIES);
+            m_id_to_perform_action = MAX_ENTITIES;
+            m_selected = MAX_ENTITIES;
         }
-
-        ImGui::EndChild();
     }
 }
