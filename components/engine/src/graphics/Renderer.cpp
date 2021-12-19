@@ -53,7 +53,7 @@ namespace vis
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec3) * 2));
 
         m_shader->set_uniform_3f("u_light_color", 1.0f, 1.0f, 1.0f);
-        m_shader->set_uniform_3f("u_light_position", 1.0f, 1.0f, 1.0f);
+        m_shader->set_uniform_3f("u_light_position", 0.0f, 10.0f, -10.0f);
         m_shader->set_uniform_mat4("u_projection", m_camera->get_projection());
         m_shader->set_uniform_mat4("u_view", m_camera->get_view());
         m_shader->set_uniform_mat4("u_model", a_mesh.m_model);

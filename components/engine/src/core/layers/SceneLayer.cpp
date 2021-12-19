@@ -31,7 +31,6 @@ namespace vis
     void SceneLayer::on_event(Event &a_event)
     {
         EventDispatcher dispatcher(a_event);
-        dispatcher.dispatch<KeyPressEvent>([this](auto&& event) { create_entity(std::forward<decltype(event)>(event)); });
     }
 
     void SceneLayer::on_render()
@@ -69,10 +68,30 @@ namespace vis
             ImGui::TreePop();
         }
 
-        ImGui::PushItemWidth(-300.0f);
-        if(ImGui::Button("Create new entity", ImVec2(150.0f, 20.0f)))
+        if(ImGui::IsWindowHovered(ImGuiFocusedFlags_RootWindow) && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+            ImGui::OpenPopup("Action");
+        if(ImGui::BeginPopup("Action"))
         {
-            m_current_scene->add_default_entity();
+            ImGui::MenuItem("Menu items", NULL, false, false);
+            if(ImGui::BeginMenu("3D"))
+            {
+                if(ImGui::MenuItem("Empty"))
+                {
+                    m_current_scene->add_entity(EntityType::EMPTY);
+                }
+                if(ImGui::MenuItem("Cube"))
+                {
+                    m_current_scene->add_entity(EntityType::CUBE);
+                }
+                if(ImGui::MenuItem("Sphere"))
+                {
+                    m_current_scene->add_entity(EntityType::SPHERE);
+                }
+
+                ImGui::EndMenu();
+            }
+
+            ImGui::EndPopup();
         }
 
         ImGui::End();
@@ -81,13 +100,5 @@ namespace vis
     void SceneLayer::on_entity_created()
     {
 
-    }
-
-    void SceneLayer::create_entity(KeyPressEvent &event)
-    {
-        if(event.get_key_code() == 'S')
-        {
-            m_current_scene->add_default_entity();
-        }
     }
 };

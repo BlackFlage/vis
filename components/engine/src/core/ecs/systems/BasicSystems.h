@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "ecs/System.h"
-#include "ecs/components/BasicComponents.h"
-#include "Renderer.h"
 #include "ecs/MainManager.h"
+#include "ecs/components/BasicComponents.h"
 #include "glm/gtc/matrix_transform.hpp"
+#include "Renderer.h"
 
 namespace vis
 {
@@ -48,9 +48,11 @@ namespace vis
 
                 glm::mat4 transform_mat = glm::mat4(1.0f);
                 transform_mat = glm::translate(transform_mat, transform.m_position);
+
                 transform_mat = glm::rotate(transform_mat, glm::radians(transform.m_rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
                 transform_mat = glm::rotate(transform_mat, glm::radians(transform.m_rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
                 transform_mat = glm::rotate(transform_mat, glm::radians(transform.m_rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+
                 transform_mat = glm::scale(transform_mat, transform.m_scale);
 
                 MeshRender mesh_render = MeshRender{.m_vertices = mesh.m_vertices,

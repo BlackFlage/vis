@@ -19,7 +19,7 @@ void main()
   gl_Position = u_projection * u_view * u_model * vec4(in_position, 1.0);
 
   v_color = u_color;
-  v_frag_position = in_position;
+  v_frag_position = vec3(u_model * vec4(in_position, 1.0));
   v_normal = in_normal;
   v_textureCoords = in_textureCoords;
 }

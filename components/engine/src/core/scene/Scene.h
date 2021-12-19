@@ -19,10 +19,13 @@ namespace vis
 
         void add_entity(std::uint16_t a_id);
         void remove_entity(std::uint16_t a_id);
-        void add_default_entity();
+
+        void add_entity(EntityType a_type = EntityType::EMPTY);
 
         std::set<std::uint16_t>& get_entities();
         const std::string& get_name() const;
+    private:
+        std::string get_suffix_from_type(EntityType a_type);
     private:
         std::string m_name;
         std::set<std::uint16_t> m_entities;

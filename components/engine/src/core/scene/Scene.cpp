@@ -42,23 +42,49 @@ namespace vis
         m_entities.erase(a_id);
     }
 
-    void Scene::add_default_entity()
+    void Scene::add_entity(EntityType a_type)
     {
         std::uint16_t e = main_manager->create_entity();
+        glm::vec3 scale = glm::vec3(1.0f);
+
+        if(a_type == EntityType::SPHERE)
+        {
+            scale = glm::vec3(0.3f);
+        }
+
+        main_manager->set_current_entity(e);
+        m_entities.insert(e);
+
+        if(a_type == EntityType::EMPTY)
+        {
+            return;
+        }
 
         main_manager->add_component(e, Transform{
                 .m_position = glm::vec3(0.0f, 0.0f, -10.0f),
                 .m_rotation = glm::vec3(1.0f),
-                .m_scale = glm::vec3(1.0f)
+                .m_scale = scale
         });
+
+        std::string suffix = get_suffix_from_type(a_type);
+        Mesh mesh = OBJLoader::load_from_models("default\\" + suffix + ".obj", suffix);
 
         main_manager->add_component(e, Color{
-            .m_color = glm::vec3(0.3f, 0.0f, 1.0f)
+            .m_color = glm::vec3(0.3f, 0.3f, 0.3f)
         });
 
-        main_manager->add_component(e, OBJLoader::load_from_models("cube/cube.obj", "cube"));
+        main_manager->add_component(e, mesh);
+    }
 
-        main_manager->set_current_entity(e);
-        m_entities.insert(e);
+    std::string Scene::get_suffix_from_type(EntityType a_type)
+    {
+        switch(a_type)
+        {
+            case EntityType::CUBE:
+                return "cube";
+            case EntityType::SPHERE:
+                return "sphere";
+        }
+        return "";
     }
 }

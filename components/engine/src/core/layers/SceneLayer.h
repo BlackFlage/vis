@@ -27,7 +27,6 @@ namespace vis
         void on_render() override;
         void on_imgui_render() override;
     private:
-        void create_entity(KeyPressEvent& event);
         void on_entity_created();
     private:
         std::unique_ptr<SceneManager> m_scene_manager;

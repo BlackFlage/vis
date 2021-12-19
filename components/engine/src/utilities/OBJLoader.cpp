@@ -59,6 +59,12 @@ namespace vis
                 std::string delimiter = "/";
                 std::string data = line;
 
+                size_t end_pos = data.find("\r");
+                if(end_pos != std::string::npos)
+                {
+                    data.erase(end_pos, 2);
+                }
+
                 size_t pos = 0;
                 while(data.size() > 0)
                 {
