@@ -19,6 +19,8 @@ namespace vis
         register_systems();
         set_signatures();
 
+        m_component_names = {"Transform", "Color", "Mesh", "RigidBody", "Camera"};
+
         m_camera = new Camera(glm::vec3(1.0f, 1.0f, 1.0f));
         m_shader = Shader::create_shader_name("vertex.glsl", "fragmentNoTex.glsl");
 
@@ -174,10 +176,46 @@ namespace vis
 
     void EntityComponentSystemLayer::show_add_component_button(std::uint16_t a_id)
     {
-        ImVec2 button_size = ImVec2(-FLT_MIN, ImGui::GetWindowHeight() * 0.025);
-        if(ImGui::Button("Add Component", button_size))
-        {
+        ImVec2 button_size = ImVec2(-FLT_MIN, ImGui::GetWindowHeight() * 0.025f);
 
+        if(ImGui::Button("Add Component", button_size))
+            ImGui::OpenPopup("Components list");
+
+        if(ImGui::BeginPopup("Components list"))
+        {
+            for(int i = 0; i < m_component_names.size(); i++)
+            {
+                if(ImGui::MenuItem(m_component_names.at(i)))
+                {
+                    add_component(a_id, m_component_names.at(i));
+                }
+            }
+
+            ImGui::EndPopup();
+        }
+    }
+
+    void EntityComponentSystemLayer::add_component(std::uint16_t a_id, const char *a_component_name)
+    {
+        if(std::strcmp(a_component_name, "Transform") == 0)
+        {
+            main_manager->add_component(a_id, Transform{
+                .m_position = glm::vec3(0.0f),
+                .m_rotation = glm::vec3(1.0f),
+                .m_scale = glm::vec3(1.0f)
+            });
+        }
+        else if(std::strcmp(a_component_name, "Color") == 0)
+        {
+            main_manager->add_component(a_id, Color{ .m_color = glm::vec3(0.3f) });
+        }
+        else if(std::strcmp(a_component_name, "Mesh") == 0)
+        {
+            main_manager->add_component(a_id, OBJLoader::load_from_models("default\\cube.obj", "cube"));
+        }
+        else if(std::strcmp(a_component_name, "RigidBody") == 0)
+        {
+            main_manager->add_component(a_id, RigidBody{ .vel_x = 0.0f, .vel_y = 0.0f, .vel_z = 0.0f});
         }
     }
 }

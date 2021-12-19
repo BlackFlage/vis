@@ -44,12 +44,17 @@ namespace vis
         void show_color_component(std::uint16_t a_id);
         void show_mesh_component(std::uint16_t a_id);
         void show_add_component_button(std::uint16_t a_id);
+
+        //Components adding
+        void add_component(std::uint16_t a_id, const char* a_component_name);
     private:
         static MainManager* m_main_manager;
 
         std::shared_ptr<PhysicsSystem> m_physics_system;
         std::shared_ptr<RendererSystem> m_renderer_system;
         std::shared_ptr<EntityTrackSystem> m_entity_track_system;
+
+        std::vector<const char*> m_component_names;
 
         Shader* m_shader;
         Camera* m_camera;
