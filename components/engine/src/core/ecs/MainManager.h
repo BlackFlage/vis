@@ -53,7 +53,7 @@ namespace vis
             m_current_entity = a_id;
         }
 
-        std::uint16_t get_current_entity()
+        std::uint16_t get_current_entity() const
         {
             return m_current_entity;
         }

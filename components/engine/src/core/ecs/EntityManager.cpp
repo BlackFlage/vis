@@ -49,7 +49,7 @@ namespace vis
 
     void EntityManager::on_entity_destroyed(std::uint16_t a_id)
     {
-        if(a_id <= 0 || a_id > MAX_ENTITIES)
+        if(a_id < 0 || a_id > MAX_ENTITIES)
         {
             LOG_ERROR("Can't destroy entity! Passed ID out of range.");
             return;

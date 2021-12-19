@@ -27,6 +27,7 @@ namespace vis
         void on_render() override;
         void on_imgui_render() override;
     private:
+        void draw_scene_hierarchy();
         void on_entity_created();
         void remove_entity(std::uint16_t a_id);
     private:

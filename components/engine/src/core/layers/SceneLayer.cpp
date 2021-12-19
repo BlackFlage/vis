@@ -30,7 +30,6 @@ namespace vis
 
     void SceneLayer::on_event(Event &a_event)
     {
-        EventDispatcher dispatcher(a_event);
     }
 
     void SceneLayer::on_render()
@@ -42,51 +41,7 @@ namespace vis
     {
         ImGui::Begin("Scene Hierarchy");
 
-        ImVec2 size = ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() / 2.0f);
-        ImGui::BeginChild("hierarchy_child", size, true);
-        auto& m_scene_entities = m_current_scene->get_entities();
-        auto m_end = m_current_scene->get_entities().end();
-        ImGuiTreeNodeFlags current_flags;
-
-        std::uint16_t i = 0;
-        if(ImGui::TreeNode("Scene Hierarchy"))
-        {
-            for(auto it = m_scene_entities.begin(); it != m_end; i++, it++)
-            {
-                current_flags = m_tree_node_flags;
-                if(m_selected == i)
-                {
-                    current_flags |= ImGuiTreeNodeFlags_Selected;
-                }
-
-                ImGui::TreeNodeEx(main_manager->get_entity(*it).get_name().c_str(), current_flags);
-                if(ImGui::IsItemClicked())
-                {
-                    m_selected = i;
-                    main_manager->set_current_entity(*it);
-                }
-
-                if(ImGui::BeginPopupContextItem())
-                {
-                    ImGui::MenuItem("Copy");
-                    if(ImGui::MenuItem("Delete"))
-                    {
-                        remove_entity(*it);
-
-                        it = m_current_scene->get_entities().begin();
-                        m_end = m_current_scene->get_entities().end();
-                        i--;
-                    }
-
-                    ImGui::EndPopup();
-                }
-            }
-
-            ImGui::TreePop();
-        }
-
-        ImGui::EndChild();
-
+        draw_scene_hierarchy();
 
         if(ImGui::IsWindowHovered( ImGuiFocusedFlags_RootWindow)
                                     &&  ImGui::IsMouseReleased(ImGuiMouseButton_Right))
@@ -128,4 +83,61 @@ namespace vis
         m_current_scene->remove_entity(a_id);
         main_manager->destroy_entity(a_id);
     }
-};
+
+    void SceneLayer::draw_scene_hierarchy()
+    {
+        ImGuiTreeNodeFlags current_flags;
+
+        auto& scene_entities = m_current_scene->get_entities();
+        auto begin = scene_entities.begin();
+        auto end = scene_entities.end();
+
+        ImVec2 size = ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() / 2.0f);
+        ImGui::BeginChild("hierarchy_child", size, true);
+        if(ImGui::TreeNode("Scene Hierarchy"))
+        {
+            for(std::uint16_t i = 0; begin != end; i++, begin++)
+            {
+                current_flags = m_tree_node_flags;
+                if(m_selected == i)
+                {
+                    current_flags |= ImGuiTreeNodeFlags_Selected;
+                }
+
+                ImGui::TreeNodeEx(main_manager->get_entity(*begin).get_name().c_str(), current_flags);
+                if(ImGui::IsItemClicked())
+                {
+                    m_selected = i;
+                    main_manager->set_current_entity(*begin);
+                }
+
+                if(ImGui::BeginPopupContextItem())
+                {
+                    if(ImGui::MenuItem("Copy"))
+                    {
+
+                    }
+
+                    if(ImGui::MenuItem("Delete"))
+                    {
+                        remove_entity(*begin);
+                        m_selected = MAX_ENTITIES;
+
+                        main_manager->set_current_entity(MAX_ENTITIES);
+
+                        ImGui::EndPopup();
+                        ImGui::TreePop();
+                        ImGui::EndChild();
+                        return;
+                    }
+
+                    ImGui::EndPopup();
+                }
+            }
+
+            ImGui::TreePop();
+        }
+
+        ImGui::EndChild();
+    }
+}
