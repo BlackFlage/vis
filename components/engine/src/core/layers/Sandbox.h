@@ -10,8 +10,6 @@
 #include <cmath>
 #include "gl/GL.h"
 #include "Renderer.h"
-#include "OBJLoader.h"
-#include "Camera.h"
 #include <functional>
 #include "Application.h"
 #include "Texture.h"

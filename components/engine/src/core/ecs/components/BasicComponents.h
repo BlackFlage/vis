@@ -6,9 +6,11 @@
 #define MAIN_BASICCOMPONENTS_H
 
 #include <vector>
+#include <cstdint>
 
 #include "glm/glm.hpp"
 #include "glm/gtc/quaternion.hpp"
+#include "resource_loaders/resource_types/Mesh.h"
 
 namespace vis
 {
@@ -31,13 +33,6 @@ namespace vis
         float vel_z;
     };
 
-    struct Vertex
-    {
-        glm::vec3 m_position;
-        glm::vec3 m_normals;
-        glm::vec2 m_textureCoords;
-    };
-
     struct VertexRender
     {
         glm::vec3 m_position;
@@ -47,12 +42,9 @@ namespace vis
         glm::mat4 m_transform;
     };
 
-    struct Mesh
+    struct MeshComponent
     {
-        std::vector<Vertex> m_vertices;
-        std::vector<unsigned int> m_indices;
-        std::string m_name;
-        unsigned int m_geometry_type;
+        std::uint16_t m_id;
     };
 
     struct MeshRender

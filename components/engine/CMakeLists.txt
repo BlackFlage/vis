@@ -17,12 +17,14 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/event/WindowEvent.h
         ${CORE_PATH}/Macro.h
         ${CORE_PATH}/Logger.h
+        ${CORE_PATH}/Types.h
         ${CORE_PATH}/layers/Layer.h
         ${CORE_PATH}/layers/LayerStack.h
         ${CORE_PATH}/layers/Sandbox.h
         ${CORE_PATH}/layers/EntityComponentSystemLayer.h
         ${CORE_PATH}/layers/ImGuiLayer.h
-        ${CORE_PATH}/ecs/Types.h
+        ${CORE_PATH}/layers/SceneLayer.h
+        ${CORE_PATH}/layers/ResourcesLoaderLayer.h
         ${CORE_PATH}/ecs/EntityManager.h
         ${CORE_PATH}/ecs/ComponentManager.h
         ${CORE_PATH}/ecs/ComponentArray.h
@@ -34,7 +36,10 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/ecs/components/BasicComponents.h
         ${CORE_PATH}/scene/SceneManager.h
         ${CORE_PATH}/scene/Scene.h
-        ${CORE_PATH}/layers/SceneLayer.h
+        ${CORE_PATH}/resource_loaders/ResourcesManager.h
+        ${CORE_PATH}/resource_loaders/ResourceArray.h
+        ${CORE_PATH}/resource_loaders/MeshLoader.h
+        ${CORE_PATH}/resource_loaders/resource_types/Mesh.h
         )
 
 set(SOURCE_FILES_CORE
@@ -48,19 +53,21 @@ set(SOURCE_FILES_CORE
         ${CORE_PATH}/ecs/EntityManager.cpp
         ${CORE_PATH}/layers/EntityComponentSystemLayer.cpp
         ${CORE_PATH}/layers/ImGuiLayer.cpp
+        ${CORE_PATH}/layers/ResourcesLoaderLayer.cpp
+        ${CORE_PATH}/layers/SceneLayer.cpp
         ${CORE_PATH}/scene/SceneManager.cpp
         ${CORE_PATH}/scene/Scene.cpp
-        ${CORE_PATH}/layers/SceneLayer.cpp
+        ${CORE_PATH}/resource_loaders/MeshLoader.cpp
+        ${CORE_PATH}/resource_loaders/ResourcesManager.cpp
+        ${CORE_PATH}/resource_loaders/resource_types/Mesh.cpp
         )
 
 set(HEADER_FILES_UTIL
         src/utilities/Timer.h
-        src/utilities/OBJLoader.h
         src/utilities/BMPLoader.h
         )
 
 set(SOURCE_FILES_UTIL
-        src/utilities/OBJLoader.cpp
         src/utilities/BMPLoader.cpp)
 
 set(HEADER_FILES_GRAPHICS

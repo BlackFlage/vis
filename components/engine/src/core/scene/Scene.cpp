@@ -7,10 +7,13 @@
 #include <string>
 #include <ecs/components/BasicComponents.h>
 #include "ecs/MainManager.h"
-#include "OBJLoader.h"
+#include "resource_loaders/ResourcesManager.h"
+#include "Types.h"
 
 namespace vis
 {
+    const char* Scene::m_default_models_path = R"(C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\C++\visual\components\engine\res\models\default\)";
+
     Scene::Scene()
     {
 
@@ -73,7 +76,7 @@ namespace vis
         });
 
         std::string suffix = get_suffix_from_type(a_type);
-        Mesh mesh = OBJLoader::load_from_models("default\\" + suffix + ".obj", suffix);
+        MeshComponent mesh = { .m_id = ResourcesManager::get_instance()->load_mesh((m_default_models_path + suffix + ".obj").c_str())};
 
         main_manager->add_component(e, Color{
             .m_color = glm::vec3(0.3f, 0.3f, 0.3f)

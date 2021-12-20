@@ -11,6 +11,7 @@
 #include "ecs/MainManager.h"
 #include "ecs/components/BasicComponents.h"
 #include "glm/gtc/matrix_transform.hpp"
+#include "resource_loaders/ResourcesManager.h"
 #include "Renderer.h"
 
 namespace vis
@@ -44,7 +45,8 @@ namespace vis
             {
                 auto& transform = main_manager->get_component<Transform>(*it);
                 auto& color = main_manager->get_component<Color>(*it);
-                auto& mesh = main_manager->get_component<Mesh>(*it);
+                std::uint16_t mesh_id = main_manager->get_component<MeshComponent>(*it).m_id;
+                auto mesh = ResourcesManager::get_instance()->get_mesh(mesh_id);
 
                 glm::mat4 transform_mat = glm::mat4(1.0f);
                 transform_mat = glm::translate(transform_mat, transform.m_position);
@@ -55,36 +57,17 @@ namespace vis
 
                 transform_mat = glm::scale(transform_mat, transform.m_scale);
 
-                MeshRender mesh_render = MeshRender{.m_vertices = mesh.m_vertices,
-                        .m_indices = mesh.m_indices,
+                MeshRender mesh_render = MeshRender{.m_vertices = mesh->get_vertices(),
+                        .m_indices = mesh->get_indices(),
                         .m_model = transform_mat,
                         .m_color = color.m_color,
-                        .m_geometry_type = mesh.m_geometry_type};
+                        .m_geometry_type = mesh->get_geometry_type()};
                 Renderer::render(mesh_render);
 
                 it++;
             }
 
             Renderer::end();
-        }
-
-    private:
-        static std::vector<VertexRender> compose_vertexes(const Mesh& a_mesh, const glm::mat4& a_transform, const Color& a_color)
-        {
-            std::vector<VertexRender> vrs;
-
-            for(const auto& v : a_mesh.m_vertices)
-            {
-                vrs.push_back(VertexRender{
-                        .m_position = v.m_position,
-                        .m_normals = v.m_normals,
-                        .m_textureCoords = v.m_textureCoords,
-                        .m_color = a_color.m_color,
-                        .m_transform = a_transform
-                });
-            }
-
-            return vrs;
         }
     };
 

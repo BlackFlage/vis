@@ -1,23 +1,39 @@
 //
-// Created by BlackFlage on 13.11.2021.
+// Created by BlackFlage on 20.12.2021.
 //
+
+#include "MeshLoader.h"
+
 #include <fstream>
+#include <string>
 #include <sstream>
 
-#include "OBJLoader.h"
 #include "Logger.h"
 #include "GL/glew.h"
+#include "Types.h"
 
 namespace vis
 {
-    Mesh OBJLoader::load_from_file(const std::string &a_file_path, const std::string& a_name)
-    {
-        std::ifstream file(a_file_path);
 
+    MeshLoader::MeshLoader()
+    {
+        m_path_to_index = {};
+        m_mesh_array = std::make_unique<ResourceArray<Mesh>>();
+    }
+
+    std::uint16_t MeshLoader::load_mesh(const char* a_path)
+    {
+        if(m_path_to_index.find(a_path) != m_path_to_index.end())
+        {
+            LOG_INFO("Mesh already loaded, returning id to resource.");
+            return m_path_to_index.at(a_path);
+        }
+
+        std::ifstream file(a_path);
         if(!file)
         {
-            LOG_ERROR("Failed to open file: {0} while loading .obj file!", a_file_path);
-            return Mesh{ std::vector<Vertex>(), std::vector<unsigned int>(), 0 };
+            LOG_ERROR("Failed to open file: {0} while loading .obj file!", a_path);
+            return MAX_RESOURCES;
         }
 
         std::vector<glm::vec3> vertices;
@@ -120,21 +136,37 @@ namespace vis
 
         file.close();
         std::vector<Vertex> outVertices;
+        outVertices.reserve(indices.size());
 
         for(int i = 0; i < indices.size(); i++)
         {
             outVertices.emplace_back(Vertex{ vertices.at(indices.at(i)), normals.at(vertexNormalIndices.at(i)), textureCoords.at(textureCoordsIndices.at(i)) });
         }
 
-        LOG_INFO("Successfully loaded file: {0}.", a_file_path);
+        LOG_INFO("Successfully loaded file: {0}.", a_path);
 
-        return Mesh{ outVertices, indices, a_name, GL_TRIANGLES };
+        Mesh* mesh = new Mesh(outVertices, indices, GL_TRIANGLES);
+
+        std::uint16_t id = m_mesh_array->add_resource(mesh);
+        m_path_to_index.insert({a_path, id});
+
+        return id;
     }
 
-    Mesh OBJLoader::load_from_models(const std::string& a_path_from_models_dir, const std::string& a_name)
+    void MeshLoader::delete_mesh(const char *a_path)
     {
-        std::string file_path = MODELS_PATH + a_path_from_models_dir;
+        if(m_path_to_index.find(a_path) == m_path_to_index.end())
+        {
+            LOG_WARNING("Trying to delete non existing mesh: {0}", a_path);
+            return;
+        }
 
-        return load_from_file(file_path, a_name);
+        m_mesh_array->delete_resource(m_path_to_index.at(a_path));
+        m_path_to_index.erase(a_path);
+    }
+
+    Mesh *MeshLoader::get_mesh(std::uint16_t a_id)
+    {
+        return m_mesh_array->get_resource(a_id);
     }
 }

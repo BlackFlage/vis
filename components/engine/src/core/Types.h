@@ -1,5 +1,5 @@
 //
-// Created by BlackFlage on 02.12.2021.
+// Created by BlackFlage on 20.12.2021.
 //
 
 #ifndef MAIN_TYPES_H
@@ -13,6 +13,7 @@ using ComponentType = std::uint8_t;
 
 #define MAX_ENTITIES 2048
 #define MAX_COMPONENTS 128
+#define MAX_RESOURCES 1000
 
 using Signature = std::bitset<MAX_COMPONENTS>;
 

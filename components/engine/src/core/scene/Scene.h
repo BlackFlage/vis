@@ -30,6 +30,8 @@ namespace vis
     private:
         std::string m_name;
         std::set<std::uint16_t> m_entities;
+
+        static const char* m_default_models_path;
     };
 }
 

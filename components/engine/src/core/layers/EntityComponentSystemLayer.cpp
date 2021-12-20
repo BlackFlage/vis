@@ -6,6 +6,7 @@
 #include <optional>
 
 #include "ImGui/imgui.h"
+#include "Types.h"
 
 namespace vis
 {
@@ -19,6 +20,7 @@ namespace vis
         register_systems();
         set_signatures();
 
+        m_resources_manager = ResourcesManager::get_instance();
         m_component_names = {"Transform", "Color", "Mesh", "RigidBody", "Camera"};
 
         m_camera = new Camera(glm::vec3(1.0f, 1.0f, 1.0f));
@@ -77,7 +79,7 @@ namespace vis
         main_manager->register_component<Transform>();
         main_manager->register_component<Color>();
         main_manager->register_component<RigidBody>();
-        main_manager->register_component<Mesh>();
+        main_manager->register_component<MeshComponent>();
     }
 
     void EntityComponentSystemLayer::register_systems()
@@ -98,7 +100,7 @@ namespace vis
 
         {
             Signature rend_signature;
-            rend_signature.set(main_manager->get_component_type<Mesh>(), true);
+            rend_signature.set(main_manager->get_component_type<MeshComponent>(), true);
             rend_signature.set(main_manager->get_component_type<Color>(), true);
             rend_signature.set(main_manager->get_component_type<Transform>(), true);
             main_manager->set_system_signature<RendererSystem>(rend_signature);
@@ -161,15 +163,18 @@ namespace vis
     {
         Signature sig = main_manager->get_entity_signature(a_id);
 
-        if(sig[main_manager->get_component_type<Mesh>()])
+        if(sig[main_manager->get_component_type<MeshComponent>()])
         {
             if(ImGui::CollapsingHeader("Mesh"))
             {
-                auto& mesh = main_manager->get_component<Mesh>(a_id);
+                auto mesh_id = main_manager->get_component<MeshComponent>(a_id).m_id;
+                auto mesh = m_resources_manager->get_mesh(mesh_id);
 
                 ImGui::Text("Mesh: ");
                 ImGui::SameLine();
-                ImGui::Text("%s", mesh.m_name.c_str());
+                ImGui::Text("Vertices: %d", (int)mesh->get_vertices().size());
+                ImGui::SameLine();
+                ImGui::Text("Indices: %d", (int)mesh->get_indices().size());
             }
         }
     }
@@ -211,7 +216,12 @@ namespace vis
         }
         else if(std::strcmp(a_component_name, "Mesh") == 0)
         {
-            main_manager->add_component(a_id, OBJLoader::load_from_models("default\\cube.obj", "cube"));
+            MeshComponent mesh_comp = {.m_id = m_resources_manager->load_mesh("C:\\Users\\BlackFlage\\OneDrive - Politechnika Wroclawska\\C++\\visual\\components\\engine\\res\\models\\default\\cube.obj")};
+
+            if(mesh_comp.m_id != MAX_COMPONENTS)
+            {
+                main_manager->add_component(a_id, mesh_comp);
+            }
         }
         else if(std::strcmp(a_component_name, "RigidBody") == 0)
         {

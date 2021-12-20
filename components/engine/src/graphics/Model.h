@@ -9,7 +9,6 @@
 #include <GL/glew.h>
 #include <vector>
 #include <string>
-#include "OBJLoader.h"
 #include "Texture.h"
 
 namespace vis

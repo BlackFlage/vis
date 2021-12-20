@@ -12,7 +12,7 @@
 #include "ecs/MainManager.h"
 #include "ecs/components/BasicComponents.h"
 #include "ecs/systems/BasicSystems.h"
-#include "OBJLoader.h"
+#include "resource_loaders/ResourcesManager.h"
 #include "Camera.h"
 #include "Shader.h"
 
@@ -49,6 +49,7 @@ namespace vis
         void add_component(std::uint16_t a_id, const char* a_component_name);
     private:
         static MainManager* m_main_manager;
+        ResourcesManager* m_resources_manager;
 
         std::shared_ptr<PhysicsSystem> m_physics_system;
         std::shared_ptr<RendererSystem> m_renderer_system;
