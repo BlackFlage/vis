@@ -22,14 +22,14 @@ namespace vis
         {
             auto now = std::chrono::high_resolution_clock::now();
 
-            return std::chrono::duration_cast<std::chrono::milliseconds>(now - m_last_stamp).count() / 1000.0;
+            return (float)std::chrono::duration_cast<std::chrono::milliseconds>(now - m_last_stamp).count() / 1000.0f;
         }
 
         float get_time_passed()
         {
             auto now = std::chrono::high_resolution_clock::now();
 
-            return std::chrono::duration_cast<std::chrono::milliseconds>(now - m_beginning).count() / 1000.0;
+            return (float)std::chrono::duration_cast<std::chrono::milliseconds>(now - m_beginning).count() / 1000.0f;
         }
 
         void new_time_stamp()

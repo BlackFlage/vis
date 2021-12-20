@@ -30,6 +30,19 @@ namespace vis
         m_default_models_path = R"(C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\C++\visual\components\engine\res\models\default\)";
     }
 
+    void Scene::on_load()
+    {
+
+    }
+
+    void Scene::on_unload()
+    {
+        for(auto it = m_entities.begin(); it != m_entities.end(); it++)
+        {
+            main_manager->destroy_entity(*it);
+        }
+    }
+
     std::set<std::uint16_t>& Scene::get_entities()
     {
         return m_entities;

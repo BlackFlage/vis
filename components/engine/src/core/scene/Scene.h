@@ -18,6 +18,9 @@ namespace vis
         Scene(const std::string& a_name);
         Scene(const std::string& a_name, std::set<std::uint16_t> a_entities);
 
+        void on_load();
+        void on_unload();
+
         void add_entity(std::uint16_t a_id);
         void remove_entity(std::uint16_t a_id);
 

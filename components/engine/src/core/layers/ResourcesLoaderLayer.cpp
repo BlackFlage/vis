@@ -4,7 +4,6 @@
 
 #include "ResourcesLoaderLayer.h"
 
-
 namespace vis
 {
     ResourcesManager* ResourcesManager::m_instance = new ResourcesManager();
