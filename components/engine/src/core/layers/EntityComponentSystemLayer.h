@@ -59,6 +59,8 @@ namespace vis
 
         Shader* m_shader;
         Camera* m_camera;
+
+        std::string m_default_models_path;
     };
 }
 

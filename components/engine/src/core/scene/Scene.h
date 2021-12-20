@@ -29,9 +29,9 @@ namespace vis
         std::string get_suffix_from_type(EntityType a_type);
     private:
         std::string m_name;
-        std::set<std::uint16_t> m_entities;
+        std::string m_default_models_path;
 
-        static const char* m_default_models_path;
+        std::set<std::uint16_t> m_entities;
     };
 }
 

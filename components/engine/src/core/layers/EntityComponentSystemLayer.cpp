@@ -2,8 +2,9 @@
 // Created by BlackFlage on 02.12.2021.
 //
 
-#include <layers/EntityComponentSystemLayer.h>
+#include "layers/EntityComponentSystemLayer.h"
 #include <optional>
+#include <string>
 
 #include "ImGui/imgui.h"
 #include "Types.h"
@@ -22,6 +23,7 @@ namespace vis
 
         m_resources_manager = ResourcesManager::get_instance();
         m_component_names = {"Transform", "Color", "Mesh", "RigidBody", "Camera"};
+        m_default_models_path = R"(C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\C++\visual\components\engine\res\models\default\)";
 
         m_camera = new Camera(glm::vec3(1.0f, 1.0f, 1.0f));
         m_shader = Shader::create_shader_name("vertex.glsl", "fragmentNoTex.glsl");
@@ -170,10 +172,8 @@ namespace vis
                 auto mesh_id = main_manager->get_component<MeshComponent>(a_id).m_id;
                 auto mesh = m_resources_manager->get_mesh(mesh_id);
 
-                ImGui::Text("Mesh: ");
-                ImGui::SameLine();
+                ImGui::Text("Mesh id: %d", mesh_id);
                 ImGui::Text("Vertices: %d", (int)mesh->get_vertices().size());
-                ImGui::SameLine();
                 ImGui::Text("Indices: %d", (int)mesh->get_indices().size());
             }
         }
@@ -216,7 +216,7 @@ namespace vis
         }
         else if(std::strcmp(a_component_name, "Mesh") == 0)
         {
-            MeshComponent mesh_comp = {.m_id = m_resources_manager->load_mesh("C:\\Users\\BlackFlage\\OneDrive - Politechnika Wroclawska\\C++\\visual\\components\\engine\\res\\models\\default\\cube.obj")};
+            MeshComponent mesh_comp = {.m_id = m_resources_manager->load_mesh(m_default_models_path + "cube.obj")};
 
             if(mesh_comp.m_id != MAX_COMPONENTS)
             {

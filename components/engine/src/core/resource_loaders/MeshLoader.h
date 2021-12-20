@@ -20,13 +20,13 @@ namespace vis
         MeshLoader();
         ~MeshLoader() = default;
 
-        std::uint16_t load_mesh(const char* a_path);
+        std::uint16_t load_mesh(const std::string& a_path);
         void delete_mesh(const char* a_path);
         Mesh* get_mesh(std::uint16_t a_id);
     private:
 
     private:
-        std::unordered_map<const char*, std::uint16_t> m_path_to_index;
+        std::unordered_map<std::string, std::uint16_t> m_path_to_index;
         std::unique_ptr<ResourceArray<Mesh>> m_mesh_array;
     };
 }

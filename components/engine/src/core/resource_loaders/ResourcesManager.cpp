@@ -16,7 +16,7 @@ namespace vis
         return m_instance;
     }
 
-    std::uint16_t ResourcesManager::load_mesh(const char *a_name)
+    std::uint16_t ResourcesManager::load_mesh(const std::string& a_name)
     {
         return m_mesh_loader->load_mesh(a_name);
     }

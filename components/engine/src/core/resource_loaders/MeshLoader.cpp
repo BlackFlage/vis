@@ -21,8 +21,9 @@ namespace vis
         m_mesh_array = std::make_unique<ResourceArray<Mesh>>();
     }
 
-    std::uint16_t MeshLoader::load_mesh(const char* a_path)
+    std::uint16_t MeshLoader::load_mesh(const std::string& a_path)
     {
+        LOG_INFO("Mesh path: {0}", a_path);
         if(m_path_to_index.find(a_path) != m_path_to_index.end())
         {
             LOG_INFO("Mesh already loaded, returning id to resource.");

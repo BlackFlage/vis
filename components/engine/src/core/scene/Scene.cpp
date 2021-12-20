@@ -12,8 +12,6 @@
 
 namespace vis
 {
-    const char* Scene::m_default_models_path = R"(C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\C++\visual\components\engine\res\models\default\)";
-
     Scene::Scene()
     {
 
@@ -29,6 +27,7 @@ namespace vis
     {
         m_name = a_name;
         m_entities = std::move(a_entities);
+        m_default_models_path = R"(C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\C++\visual\components\engine\res\models\default\)";
     }
 
     std::set<std::uint16_t>& Scene::get_entities()
@@ -76,7 +75,7 @@ namespace vis
         });
 
         std::string suffix = get_suffix_from_type(a_type);
-        MeshComponent mesh = { .m_id = ResourcesManager::get_instance()->load_mesh((m_default_models_path + suffix + ".obj").c_str())};
+        MeshComponent mesh = { .m_id = ResourcesManager::get_instance()->load_mesh(m_default_models_path + suffix + ".obj")};
 
         main_manager->add_component(e, Color{
             .m_color = glm::vec3(0.3f, 0.3f, 0.3f)
@@ -93,7 +92,8 @@ namespace vis
                 return "cube";
             case EntityType::SPHERE:
                 return "sphere";
+            default:
+                return "cube";
         }
-        return "";
     }
 }

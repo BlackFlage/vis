@@ -17,7 +17,7 @@ namespace vis
 
         static ResourcesManager* get_instance();
 
-        std::uint16_t load_mesh(const char* a_name);
+        std::uint16_t load_mesh(const std::string& a_name);
         Mesh* get_mesh(std::uint16_t a_id);
     private:
         static ResourcesManager* m_instance;
