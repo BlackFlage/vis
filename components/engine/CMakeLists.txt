@@ -73,22 +73,15 @@ set(SOURCE_FILES_UTIL
 set(HEADER_FILES_GRAPHICS
         ${GRAPHICS_PATH}/Model.h
         ${GRAPHICS_PATH}/Renderer.h
-        ${GRAPHICS_PATH}/VBO.h
         ${GRAPHICS_PATH}/Shader.h
-        ${GRAPHICS_PATH}/VAO.h
-        ${GRAPHICS_PATH}/EBO.h
         ${GRAPHICS_PATH}/Camera.h
-        ${GRAPHICS_PATH}/Vertex.h
         ${GRAPHICS_PATH}/Texture.h
         )
 
 set(SOURCE_FILES_GRAPHICS
         ${GRAPHICS_PATH}/Model.cpp
         ${GRAPHICS_PATH}/Renderer.cpp
-        ${GRAPHICS_PATH}/VBO.cpp
         ${GRAPHICS_PATH}/Shader.cpp
-        ${GRAPHICS_PATH}/VAO.cpp
-        ${GRAPHICS_PATH}/EBO.cpp
         ${GRAPHICS_PATH}/Camera.cpp
         ${GRAPHICS_PATH}/Texture.cpp)
 
