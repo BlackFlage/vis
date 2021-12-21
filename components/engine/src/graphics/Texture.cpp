@@ -42,11 +42,26 @@ namespace vis
 
     void Texture::load_texture(const std::string& a_file_path, unsigned char** a_texture_data)
     {
-        *a_texture_data = BMPLoader::load_from_file(a_file_path, &m_width, &m_height);
+        *a_texture_data = BMPLoader::load_from_file(a_file_path, &m_width, &m_height, true);
     }
 
     Texture::~Texture()
     {
         glDeleteTextures(1, &m_id);
+    }
+
+    GLuint Texture::get_id() const
+    {
+        return m_id;
+    }
+
+    int Texture::get_width() const
+    {
+        return m_width;
+    }
+
+    int Texture::get_height() const
+    {
+        return m_height;
     }
 }

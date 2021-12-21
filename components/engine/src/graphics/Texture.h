@@ -18,6 +18,11 @@ namespace vis
 
         void bind() const;
         void unbind() const;
+
+        int get_width() const;
+        int get_height() const;
+
+        GLuint get_id() const;
     private:
         void load_texture(const std::string& a_file_path, unsigned char** a_texture_data);
     private:
