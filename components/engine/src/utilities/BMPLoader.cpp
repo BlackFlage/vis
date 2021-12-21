@@ -11,7 +11,7 @@
 
 namespace vis
 {
-    uint8_t* BMPLoader::load_from_file(const std::string &a_file_path, int* a_width, int* a_height)
+    uint8_t* BMPLoader::load_from_file(const std::string &a_file_path, int* a_width, int* a_height, bool a_flip_vertically)
     {
         uint8_t* dataBuffer[2] = {nullptr, nullptr};
         uint8_t* bitmapImage = nullptr;
@@ -42,7 +42,6 @@ namespace vis
         bitmapImage = new uint8_t[bitmapInfoHeader->biSizeImage];
 
         file.seekg(bitmapFileHeader->bfOffBits, std::ifstream::beg);
-        file.read(reinterpret_cast<char*>(bitmapImage), bitmapInfoHeader->biSizeImage);
 
         *a_width = bitmapInfoHeader->biWidth;
         *a_height = std::abs(bitmapInfoHeader->biHeight);
@@ -51,11 +50,35 @@ namespace vis
         {
             bitmapInfoHeader->biSizeImage = (*a_width) * (*a_height) * 3;
         }
-        uint8_t tempPixel;
-        for(int i = 0; i < bitmapInfoHeader->biSizeImage; i += 3) {
-            tempPixel = bitmapImage[i];
-            bitmapImage[i] = bitmapImage[i + 2];
-            bitmapImage[i + 2] = tempPixel;
+
+        const int padding = (4 - (*a_width * 3) % 4) % 4;
+
+        if(a_flip_vertically)
+        {
+            for(int i = (*a_height - 1) * 3; i >= 0; i -= 3)
+            {
+                int index = i * (*a_width);
+                for(int j = 0; j < *a_width * 3; j += 3)
+                {
+                    bitmapImage[index + j + 2] = (uint8_t)file.get();
+                    bitmapImage[index + j + 1] = (uint8_t)file.get();
+                    bitmapImage[index + j] = (uint8_t)file.get();
+
+                    file.seekg(padding, std::ios::cur);
+                }
+            }
+        }
+        else
+        {
+            file.read(reinterpret_cast<char*>(bitmapImage), bitmapInfoHeader->biSizeImage);
+
+            uint8_t tempPixel;
+            for(int i = 0; i < bitmapInfoHeader->biSizeImage; i += 3)
+            {
+                tempPixel = bitmapImage[i];
+                bitmapImage[i] = bitmapImage[i + 2];
+                bitmapImage[i + 2] = tempPixel;
+            }
         }
 
         file.close();
