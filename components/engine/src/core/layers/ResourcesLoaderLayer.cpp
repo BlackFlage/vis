@@ -4,6 +4,7 @@
 #include <filesystem>
 
 #include "ResourcesLoaderLayer.h"
+#include "Logger.h"
 
 namespace vis
 {
@@ -29,6 +30,8 @@ namespace vis
 
         m_closed_dir_icon = new Texture("../engine_textures/closed_dir_icon.bmp");
         m_file_icon = new Texture("../engine_textures/file_icon.bmp");
+
+        SceneConsole::initialize();
     }
 
     void ResourcesLoaderLayer::on_detach()
@@ -92,7 +95,15 @@ namespace vis
                 }
                 if(ImGui::BeginTabItem("Console"))
                 {
-                    ImGui::Text("Ah shit console coming");
+                    if(ImGui::Button("Clear"))
+                    {
+                        SceneConsole::get_instance()->clear();
+                    }
+
+                    ImGui::Separator();
+
+                    SceneConsole::get_instance()->draw();
+
                     ImGui::EndTabItem();
                 }
 
@@ -154,7 +165,6 @@ namespace vis
             {
                 if(std::filesystem::is_empty(a_path))
                 {
-                    LOG_INFO("TRUE");
                     ImGui::TableNextColumn();
                     ImGui::TextWrapped("Folder is empty!");
                 }
