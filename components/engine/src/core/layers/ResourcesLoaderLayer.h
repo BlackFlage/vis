@@ -6,6 +6,9 @@
 
 #define DEFAULT_ASSETS_PATH "../res/assets"
 
+#include <memory>
+#include <filesystem>
+
 #include "Layer.h"
 #include "ImGui/imgui.h"
 #include "resource_loaders/ResourcesManager.h"
@@ -30,14 +33,18 @@ namespace vis
         void draw_dir_tree(const std::filesystem::path& a_path);
         void draw_files_view_table(const std::filesystem::path& a_path);
         void show_options_popup(const std::string& a_current_path_name);
+
+        void load_icons();
+        GLuint get_icon_texture_id(const std::filesystem::directory_entry& a_entry);
     private:
         ResourcesManager* m_resources_manager;
-        Texture* m_closed_dir_icon;
-        Texture* m_file_icon;
 
-        std::string m_selected_path;
-        float m_icons_zoom;
-        int m_max_items_in_row;
+        int               m_max_items_in_row;
+        float             m_icon_zoom;
+        float             m_mini_icon_zoom;
+        std::string       m_selected_path;
+        ImVec2            m_default_icon_size;
+        std::unordered_map<const char*, std::unique_ptr<Texture>> m_icons;
     };
 }
 

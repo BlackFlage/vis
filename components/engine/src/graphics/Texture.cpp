@@ -3,8 +3,9 @@
 //
 
 #include "Texture.h"
-#include "BMPLoader.h"
 #include "Macro.h"
+#include "stb_image.h"
+#include "Logger.h"
 
 namespace vis
 {
@@ -19,15 +20,23 @@ namespace vis
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        uint8_t* texture_data = nullptr;
-        load_texture(a_file_path, &texture_data);
+        int channels;
+        unsigned char* texture_data = nullptr;
+        texture_data = stbi_load(a_file_path.c_str(), &m_width, &m_height, &channels, STBI_rgb_alpha);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture_data);
+        if(!texture_data)
+        {
+            LOG_ERROR("Failed to load texture: {0}", a_file_path);
+            glDeleteTextures(1, &m_id);
+            return;
+        }
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
         glGenerateMipmap(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, 0);
         CheckGLError();
 
-        delete[] texture_data;
+        stbi_image_free(texture_data);
     }
 
     void Texture::bind() const
@@ -38,11 +47,6 @@ namespace vis
     void Texture::unbind() const
     {
         glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
-    void Texture::load_texture(const std::string& a_file_path, unsigned char** a_texture_data)
-    {
-        *a_texture_data = BMPLoader::load_from_file(a_file_path, &m_width, &m_height, true);
     }
 
     Texture::~Texture()

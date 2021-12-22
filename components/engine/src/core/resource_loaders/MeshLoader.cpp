@@ -6,7 +6,6 @@
 
 #include <fstream>
 #include <string>
-#include <sstream>
 
 #include "Logger.h"
 #include "GL/glew.h"
@@ -23,10 +22,8 @@ namespace vis
 
     std::uint16_t MeshLoader::load_mesh(const std::string& a_path)
     {
-        LOG_INFO("Mesh path: {0}", a_path);
         if(m_path_to_index.find(a_path) != m_path_to_index.end())
         {
-            LOG_INFO("Mesh already loaded, returning id to resource.");
             return m_path_to_index.at(a_path);
         }
 

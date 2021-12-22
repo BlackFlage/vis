@@ -65,6 +65,7 @@ set(SOURCE_FILES_CORE
 set(HEADER_FILES_UTIL
         src/utilities/Timer.h
         src/utilities/BMPLoader.h
+        src/utilities/stb_image.h
         )
 
 set(SOURCE_FILES_UTIL
@@ -86,8 +87,8 @@ set(SOURCE_FILES_GRAPHICS
         ${GRAPHICS_PATH}/Texture.cpp)
 
 
-add_subdirectory(${VENDOR_PATH}/glew/build/cmake ${VENDOR_PATH}/glew/build/cmake)
 add_executable(${PROJECT_NAME} ${HEADER_FILES_CORE} ${SOURCE_FILES_CORE} ${HEADER_FILES_UTIL} ${SOURCE_FILES_UTIL} ${HEADER_FILES_GRAPHICS} ${SOURCE_FILES_GRAPHICS})
+add_subdirectory(${VENDOR_PATH}/glew/build/cmake ${VENDOR_PATH}/glew/build/cmake)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/core)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/utilities)
@@ -111,3 +112,4 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${VENDOR_PATH}/glm)
 add_subdirectory(${VENDOR_PATH}/ImGui ${VENDOR_PATH}/ImGui)
 target_link_libraries(${PROJECT_NAME} ImGui)
 target_include_directories(${PROJECT_NAME} PRIVATE ${VENDOR_PATH}/ImGui)
+

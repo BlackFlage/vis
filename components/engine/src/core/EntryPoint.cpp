@@ -6,6 +6,9 @@
 #include "layers/SceneLayer.h"
 #include "layers/ResourcesLoaderLayer.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 int main()
 {
     vis::Application* app = vis::Application::create_instance();

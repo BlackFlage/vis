@@ -1,8 +1,6 @@
 //
 // Created by BlackFlage on 20.12.2021.
 //
-#include <filesystem>
-
 #include "ResourcesLoaderLayer.h"
 #include "Logger.h"
 
@@ -24,12 +22,13 @@ namespace vis
             }
         }
 
-        m_selected_path = "";
-        m_icons_zoom = 0.5f;
-        m_max_items_in_row = 4;
+        m_selected_path     = "";
+        m_icon_zoom         = 0.5f;
+        m_mini_icon_zoom    = 0.1f;
+        m_max_items_in_row  = 4;
+        m_default_icon_size = ImVec2(128.0f, 128.0f);
 
-        m_closed_dir_icon = new Texture("../engine_textures/closed_dir_icon.bmp");
-        m_file_icon = new Texture("../engine_textures/file_icon.bmp");
+        load_icons();
 
         SceneConsole::initialize();
     }
@@ -37,8 +36,6 @@ namespace vis
     void ResourcesLoaderLayer::on_detach()
     {
         delete m_resources_manager;
-        delete m_closed_dir_icon;
-        delete m_file_icon;
     }
 
     void ResourcesLoaderLayer::on_event(Event &a_event)
@@ -155,7 +152,7 @@ namespace vis
     {
         if(std::filesystem::is_directory(a_path))
         {
-            ImVec2 m_dimensions = ImVec2((float)m_closed_dir_icon->get_width() * m_icons_zoom, (float)m_closed_dir_icon->get_height() * m_icons_zoom);
+            ImVec2 m_dimensions = ImVec2(m_default_icon_size.x * m_icon_zoom, m_default_icon_size.y * m_icon_zoom);
             m_max_items_in_row = (int)(ImGui::GetColumnWidth() / m_dimensions.x);
 
             if(m_max_items_in_row == 0)
@@ -171,6 +168,7 @@ namespace vis
                 else
                 {
                     int i = 0;
+                    GLuint current_icon_id;
                     for(const auto& entry : std::filesystem::directory_iterator(a_path))
                     {
                         if(i == m_max_items_in_row - 1)
@@ -179,34 +177,16 @@ namespace vis
                             ImGui::TableNextRow();
                         }
 
-                        if(entry.is_directory())
-                        {
-                            std::string name = entry.path().filename().string();
-
-                            ImGui::TableNextColumn();
-                            ImGui::Image((void*)m_closed_dir_icon->get_id(),
-                                         m_dimensions,
-                                         ImVec2(0.0f, 0.0f),
-                                         ImVec2(1.0f, 1.0f),
-                                         ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
-                                         ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
-                            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (ImGui::GetColumnWidth() - ImGui::CalcTextSize(name.c_str()).x) / 2.0f);
-                            ImGui::TextWrapped("%s", name.c_str());
-                        }
-                        else if(entry.is_regular_file())
-                        {
-                            std::string name = entry.path().filename().string();
-
-                            ImGui::TableNextColumn();
-                            ImGui::Image((void*)m_file_icon->get_id(),
-                                         m_dimensions,
-                                         ImVec2(0.0f, 0.0f),
-                                         ImVec2(1.0f, 1.0f),
-                                         ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
-                                         ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
-                            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (ImGui::GetColumnWidth() - ImGui::CalcTextSize(name.c_str()).x) / 2.0f);
-                            ImGui::Text("%s", name.c_str());
-                        }
+                        std::string name = entry.path().filename().string();
+                        ImGui::TableNextColumn();
+                        ImGui::Image((void*) get_icon_texture_id(entry),
+                                     m_dimensions,
+                                     ImVec2(0.0f, 0.0f),
+                                     ImVec2(1.0f, 1.0f),
+                                     ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
+                                     ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
+                        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (ImGui::GetColumnWidth() - ImGui::CalcTextSize(name.c_str()).x) / 2.0f);
+                        ImGui::TextWrapped("%s", name.c_str());
 
                         i++;
                     }
@@ -242,6 +222,34 @@ namespace vis
             }
 
             ImGui::EndPopup();
+        }
+    }
+
+    void ResourcesLoaderLayer::load_icons()
+    {
+        m_icons.insert({"closed_dir", std::make_unique<Texture>("../engine_textures/closed_folder_icon.png")});
+        m_icons.insert({"opened_dir", std::make_unique<Texture>("../engine_textures/opened_folder_icon.png")});
+        m_icons.insert({"full_dir", std::make_unique<Texture>("../engine_textures/full_folder_icon.png")});
+        m_icons.insert({"default", std::make_unique<Texture>("../engine_textures/file_icon.png")});
+    }
+
+    GLuint ResourcesLoaderLayer::get_icon_texture_id(const std::filesystem::directory_entry &a_entry)
+    {
+        if(a_entry.is_directory())
+        {
+            if(std::filesystem::is_empty(a_entry.path()))
+                return m_icons.at("closed_dir")->get_id();
+            else
+                return m_icons.at("full_dir")->get_id();
+        }
+        else
+        {
+            const char* extension = a_entry.path().extension().string().c_str();
+
+            if(m_icons.find(extension) != m_icons.end())
+                return m_icons.at(extension)->get_id();
+            else
+                return m_icons.at("default")->get_id();
         }
     }
 }

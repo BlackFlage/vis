@@ -24,8 +24,6 @@ namespace vis
 
         GLuint get_id() const;
     private:
-        void load_texture(const std::string& a_file_path, unsigned char** a_texture_data);
-    private:
         GLuint m_id;
 
         int m_width;
