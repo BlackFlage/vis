@@ -5,17 +5,20 @@
 #ifndef VISUAL_APPLICATION_H
 #define VISUAL_APPLICATION_H
 
-#include "Window.h"
+#include <memory>
+#include <iostream>
 #include <functional>
+
+#include "Window.h"
 #include "layers/LayerStack.h"
 #include "Timer.h"
 #include "event/Event.h"
 #include "event/KeyboardEvent.h"
 #include "event/WindowEvent.h"
 #include "event/MouseEvent.h"
-#include <iostream>
 #include "Shader.h"
 #include "Input.h"
+#include "Framebuffer.h"
 
 #define INPUT Application::get_input_instance()
 
@@ -49,6 +52,7 @@ namespace vis
         inline static void set_running(bool a_running) { m_running = a_running; }
         inline float get_delta_time() { return m_timer.get_delta_time(); }
         inline float get_time_passed() { return m_timer.get_time_passed();}
+        inline GLuint get_framebuffer_texture_id() const { return m_scene_framebuffer->get_texture_id(); }
 
         static Application* create_instance();
         static void set_resize_event(WindowResizeEvent* a_event);
@@ -62,21 +66,23 @@ namespace vis
         static DWORD WINAPI opengl_thread(LPVOID a_param);
         static void on_resize_event(WindowResizeEvent& a_event);
     private:
-        static Window* m_window;
-        static Application* m_instance;
-        static Input* m_input;
-        static WindowResizeEvent* m_resize_event;
-        static bool m_running;
-        static bool m_opengl_initialized;
-        static bool m_gl_context_should_resize;
-        static bool m_layers_attached;
+        static Window*               m_window;
+        static Application*          m_instance;
+        static Input*                m_input;
+        static WindowResizeEvent*    m_resize_event;
+        static bool                  m_running;
+        static bool                  m_opengl_initialized;
+        static bool                  m_gl_context_should_resize;
+        static bool                  m_layers_attached;
 
-        Timer other;
-        Timer m_timer;
-        LayerStack m_layer_stack;
+        Timer                        m_timer;
+        LayerStack                   m_layer_stack;
 
-        double m_refresh_rate = 120.0; //frames per second
-        double m_refresh_interval;
+        std::unique_ptr<Framebuffer> m_scene_framebuffer;
+
+        double                       m_refresh_rate = 120.0; //frames per second
+        double                       m_refresh_interval;
+        bool                         m_main_window_open;
     };
 }
 

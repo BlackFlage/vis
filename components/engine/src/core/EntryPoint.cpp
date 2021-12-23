@@ -5,6 +5,7 @@
 #include "layers/ImGuiLayer.h"
 #include "layers/SceneLayer.h"
 #include "layers/ResourcesLoaderLayer.h"
+#include "layers/SceneEditorLayer.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -20,12 +21,14 @@ int main()
         vis::Layer* entity_component_system_layer = new vis::EntityComponentSystemLayer();
         vis::Layer* im_gui_layer = new vis::ImGuiLayer();
         vis::Layer* scene_layer = new vis::SceneLayer();
+        vis::Layer* scene_editor_layer = new vis::SceneEditorLayer();
 
         app->push_layer(im_gui_layer);
         app->push_layer(resources_loader_layer);
         app->push_layer(entity_component_system_layer);
         app->push_layer(sandbox);
         app->push_layer(scene_layer);
+        app->push_layer(scene_editor_layer);
 
         app->initialize();
 

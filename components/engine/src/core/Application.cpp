@@ -198,7 +198,8 @@ namespace vis
 
     void Application::initialize()
     {
-        m_window = Window::create_window(win_proc, {1920, 1080, "Shark"});
+        m_window           = Window::create_window(win_proc, {1920, 1080, "Shark"});
+        m_main_window_open = true;
 
         if(!m_window)
         {
@@ -317,7 +318,6 @@ namespace vis
 
         ASSERT(ogl_thread_id, "Failed to create OpenGL thread!");
 
-
         WaitForSingleObject(ogl_thread, 0);
     }
 
@@ -345,7 +345,7 @@ namespace vis
         glDepthFunc(GL_LEQUAL);
 
         glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
@@ -362,7 +362,10 @@ namespace vis
         Application::get_instance()->m_layer_stack.on_attach_layers();
         Application::m_opengl_initialized = true;
         Application::m_layers_attached = true;
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+        Application::get_instance()->m_scene_framebuffer = std::make_unique<Framebuffer>(contextRect.right, contextRect.bottom);
+        CheckGLError();
 
         while(Application::is_running())
         {
@@ -371,11 +374,18 @@ namespace vis
                 on_resize_event(*m_resize_event);
             }
 
-            //Clear
+            Application::get_instance()->m_scene_framebuffer->bind();
+            glEnable(GL_DEPTH_TEST);
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
             //Render
             Application::get_instance()->on_render();
+
+            Application::get_instance()->m_scene_framebuffer->unbind();
+
+            glDisable(GL_DEPTH_TEST);
+
             Application::get_instance()->on_imgui_render();
 
             //Flush and swap buffers
@@ -424,6 +434,10 @@ namespace vis
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui::NewFrame();
+
+        ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
+
+        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
         const auto& layers = m_layer_stack.get_layers();
         std::for_each(layers.begin(), layers.end(), [](Layer* a_layer) { a_layer->on_imgui_render(); });

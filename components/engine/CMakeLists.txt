@@ -25,6 +25,7 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/layers/ImGuiLayer.h
         ${CORE_PATH}/layers/SceneLayer.h
         ${CORE_PATH}/layers/ResourcesLoaderLayer.h
+        ${CORE_PATH}/layers/SceneEditorLayer.h
         ${CORE_PATH}/ecs/EntityManager.h
         ${CORE_PATH}/ecs/ComponentManager.h
         ${CORE_PATH}/ecs/ComponentArray.h
@@ -55,6 +56,7 @@ set(SOURCE_FILES_CORE
         ${CORE_PATH}/layers/ImGuiLayer.cpp
         ${CORE_PATH}/layers/ResourcesLoaderLayer.cpp
         ${CORE_PATH}/layers/SceneLayer.cpp
+        ${CORE_PATH}/layers/SceneEditorLayer.cpp
         ${CORE_PATH}/scene/SceneManager.cpp
         ${CORE_PATH}/scene/Scene.cpp
         ${CORE_PATH}/resource_loaders/MeshLoader.cpp
@@ -77,6 +79,7 @@ set(HEADER_FILES_GRAPHICS
         ${GRAPHICS_PATH}/Shader.h
         ${GRAPHICS_PATH}/Camera.h
         ${GRAPHICS_PATH}/Texture.h
+        ${GRAPHICS_PATH}/Framebuffer.h
         )
 
 set(SOURCE_FILES_GRAPHICS
@@ -84,7 +87,9 @@ set(SOURCE_FILES_GRAPHICS
         ${GRAPHICS_PATH}/Renderer.cpp
         ${GRAPHICS_PATH}/Shader.cpp
         ${GRAPHICS_PATH}/Camera.cpp
-        ${GRAPHICS_PATH}/Texture.cpp)
+        ${GRAPHICS_PATH}/Texture.cpp
+        ${GRAPHICS_PATH}/Framebuffer.cpp
+        )
 
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES_CORE} ${SOURCE_FILES_CORE} ${HEADER_FILES_UTIL} ${SOURCE_FILES_UTIL} ${HEADER_FILES_GRAPHICS} ${SOURCE_FILES_GRAPHICS})
