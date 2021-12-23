@@ -18,6 +18,7 @@ namespace vis
         ImGui::SetCurrentContext(im_gui_context);
 
         ImGui::StyleColorsDark();
+        ImGui::GetStyle().Alpha = 1.0f;
 
         ImGui_ImplOpenGL3_Init(glsl_version);
 
@@ -25,6 +26,9 @@ namespace vis
 
         ImGuiIO& io = ImGui::GetIO();
         io.DisplaySize = ImVec2((float)client_area.right, (float)client_area.bottom);
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
+        io.ConfigWindowsResizeFromEdges = true;
 
         io.KeyMap[ImGuiKey_Tab] = VK_TAB;
         io.KeyMap[ImGuiKey_LeftArrow] = VK_LEFT;
