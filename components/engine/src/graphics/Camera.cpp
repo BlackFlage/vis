@@ -9,22 +9,8 @@
 namespace vis
 {
     Camera::Camera()
-    {
-        RECT client_area = Application::get_window_instance()->get_client_rect();
+    : Camera(glm::vec3(0.0f)) {}
 
-        m_projection = glm::perspective(glm::radians(45.0f), (float)client_area.right / (float)client_area.bottom, 0.1f, 100.0f);
-        m_position = glm::vec3(0.0f);
-
-        m_front = glm::vec3(0.0f, 0.0f, -1.0f);
-        m_up = glm::vec3 (0.0f, 1.0f, 0.0f);
-
-        m_yaw = -90.0f;
-        m_pitch = 0.0f;
-        m_sensitivity = 0.1f;
-        m_speed = 5.0f;
-
-        recalculate_view_matrix();
-    }
 
     Camera::Camera(glm::vec3 a_position)
     {
@@ -39,7 +25,7 @@ namespace vis
         m_yaw = -90.0f;
         m_pitch = 0.0f;
         m_sensitivity = 0.1f;
-        m_speed = 400.0f;
+        m_speed = 5.0f;
 
         recalculate_view_matrix();
     }

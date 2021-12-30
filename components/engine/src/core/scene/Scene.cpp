@@ -27,7 +27,7 @@ namespace vis
     {
         m_name = a_name;
         m_entities = std::move(a_entities);
-        m_default_models_path = R"(C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\C++\visual\components\engine\res\models\default\)";
+        m_default_mesh_path = R"(..\engine_assets\meshes\)";
     }
 
     void Scene::on_load()
@@ -39,7 +39,7 @@ namespace vis
     {
         for(auto it = m_entities.begin(); it != m_entities.end(); it++)
         {
-            main_manager->destroy_entity(*it);
+            MainManager::get_instance()->destroy_entity(*it);
         }
     }
 
@@ -65,7 +65,7 @@ namespace vis
 
     void Scene::add_entity(EntityType a_type)
     {
-        std::uint16_t e = main_manager->create_entity();
+        std::uint16_t e = MainManager::get_instance()->create_entity();
         glm::vec3 scale = glm::vec3(1.0f);
 
         if(a_type == EntityType::SPHERE)
@@ -73,28 +73,28 @@ namespace vis
             scale = glm::vec3(0.3f);
         }
 
-        main_manager->set_current_entity(e);
+        MainManager::get_instance()->set_current_entity(e);
         m_entities.insert(e);
+
+        MainManager::get_instance()->add_component(e, Transform{
+                .m_position = glm::vec3(0.0f, 0.0f, 0.0f),
+                .m_rotation = glm::vec3(1.0f),
+                .m_scale = scale
+        });
 
         if(a_type == EntityType::EMPTY)
         {
             return;
         }
 
-        main_manager->add_component(e, Transform{
-                .m_position = glm::vec3(0.0f, 0.0f, -10.0f),
-                .m_rotation = glm::vec3(1.0f),
-                .m_scale = scale
-        });
-
         std::string suffix = get_suffix_from_type(a_type);
-        MeshComponent mesh = { .m_id = ResourcesManager::get_instance()->load_mesh(m_default_models_path + suffix + ".obj")};
+        MeshComponent mesh = { .m_id = ResourcesManager::get_instance()->load_mesh(m_default_mesh_path + suffix + ".obj")};
 
-        main_manager->add_component(e, Color{
+        MainManager::get_instance()->add_component(e, Color{
             .m_color = glm::vec3(0.3f, 0.3f, 0.3f)
         });
 
-        main_manager->add_component(e, mesh);
+        MainManager::get_instance()->add_component(e, mesh);
     }
 
     std::string Scene::get_suffix_from_type(EntityType a_type)

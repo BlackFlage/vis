@@ -13,9 +13,11 @@ namespace vis
     void Logger::initialize()
     {
         spdlog::set_pattern("%^[%T] %n: %v%$");
-
         m_logger = spdlog::stdout_color_mt("VISUAL");
-        LOG_INFO("Logger initialized successfully!");
+
+        SceneConsole::initialize();
+
+        LOG_INFO("Logger and SceneConsole initialized successfully!");
     }
 
     SceneConsole::SceneConsole()
@@ -29,29 +31,29 @@ namespace vis
         m_is_created = true;
     }
 
-    void SceneConsole::log_info(const std::string &a_msg)
+    void SceneConsole::log_info(const char* a_format, ...)
     {
-        m_buffer.push_back(std::make_pair(LOG_LEVEL::C_INFO, "INFO-> " + a_msg));
+        log_default(LOG_LEVEL::C_INFO, a_format);
     }
 
-    void SceneConsole::log_warning(const std::string &a_msg)
+    void SceneConsole::log_warning(const char* a_format, ...)
     {
-        m_buffer.push_back(std::make_pair(LOG_LEVEL::C_WARNING, "WARNING-> " + a_msg));
+        log_default(LOG_LEVEL::C_WARNING, a_format);
     }
 
-    void SceneConsole::log_error(const std::string &a_msg)
+    void SceneConsole::log_error(const char* a_format, ...)
     {
-        m_buffer.push_back(std::make_pair(LOG_LEVEL::C_ERROR, "ERROR-> " + a_msg));
+        log_default(LOG_LEVEL::C_ERROR, a_format);
     }
 
-    void SceneConsole::log_trace(const std::string &a_msg)
+    void SceneConsole::log_trace(const char* a_format, ...)
     {
-        m_buffer.push_back(std::make_pair(LOG_LEVEL::C_TRACE, "TRACE-> " + a_msg));
+        log_default(LOG_LEVEL::C_TRACE, a_format);
     }
 
-    void SceneConsole::log_critical(const std::string &a_msg)
+    void SceneConsole::log_critical(const char* a_format, ...)
     {
-        m_buffer.push_back(std::make_pair(LOG_LEVEL::C_CRITICAL, "CRITICAL-> " + a_msg));
+        log_default(LOG_LEVEL::C_CRITICAL, a_format);
     }
 
     void SceneConsole::clear()
@@ -97,5 +99,10 @@ namespace vis
     bool SceneConsole::is_created()
     {
         return m_is_created;
+    }
+
+    void SceneConsole::log_default(LOG_LEVEL a_level, const std::string& a_msg)
+    {
+        m_buffer.push_back(std::make_pair(a_level, a_msg));
     }
 }

@@ -12,23 +12,20 @@
 #include "ComponentManager.h"
 #include "SystemManager.h"
 
+
 namespace vis
 {
     class MainManager
     {
     public:
-        void init()
+        MainManager() = default;
+        MainManager(const MainManager& a_other) = delete;
+        MainManager& operator=(const MainManager a_other) = delete;
+
+        static void init()
         {
-            m_entity_manager = std::make_unique<EntityManager>();
-            m_entity_manager->init();
-
-            m_component_manager = std::make_unique<ComponentManager>();
-            m_component_manager->init();
-
-            m_system_manager = std::make_unique<SystemManager>();
-            m_system_manager->init();
-
-            m_current_entity = MAX_ENTITIES;
+            m_instance = std::make_shared<MainManager>();
+            m_instance->create_managers();
         }
 
         std::uint16_t create_entity()
@@ -105,19 +102,37 @@ namespace vis
             m_system_manager->set_signature<T>(a_signature);
         }
 
+        static std::shared_ptr<MainManager> get_instance()
+        {
+            return m_instance;
+        }
+
         Signature get_entity_signature(std::uint16_t a_id)
         {
             return m_entity_manager->get_signature(a_id);
         }
     private:
-        std::unique_ptr<EntityManager> m_entity_manager;
-        std::unique_ptr<ComponentManager> m_component_manager;
-        std::unique_ptr<SystemManager> m_system_manager;
+        void create_managers()
+        {
+            m_entity_manager = std::make_unique<EntityManager>();
+            m_entity_manager->init();
 
-        std::uint16_t m_current_entity;
+            m_component_manager = std::make_unique<ComponentManager>();
+            m_component_manager->init();
+
+            m_system_manager = std::make_unique<SystemManager>();
+            m_system_manager->init();
+
+            m_current_entity = MAX_ENTITIES;
+        }
+    private:
+        std::unique_ptr<EntityManager>      m_entity_manager;
+        std::unique_ptr<ComponentManager>   m_component_manager;
+        std::unique_ptr<SystemManager>      m_system_manager;
+        static std::shared_ptr<MainManager> m_instance;
+
+        std::uint16_t                       m_current_entity;
     };
-
-    extern MainManager* main_manager;
 }
 
 #endif //MAIN_MAINMANAGER_H

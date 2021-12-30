@@ -6,12 +6,14 @@
 
 namespace vis
 {
+    std::shared_ptr<ResourcesManager> ResourcesManager::m_instance;
+
     ResourcesManager::ResourcesManager()
     {
         m_mesh_loader = std::make_unique<MeshLoader>();
     }
 
-    ResourcesManager *ResourcesManager::get_instance()
+    std::shared_ptr<ResourcesManager> ResourcesManager::get_instance()
     {
         return m_instance;
     }
@@ -24,5 +26,10 @@ namespace vis
     Mesh *ResourcesManager::get_mesh(std::uint16_t a_id)
     {
         return m_mesh_loader->get_mesh(a_id);
+    }
+
+    void ResourcesManager::init()
+    {
+        m_instance = std::make_shared<ResourcesManager>();
     }
 }

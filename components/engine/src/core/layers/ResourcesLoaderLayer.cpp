@@ -1,15 +1,17 @@
 //
 // Created by BlackFlage on 20.12.2021.
 //
+
+#include <unordered_map>
+
 #include "ResourcesLoaderLayer.h"
 #include "Logger.h"
 
 namespace vis
 {
-    ResourcesManager* ResourcesManager::m_instance = new ResourcesManager();
-
     void ResourcesLoaderLayer::on_attach()
     {
+        ResourcesManager::init();
         m_resources_manager = ResourcesManager::get_instance();
 
         std::filesystem::path default_assets(DEFAULT_ASSETS_PATH);
@@ -29,15 +31,14 @@ namespace vis
         m_default_icon_size = ImVec2(128.0f, 128.0f);
         m_renamed_path = std::filesystem::path();
         m_rename_buffer = new char[256];
+        m_icons = std::unordered_map<std::string, std::unique_ptr<Texture>>();
 
         load_icons();
-
-        SceneConsole::initialize();
     }
 
     void ResourcesLoaderLayer::on_detach()
     {
-        delete m_resources_manager;
+
     }
 
     void ResourcesLoaderLayer::on_event(Event &a_event)
@@ -234,11 +235,11 @@ namespace vis
             }
             else if(ImGui::MenuItem("Delete"))
             {
-                auto n = std::filesystem::remove_all(a_entry.path());
+                std::filesystem::remove_all(a_entry.path());
             }
             else if(ImGui::MenuItem("Rename"))
             {
-                LOG_INFO("Rename {0}", a_entry.path().filename().string());
+                LOG_INFO("Rename {0}", a_entry.path().filename().string().c_str());
             }
 
             ImGui::EndPopup();
@@ -247,10 +248,10 @@ namespace vis
 
     void ResourcesLoaderLayer::load_icons()
     {
-        m_icons.insert({"closed_dir", std::make_unique<Texture>("../engine_textures/closed_folder_icon.png")});
-        m_icons.insert({"opened_dir", std::make_unique<Texture>("../engine_textures/opened_folder_icon.png")});
-        m_icons.insert({"full_dir", std::make_unique<Texture>("../engine_textures/full_folder_icon.png")});
-        m_icons.insert({"default", std::make_unique<Texture>("../engine_textures/file_icon.png")});
+        m_icons.insert({"closed_dir", std::make_unique<Texture>("..\\engine_assets\\textures\\closed_folder_icon.png")});
+        m_icons.insert({"opened_dir", std::make_unique<Texture>("..\\engine_assets\\textures\\opened_folder_icon.png")});
+        m_icons.insert({"full_dir", std::make_unique<Texture>("..\\engine_assets\\textures\\full_folder_icon.png")});
+        m_icons.insert({"default", std::make_unique<Texture>("..\\engine_assets\\textures\\file_icon.png")});
     }
 
     GLuint ResourcesLoaderLayer::get_icon_texture_id(const std::filesystem::directory_entry &a_entry)

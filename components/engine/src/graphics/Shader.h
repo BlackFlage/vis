@@ -5,10 +5,12 @@
 #ifndef MAIN_SHADER_H
 #define MAIN_SHADER_H
 
-#include "GL/glew.h"
 #include <string>
 #include <fstream>
-#include <Logger.h>
+#include <sstream>
+
+#include "GL/glew.h"
+#include "Logger.h"
 #include "Macro.h"
 #include "glm/glm.hpp"
 

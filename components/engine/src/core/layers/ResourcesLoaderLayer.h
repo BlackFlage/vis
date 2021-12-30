@@ -40,16 +40,15 @@ namespace vis
         void draw_rename_widget(const std::filesystem::path& a_path);
         GLuint get_icon_texture_id(const std::filesystem::directory_entry& a_entry);
     private:
-        ResourcesManager*               m_resources_manager;
-
-        int                             m_max_items_in_row;
-        float                           m_icon_zoom;
-        float                           m_mini_icon_zoom;
-        char*                           m_rename_buffer;
-        std::string                     m_selected_path;
-        ImVec2                          m_default_icon_size;
-        std::unordered_map<const char*, std::unique_ptr<Texture>> m_icons;
-        std::filesystem::path           m_renamed_path;
+        std::shared_ptr<ResourcesManager> m_resources_manager;
+        int                               m_max_items_in_row;
+        float                             m_icon_zoom;
+        float                             m_mini_icon_zoom;
+        char*                             m_rename_buffer;
+        std::string                       m_selected_path;
+        ImVec2                            m_default_icon_size;
+        std::filesystem::path             m_renamed_path;
+        std::unordered_map<std::string, std::unique_ptr<Texture>> m_icons;
     };
 }
 

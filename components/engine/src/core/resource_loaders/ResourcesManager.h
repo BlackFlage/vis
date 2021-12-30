@@ -15,12 +15,13 @@ namespace vis
         ResourcesManager();
         ~ResourcesManager() = default;
 
-        static ResourcesManager* get_instance();
-
+        Mesh*         get_mesh(std::uint16_t a_id);
         std::uint16_t load_mesh(const std::string& a_name);
-        Mesh* get_mesh(std::uint16_t a_id);
+
+        static void                              init();
+        static std::shared_ptr<ResourcesManager> get_instance();
     private:
-        static ResourcesManager* m_instance;
+        static std::shared_ptr<ResourcesManager> m_instance;
         std::unique_ptr<MeshLoader> m_mesh_loader;
     };
 }

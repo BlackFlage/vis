@@ -21,7 +21,7 @@ namespace vis
         std::ifstream file(a_file_path, std::ios::binary);
         if(!file)
         {
-            LOG_ERROR("Invalid file path: " + a_file_path);
+            LOG_ERROR("Invalid file path: {0}", a_file_path.c_str());
             return nullptr;
         }
 

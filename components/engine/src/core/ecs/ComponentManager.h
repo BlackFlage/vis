@@ -89,7 +89,7 @@ namespace vis
 
             if(m_component_arrays.find(component_name) == m_component_arrays.end())
             {
-                LOG_WARNING("Failed to retrieve ComponentArray of type: {0}. Component maybe be not registered before use!", component_name);
+                //LOG_WARNING("Failed to retrieve ComponentArray of type: {0}. Component maybe be not registered before use!", component_name);
                 return nullptr;
             }
 

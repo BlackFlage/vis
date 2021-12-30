@@ -26,7 +26,7 @@ namespace vis
 
         if(!texture_data)
         {
-            LOG_ERROR("Failed to load texture: {0}", a_file_path);
+            LOG_ERROR("Failed to load texture: {0}", a_file_path.c_str());
             glDeleteTextures(1, &m_id);
             return;
         }

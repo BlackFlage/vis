@@ -30,7 +30,7 @@ namespace vis
         std::ifstream file(a_path);
         if(!file)
         {
-            LOG_ERROR("Failed to open file: {0} while loading .obj file!", a_path);
+            LOG_ERROR("Failed to open file: {0} while loading .obj file!", a_path.c_str());
             return MAX_RESOURCES;
         }
 
@@ -141,7 +141,7 @@ namespace vis
             outVertices.emplace_back(Vertex{ vertices.at(indices.at(i)), normals.at(vertexNormalIndices.at(i)), textureCoords.at(textureCoordsIndices.at(i)) });
         }
 
-        LOG_INFO("Successfully loaded file: {0}.", a_path);
+        LOG_INFO("Successfully loaded file: {0}.", a_path.c_str());
 
         Mesh* mesh = new Mesh(outVertices, indices, GL_TRIANGLES);
 

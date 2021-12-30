@@ -32,7 +32,7 @@ namespace vis
         std::string get_suffix_from_type(EntityType a_type);
     private:
         std::string m_name;
-        std::string m_default_models_path;
+        std::string m_default_mesh_path;
 
         std::set<std::uint16_t> m_entities;
     };

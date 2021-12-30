@@ -8,6 +8,7 @@
 #include <exception>
 
 #include "ImGui/imgui.h"
+#include "Logger.h"
 #include "ImGui/imgui_impl_opengl3.h"
 
 namespace vis
@@ -29,7 +30,7 @@ namespace vis
             {
                 KeyPressEvent event((int)wParam);
                 Application::get_instance()->on_event(event);
-                LOG_INFO(event.get_name());
+                LOG_INFO(event.get_name().c_str());
                 break;
             }
             case WM_KEYUP:
