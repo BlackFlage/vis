@@ -4,7 +4,6 @@
 
 #include "Scene.h"
 
-#include <string>
 #include <ecs/components/BasicComponents.h>
 #include "ecs/MainManager.h"
 #include "resource_loaders/ResourcesManager.h"
@@ -66,7 +65,7 @@ namespace vis
     void Scene::add_entity(EntityType a_type)
     {
         std::uint16_t e = MainManager::get_instance()->create_entity();
-        glm::vec3 scale = glm::vec3(1.0f);
+        glm::vec3 scale(1.0f);
 
         if(a_type == EntityType::SPHERE)
         {

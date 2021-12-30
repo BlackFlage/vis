@@ -20,7 +20,6 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/layers/LayerStack.h
         ${CORE_PATH}/layers/Sandbox.h
         ${CORE_PATH}/layers/ImGuiLayer.h
-        ${CORE_PATH}/layers/ResourcesLoaderLayer.h
         ${CORE_PATH}/layers/SceneEditorLayer.h
         ${CORE_PATH}/ecs/EntityManager.h
         ${CORE_PATH}/ecs/ComponentManager.h
@@ -49,7 +48,6 @@ set(SOURCE_FILES_CORE
         ${CORE_PATH}/ecs/Entity.cpp
         ${CORE_PATH}/ecs/EntityManager.cpp
         ${CORE_PATH}/layers/ImGuiLayer.cpp
-        ${CORE_PATH}/layers/ResourcesLoaderLayer.cpp
         ${CORE_PATH}/layers/SceneEditorLayer.cpp
         ${CORE_PATH}/scene/SceneManager.cpp
         ${CORE_PATH}/scene/Scene.cpp

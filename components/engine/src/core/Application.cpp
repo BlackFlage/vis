@@ -7,8 +7,7 @@
 #include <GL/wglew.h>
 #include <exception>
 
-#include "ImGui/imgui.h"
-#include "Logger.h"
+#include "resource_loaders/ResourcesManager.h"
 #include "ImGui/imgui_impl_opengl3.h"
 
 namespace vis
@@ -201,6 +200,7 @@ namespace vis
     {
         m_window           = Window::create_window(win_proc, {1920, 1080, "Shark"});
         m_main_window_open = true;
+        ResourcesManager::init();
 
         if(!m_window)
         {

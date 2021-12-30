@@ -11,6 +11,10 @@ namespace vis
 {
 
     Texture::Texture(const std::string &a_file_path)
+    : Texture(a_file_path, {0.0f, 0.0f}, {1.0f, 1.0f}){}
+
+    Texture::Texture(const std::string &a_file_path, glm::vec2 a_uv0, glm::vec2 a_uv1)
+    : m_uv0(a_uv0), m_uv1(a_uv1)
     {
         glGenTextures(1, &m_id);
         glBindTexture(GL_TEXTURE_2D, m_id);
@@ -22,7 +26,7 @@ namespace vis
 
         int channels;
         unsigned char* texture_data = nullptr;
-        texture_data = stbi_load(a_file_path.c_str(), &m_width, &m_height, &channels, STBI_rgb_alpha);
+        texture_data = stbi_load(a_file_path.c_str(), &m_dimensions.x, &m_dimensions.y, &channels, STBI_rgb_alpha);
 
         if(!texture_data)
         {
@@ -31,7 +35,7 @@ namespace vis
             return;
         }
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_dimensions.x, m_dimensions.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
         glGenerateMipmap(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, 0);
         CheckGLError();
@@ -54,18 +58,33 @@ namespace vis
         glDeleteTextures(1, &m_id);
     }
 
-    GLuint Texture::get_id() const
+    const GLuint& Texture::get_id() const
     {
         return m_id;
     }
 
-    int Texture::get_width() const
+    std::uint16_t Texture::get_width() const
     {
-        return m_width;
+        return m_dimensions.x;
     }
 
-    int Texture::get_height() const
+    std::uint16_t Texture::get_height() const
     {
-        return m_height;
+        return m_dimensions.y;
+    }
+
+    const glm::ivec2& Texture::get_dimensions() const
+    {
+        return m_dimensions;
+    }
+
+    const glm::vec2& Texture::get_uv0() const
+    {
+        return m_uv0;
+    }
+
+    const glm::vec2& Texture::get_uv1() const
+    {
+        return m_uv1;
     }
 }
