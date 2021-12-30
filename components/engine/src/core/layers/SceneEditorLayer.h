@@ -8,6 +8,7 @@
 #define DEFAULT_ASSETS_PATH "..\\res\\assets"
 
 #include <filesystem>
+#include <stack>
 
 #include "Layer.h"
 #include "ecs/MainManager.h"
@@ -53,10 +54,12 @@ namespace vis
         void render_assets_panel();
         void load_icons();
         void render_dir_tree(const std::filesystem::path& a_path);
+        void render_entry(const std::filesystem::directory_entry& a_entry, const ImVec2& a_icon_dimensions);
         void render_files_view_table(const std::filesystem::path& a_path);
         void render_assets_popup(const std::filesystem::directory_entry& a_entry);
+        void render_directories_buttons();
+        void set_path_from_buttons(std::filesystem::path& path_to_set, const std::vector<std::string>& a_to_set_from, std::uint8_t a_index);
         GLuint get_icon_texture_id(const std::filesystem::directory_entry& a_entry);
-
 
         void on_window_resize_event(WindowResizeEvent& a_event);
     private:
@@ -73,10 +76,12 @@ namespace vis
 
         std::unordered_map<std::string, Texture*> m_icons;
         float                            m_mini_icon_zoom;
-        std::string                      m_selected_path;
+        float                            m_spacing;
         ImVec2                           m_default_icon_size;
         std::uint8_t                     m_max_items_in_row;
         std::filesystem::path            m_renamed_path;
+        std::filesystem::path            m_selected_path;
+        std::filesystem::path            m_assets_path;
 
         ImGuiTreeNodeFlags               m_scene_hierarchy_flags;
     };
