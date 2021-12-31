@@ -44,7 +44,7 @@ namespace vis
 
     struct MeshComponent
     {
-        std::uint16_t m_id;
+        int m_id;
     };
 
     struct MeshRender

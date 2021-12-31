@@ -60,7 +60,7 @@ namespace vis
         m_shader->set_uniform_3f("u_color", a_mesh.m_color.x, a_mesh.m_color.y, a_mesh.m_color.z);
 
         m_shader->bind();
-        glDrawArrays(GL_TRIANGLES, 0, a_mesh.m_vertices.size());
+        glDrawArrays(a_mesh.m_geometry_type, 0, a_mesh.m_vertices.size());
 
         clean_buffers();
     }

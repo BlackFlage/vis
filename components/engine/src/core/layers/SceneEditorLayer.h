@@ -58,6 +58,7 @@ namespace vis
         void render_files_view_table(const std::filesystem::path& a_path);
         void render_assets_popup(const std::filesystem::directory_entry& a_entry);
         void render_directories_buttons();
+        void render_import_button();
         void set_path_from_buttons(std::filesystem::path& path_to_set, const std::vector<std::string>& a_to_set_from, std::uint8_t a_index);
         GLuint get_icon_texture_id(const std::filesystem::directory_entry& a_entry);
 

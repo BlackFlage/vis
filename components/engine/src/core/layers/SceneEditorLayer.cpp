@@ -6,6 +6,7 @@
 
 #include "SceneEditorLayer.h"
 #include "Application.h"
+#include "nfd.h"
 
 namespace vis
 {
@@ -18,7 +19,8 @@ namespace vis
         initialize_assets_panel();
 
         m_editor_camera = new Camera(glm::vec3(-5.0f, 5.0f, 10.0f));
-        m_editor_shader = Shader::create_shader(R"(..\engine_assets\shaders\vertex.glsl)", R"(..\engine_assets\shaders\fragmentNoTex.glsl)");
+        m_editor_shader = Shader::create_shader(R"(..\engine_assets\shaders\vertex.glsl)",
+                                                R"(..\engine_assets\shaders\fragmentNoTex.glsl)");
         m_default_mesh_path = R"(..\engine_assets\meshes\)";
 
         Renderer::set_camera(m_editor_camera);
@@ -27,8 +29,7 @@ namespace vis
 
     void SceneEditorLayer::on_detach()
     {
-        for(auto it = m_icons.begin(); it != m_icons.end(); it++)
-        {
+        for (auto it = m_icons.begin(); it != m_icons.end(); it++) {
             delete it->second;
         }
     }
@@ -36,7 +37,8 @@ namespace vis
     void SceneEditorLayer::on_event(vis::Event &a_event)
     {
         EventDispatcher dispatcher(a_event);
-        dispatcher.dispatch<WindowResizeEvent>([this](auto&& event){ on_window_resize_event(std::forward<decltype(event)>(event)); });
+        dispatcher.dispatch<WindowResizeEvent>(
+                [this](auto &&event) { on_window_resize_event(std::forward<decltype(event)>(event)); });
     }
 
     void SceneEditorLayer::on_update(float a_dt)
@@ -59,7 +61,7 @@ namespace vis
         ImGui::Begin("Scene viewport", &open, ImGuiWindowFlags_NoBackground);
 
         ImVec2 dimensions = ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
-        ImGui::Image((void*)Application::get_instance()->get_framebuffer_texture_id(), dimensions);
+        ImGui::Image((void *) Application::get_instance()->get_framebuffer_texture_id(), dimensions);
 
         ImGui::End();
 
@@ -92,16 +94,16 @@ namespace vis
         MainManager::get_instance()->set_system_signature<RendererSystem>(rend_signature);
 
         m_components_names = {"Transform", "Color", "Mesh", "RigidBody", "Camera"};
+        ResourcesManager::get_instance()->load_meshes_in_folders(std::filesystem::path(DEFAULT_ASSETS_PATH));
     }
 
     void SceneEditorLayer::render_transform_component(std::uint16_t a_id)
     {
         Signature sig = MainManager::get_instance()->get_entity_signature(a_id);
 
-        if(sig[MainManager::get_instance()->get_component_type<Transform>()])
-        {
-            if(ImGui::CollapsingHeader("Transform")) {
-                auto& transform = MainManager::get_instance()->get_component<Transform>(a_id);
+        if (sig[MainManager::get_instance()->get_component_type<Transform>()]) {
+            if (ImGui::CollapsingHeader("Transform")) {
+                auto &transform = MainManager::get_instance()->get_component<Transform>(a_id);
 
                 ImGui::DragFloat3("Position", &transform.m_position[0], 0.1f);
 
@@ -112,35 +114,44 @@ namespace vis
         }
     }
 
-    void SceneEditorLayer::render_mesh_component(std::uint16_t a_id)
+    void SceneEditorLayer::render_color_component(std::uint16_t a_id)
     {
         Signature sig = MainManager::get_instance()->get_entity_signature(a_id);
 
-        if(sig[MainManager::get_instance()->get_component_type<Color>()])
-        {
-            if(ImGui::CollapsingHeader("Color"))
-            {
-                auto& color = MainManager::get_instance()->get_component<Color>(a_id);
+        if (sig[MainManager::get_instance()->get_component_type<Color>()]) {
+            if (ImGui::CollapsingHeader("Color")) {
+                auto &color = MainManager::get_instance()->get_component<Color>(a_id);
 
                 ImGui::ColorEdit3("Mesh color", &color.m_color[0]);
             }
         }
     }
 
-    void SceneEditorLayer::render_color_component(std::uint16_t a_id)
+    void SceneEditorLayer::render_mesh_component(std::uint16_t a_id)
     {
         Signature sig = MainManager::get_instance()->get_entity_signature(a_id);
 
-        if(sig[MainManager::get_instance()->get_component_type<MeshComponent>()])
-        {
-            if(ImGui::CollapsingHeader("Mesh"))
-            {
-                auto mesh_id = MainManager::get_instance()->get_component<MeshComponent>(a_id).m_id;
-                auto mesh = ResourcesManager::get_instance()->get_mesh(mesh_id);
+        if (sig[MainManager::get_instance()->get_component_type<MeshComponent>()]) {
+            if (ImGui::CollapsingHeader("Mesh")) {
+                std::vector<const char *> available_meshes = ResourcesManager::get_instance()->get_available_meshes();
 
+                int &mesh_id = MainManager::get_instance()->get_component<MeshComponent>(a_id).m_id;
+                int selection = 0;
+                std::string name = ResourcesManager::get_instance()->get_mesh_name_from_id(mesh_id);
+
+                for (int i = 0; i < available_meshes.size(); i++) {
+                    if (available_meshes.at(i) == name) {
+                        selection = i;
+                        break;
+                    }
+                }
+                ImGui::Combo("Meshes combo", &selection, &(available_meshes[0]), available_meshes.size());
+
+                mesh_id = ResourcesManager::get_instance()->get_mesh_id(available_meshes.at(selection));
+                auto mesh = ResourcesManager::get_instance()->get_mesh(mesh_id);
                 ImGui::Text("Mesh id: %d", mesh_id);
-                ImGui::Text("Vertices: %d", (int)mesh->get_vertices().size());
-                ImGui::Text("Indices: %d", (int)mesh->get_indices().size());
+                ImGui::Text("Vertices: %d", (int) mesh->get_vertices().size());
+                ImGui::Text("Indices: %d", (int) mesh->get_indices().size());
             }
         }
     }
@@ -149,15 +160,12 @@ namespace vis
     {
         ImVec2 button_size = ImVec2(-FLT_MIN, ImGui::GetWindowHeight() * 0.025f);
 
-        if(ImGui::Button("Add Component", button_size))
+        if (ImGui::Button("Add Component", button_size))
             ImGui::OpenPopup("Components list");
 
-        if(ImGui::BeginPopup("Components list"))
-        {
-            for(auto & m_components_name : m_components_names)
-            {
-                if(ImGui::MenuItem(m_components_name))
-                {
+        if (ImGui::BeginPopup("Components list")) {
+            for (auto &m_components_name: m_components_names) {
+                if (ImGui::MenuItem(m_components_name)) {
                     add_component_to_entity(a_id, m_components_name);
                 }
             }
@@ -168,30 +176,23 @@ namespace vis
 
     void SceneEditorLayer::add_component_to_entity(std::uint16_t a_id, const char *a_component_name)
     {
-        if(std::strcmp(a_component_name, "Transform") == 0)
-        {
+        if (std::strcmp(a_component_name, "Transform") == 0) {
             MainManager::get_instance()->add_component(a_id, Transform{
                     .m_position = glm::vec3(0.0f),
                     .m_rotation = glm::vec3(1.0f),
                     .m_scale = glm::vec3(1.0f)
             });
-        }
-        else if(std::strcmp(a_component_name, "Color") == 0)
-        {
-            MainManager::get_instance()->add_component(a_id, Color{ .m_color = glm::vec3(0.3f) });
-        }
-        else if(std::strcmp(a_component_name, "Mesh") == 0)
-        {
-            MeshComponent mesh_comp = {.m_id = ResourcesManager::get_instance()->load_mesh(m_default_mesh_path + "cube.obj")};
+        } else if (std::strcmp(a_component_name, "Color") == 0) {
+            MainManager::get_instance()->add_component(a_id, Color{.m_color = glm::vec3(0.3f)});
+        } else if (std::strcmp(a_component_name, "Mesh") == 0) {
+            MeshComponent mesh_comp = {.m_id = ResourcesManager::get_instance()->load_mesh(
+                    m_default_mesh_path + "cube.obj")};
 
-            if(mesh_comp.m_id != MAX_COMPONENTS)
-            {
+            if (mesh_comp.m_id != MAX_COMPONENTS) {
                 MainManager::get_instance()->add_component(a_id, mesh_comp);
             }
-        }
-        else if(std::strcmp(a_component_name, "RigidBody") == 0)
-        {
-            MainManager::get_instance()->add_component(a_id, RigidBody{ .vel_x = 0.0f, .vel_y = 0.0f, .vel_z = 0.0f});
+        } else if (std::strcmp(a_component_name, "RigidBody") == 0) {
+            MainManager::get_instance()->add_component(a_id, RigidBody{.vel_x = 0.0f, .vel_y = 0.0f, .vel_z = 0.0f});
         }
     }
 
@@ -206,8 +207,7 @@ namespace vis
 
         ImGui::Begin("Properties");
 
-        if(id != MAX_ENTITIES)
-        {
+        if (id != MAX_ENTITIES) {
             render_transform_component(id);
             render_color_component(id);
             render_mesh_component(id);
@@ -237,8 +237,7 @@ namespace vis
         ImGuiTreeNodeFlags flags = m_scene_hierarchy_flags;
         std::uint16_t i = 0;
 
-        if(ImGui::TreeNode(m_scene_manager->get_current_scene()->get_name().c_str()))
-        {
+        if (ImGui::TreeNode(m_scene_manager->get_current_scene()->get_name().c_str())) {
             auto &m_scene_entities = m_scene_manager->get_current_scene()->get_entities();
             for (auto it = m_scene_entities.begin(); it != m_scene_entities.end(); it++, i++) {
                 if (m_selected_entity == i) {
@@ -266,43 +265,34 @@ namespace vis
 
     void SceneEditorLayer::render_hierarchy_popup()
     {
-        if(ImGui::IsWindowHovered( ImGuiFocusedFlags_RootWindow)
-        &&  ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+        if (ImGui::IsWindowHovered(ImGuiFocusedFlags_RootWindow)
+            && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
             ImGui::OpenPopup("Options");
 
-        if(ImGui::BeginPopup("Options"))
-        {
-            if(ImGui::MenuItem("Copy"))
-            {
+        if (ImGui::BeginPopup("Options")) {
+            if (ImGui::MenuItem("Copy")) {
 
             }
-            if(ImGui::MenuItem("Paste"))
-            {
+            if (ImGui::MenuItem("Paste")) {
 
             }
-            if(ImGui::MenuItem("Rename"))
-            {
+            if (ImGui::MenuItem("Rename")) {
 
             }
-            if(ImGui::MenuItem("Delete"))
-            {
+            if (ImGui::MenuItem("Delete")) {
                 delete_entity(m_id_to_perform_action);
             }
 
             ImGui::Separator();
 
-            if(ImGui::BeginMenu("3D"))
-            {
-                if(ImGui::MenuItem("Empty"))
-                {
+            if (ImGui::BeginMenu("3D")) {
+                if (ImGui::MenuItem("Empty")) {
                     m_scene_manager->get_current_scene()->add_entity(EntityType::EMPTY);
                 }
-                if(ImGui::MenuItem("Cube"))
-                {
+                if (ImGui::MenuItem("Cube")) {
                     m_scene_manager->get_current_scene()->add_entity(EntityType::CUBE);
                 }
-                if(ImGui::MenuItem("Sphere"))
-                {
+                if (ImGui::MenuItem("Sphere")) {
                     m_scene_manager->get_current_scene()->add_entity(EntityType::SPHERE);
                 }
 
@@ -330,8 +320,7 @@ namespace vis
 
     void SceneEditorLayer::delete_entity(std::uint16_t a_id)
     {
-        if(a_id != MAX_ENTITIES)
-        {
+        if (a_id != MAX_ENTITIES) {
             m_scene_manager->get_current_scene()->remove_entity(a_id);
             MainManager::get_instance()->destroy_entity(a_id);
             MainManager::get_instance()->set_current_entity(MAX_ENTITIES);
@@ -354,8 +343,7 @@ namespace vis
 
         std::filesystem::path default_assets(DEFAULT_ASSETS_PATH);
 
-        if(!std::filesystem::exists(default_assets) && !std::filesystem::is_directory(default_assets))
-        {
+        if (!std::filesystem::exists(default_assets) && !std::filesystem::is_directory(default_assets)) {
             std::filesystem::create_directories(default_assets);
         }
 
@@ -365,21 +353,18 @@ namespace vis
     void SceneEditorLayer::render_assets_panel()
     {
         bool show = true;
-        if(ImGui::Begin("Assets browser", &show, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
-        {
-            if(ImGui::BeginTabBar("Assets browser tabs", ImGuiTabBarFlags_None))
-            {
-                if(ImGui::BeginTabItem("Browser"))
-                {
+        if (ImGui::Begin("Assets browser", &show, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar |
+                                                  ImGuiWindowFlags_NoScrollWithMouse)) {
+            if (ImGui::BeginTabBar("Assets browser tabs", ImGuiTabBarFlags_None)) {
+                if (ImGui::BeginTabItem("Browser")) {
                     //Filesystem child
-                    ImGui::BeginTable("Filesystem", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg);
+                    ImGui::BeginTable("Filesystem", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerV |
+                                                       ImGuiTableFlags_RowBg);
 
                     ImGui::TableNextRow(0, ImGui::GetWindowHeight() * 0.05f);
                     ImGui::TableNextColumn();
-                    if(ImGui::Button("Import"))
-                    {
-                        LOG_INFO("IMPORT");
-                    }
+
+                    render_import_button();
 
                     ImGui::TableNextColumn();
                     render_directories_buttons();
@@ -404,10 +389,8 @@ namespace vis
 
                     ImGui::EndTabItem();
                 }
-                if(ImGui::BeginTabItem("Console"))
-                {
-                    if(ImGui::Button("Clear"))
-                    {
+                if (ImGui::BeginTabItem("Console")) {
+                    if (ImGui::Button("Clear")) {
                         SceneConsole::get_instance()->clear();
                     }
 
@@ -435,15 +418,14 @@ namespace vis
 
     void SceneEditorLayer::render_dir_tree(const std::filesystem::path &a_path)
     {
-        ImVec2 icon_dimensions = ImVec2(m_default_icon_size.x * m_mini_icon_zoom, m_default_icon_size.y * m_mini_icon_zoom);
+        ImVec2 icon_dimensions = ImVec2(m_default_icon_size.x * m_mini_icon_zoom,
+                                        m_default_icon_size.y * m_mini_icon_zoom);
 
         ImGui::TableNextColumn();
 
         ImGui::BeginChild("File browser child", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-        if(std::filesystem::exists(a_path))
-        {
-            for(const auto& entry : std::filesystem::directory_iterator(a_path))
-            {
+        if (std::filesystem::exists(a_path)) {
+            for (const auto &entry: std::filesystem::directory_iterator(a_path)) {
                 render_entry(entry, icon_dimensions);
             }
         }
@@ -455,12 +437,12 @@ namespace vis
     {
         ImGui::BeginChild("Files view table");
 
-        if(std::filesystem::is_directory(a_path))
-        {
-            if(std::filesystem::is_empty(a_path))
-            {
-                float pos_x = ImGui::GetCursorPosX() + (ImGui::GetWindowWidth() / 2.0f) - (ImGui::CalcTextSize("Folder is empty!").x / 2.0f);
-                float pos_y = ImGui::GetCursorPosY() + (ImGui::GetWindowHeight() / 2.0f) - (ImGui::GetTextLineHeight() / 2.0f);
+        if (std::filesystem::is_directory(a_path)) {
+            if (std::filesystem::is_empty(a_path)) {
+                float pos_x = ImGui::GetCursorPosX() + (ImGui::GetWindowWidth() / 2.0f) -
+                              (ImGui::CalcTextSize("Folder is empty!").x / 2.0f);
+                float pos_y = ImGui::GetCursorPosY() + (ImGui::GetWindowHeight() / 2.0f) -
+                              (ImGui::GetTextLineHeight() / 2.0f);
 
                 ImGui::SetCursorPos({pos_x, pos_y});
 
@@ -474,24 +456,21 @@ namespace vis
             }
 
             ImVec2 m_dimensions = ImVec2(m_default_icon_size.x, m_default_icon_size.y);
-            m_max_items_in_row = (int)(ImGui::GetColumnWidth() / m_default_icon_size.x);
+            m_max_items_in_row = (int) (ImGui::GetColumnWidth() / m_default_icon_size.x);
 
-            if(m_max_items_in_row == 0)
+            if (m_max_items_in_row == 0)
                 m_max_items_in_row = 1;
 
-            if(ImGui::BeginTable("Assets file view", m_max_items_in_row))
-            {
+            if (ImGui::BeginTable("Assets file view", m_max_items_in_row)) {
                 int i = 0;
-                for(const auto& entry : std::filesystem::directory_iterator(a_path))
-                {
-                    if(i == m_max_items_in_row - 1)
-                    {
+                for (const auto &entry: std::filesystem::directory_iterator(a_path)) {
+                    if (i == m_max_items_in_row - 1) {
                         i = 0;
                         ImGui::TableNextRow();
                     }
                     std::string name = entry.path().filename().string();
                     ImGui::TableNextColumn();
-                    ImGui::Image((void*)get_icon_texture_id(entry),
+                    ImGui::Image((void *) get_icon_texture_id(entry),
                                  m_dimensions,
                                  ImVec2(0.0f, 0.0f),
                                  ImVec2(1.0f, 1.0f),
@@ -510,31 +489,24 @@ namespace vis
 
     void SceneEditorLayer::render_assets_popup(const std::filesystem::directory_entry &a_entry)
     {
-        if(ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+        if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
             ImGui::OpenPopup(a_entry.path().string().c_str(), ImGuiPopupFlags_NoOpenOverExistingPopup);
 
-        if(ImGui::BeginPopup(a_entry.path().string().c_str()))
-        {
-            if(ImGui::MenuItem("New"))
-            {
+        if (ImGui::BeginPopup(a_entry.path().string().c_str())) {
+            if (ImGui::MenuItem("New")) {
                 auto new_path = a_entry.path();
                 new_path /= "New folder";
 
                 int next_id = 0;
-                while(!std::filesystem::create_directory(new_path))
-                {
+                while (!std::filesystem::create_directory(new_path)) {
                     new_path = new_path.parent_path();
                     new_path /= "New folder";
                     new_path += "(" + std::to_string(next_id) + ")";
                     next_id++;
                 }
-            }
-            else if(ImGui::MenuItem("Delete"))
-            {
+            } else if (ImGui::MenuItem("Delete")) {
                 std::filesystem::remove_all(a_entry.path());
-            }
-            else if(ImGui::MenuItem("Rename"))
-            {
+            } else if (ImGui::MenuItem("Rename")) {
                 LOG_INFO("Rename {0}", a_entry.path().filename().string().c_str());
             }
 
@@ -544,71 +516,59 @@ namespace vis
 
     GLuint SceneEditorLayer::get_icon_texture_id(const std::filesystem::directory_entry &a_entry)
     {
-        if(a_entry.is_directory())
-        {
-            if(std::filesystem::is_empty(a_entry.path()))
+        if (a_entry.is_directory()) {
+            if (std::filesystem::is_empty(a_entry.path()))
                 return m_icons.at("closed_dir")->get_id();
             else
                 return m_icons.at("full_dir")->get_id();
-        }
-        else
-        {
+        } else {
             std::string extension = a_entry.path().extension().string();
 
-            if(m_icons.find(extension) != m_icons.end())
+            if (m_icons.find(extension) != m_icons.end())
                 return m_icons.at(extension)->get_id();
             else
                 return m_icons.at("default")->get_id();
         }
     }
 
-    void SceneEditorLayer::render_entry(const std::filesystem::directory_entry &a_entry, const ImVec2& a_icon_dimensions)
+    void
+    SceneEditorLayer::render_entry(const std::filesystem::directory_entry &a_entry, const ImVec2 &a_icon_dimensions)
     {
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
         auto filename = a_entry.path().filename();
 
-        if(a_entry.path().string() == m_selected_path)
+        if (a_entry.path().string() == m_selected_path)
             flags |= ImGuiTreeNodeFlags_Selected;
 
-        if(std::filesystem::is_directory(a_entry.path()))
-        {
-            Texture* current_tex = m_icons.at("closed_dir");
+        if (std::filesystem::is_directory(a_entry.path())) {
+            Texture *current_tex = m_icons.at("closed_dir");
 
-            if(current_tex)
-            {
-                ImGui::Image((void*)current_tex->get_id(), a_icon_dimensions, (ImVec2 &&) current_tex->get_uv0(),(ImVec2 &&) current_tex->get_uv1());
+            if (current_tex) {
+                ImGui::Image((void *) current_tex->get_id(), a_icon_dimensions, (ImVec2 &&) current_tex->get_uv0(),
+                             (ImVec2 &&) current_tex->get_uv1());
                 ImGui::SameLine();
             }
 
-            if(a_entry.path() != m_renamed_path)
-            {
-                if(ImGui::TreeNodeEx(filename.string().c_str(), flags))
-                {
-                    if(ImGui::IsItemClicked())
-                    {
+            if (a_entry.path() != m_renamed_path) {
+                if (ImGui::TreeNodeEx(filename.string().c_str(), flags)) {
+                    if (ImGui::IsItemClicked()) {
                         m_selected_path = a_entry.path();
                     }
 
                     render_assets_popup(a_entry);
-                    for(const auto& entry : std::filesystem::directory_iterator(a_entry.path()))
-                    {
+                    for (const auto &entry: std::filesystem::directory_iterator(a_entry.path())) {
                         render_entry(entry, a_icon_dimensions);
                     }
 
                     ImGui::TreePop();
-                }
-                else
-                {
+                } else {
                     render_assets_popup(a_entry);
 
-                    if(ImGui::IsItemClicked())
-                    {
+                    if (ImGui::IsItemClicked()) {
                         m_selected_path = a_entry.path().string();
                     }
                 }
-            }
-            else
-            {
+            } else {
                 LOG_INFO("Renaming will be here");
             }
         }
@@ -616,12 +576,10 @@ namespace vis
 
     void SceneEditorLayer::render_directories_buttons()
     {
-        if(std::filesystem::exists(m_selected_path))
-        {
+        if (std::filesystem::exists(m_selected_path)) {
             std::vector<std::string> paths;
             std::filesystem::path current_path(m_selected_path);
-            while(current_path != m_assets_path.parent_path() && !m_assets_path.empty())
-            {
+            while (current_path != m_assets_path.parent_path() && !m_assets_path.empty()) {
                 paths.push_back(current_path.filename().string());
                 current_path = current_path.parent_path();
             }
@@ -629,37 +587,59 @@ namespace vis
             std::reverse(paths.begin(), paths.end());
 
             std::uint8_t index = 0;
-            for(auto it = paths.begin(); it != paths.end(); it++, index++)
-            {
-                if(ImGui::Button(it->c_str()))
-                {
+            for (auto it = paths.begin(); it != paths.end(); it++, index++) {
+                if (ImGui::Button(it->c_str())) {
                     set_path_from_buttons(m_selected_path, paths, index);
                     return;
                 }
 
-                if(index != paths.size() - 1)
-                {
+                if (index != paths.size() - 1) {
                     ImGui::SameLine();
                 }
             }
         }
     }
 
-    void SceneEditorLayer::set_path_from_buttons(std::filesystem::path &path_to_set, const std::vector<std::string> &a_to_set_from, std::uint8_t a_index)
+    void SceneEditorLayer::set_path_from_buttons(std::filesystem::path &path_to_set,
+                                                 const std::vector<std::string> &a_to_set_from, std::uint8_t a_index)
     {
-        if(a_to_set_from.empty())
-        {
+        if (a_to_set_from.empty()) {
             return;
         }
 
         std::filesystem::path temp("..\\res");
 
         std::uint8_t current_index = 0;
-        for(auto it = a_to_set_from.begin() ; current_index <= a_index && it != a_to_set_from.end(); current_index++, it++)
-        {
+        for (auto it = a_to_set_from.begin();
+             current_index <= a_index && it != a_to_set_from.end(); current_index++, it++) {
             temp /= *it;
         }
 
         path_to_set = temp;
+    }
+
+    void SceneEditorLayer::render_import_button()
+    {
+        if (ImGui::Button("Import")) {
+            char *out_path = nullptr;
+            nfdresult_t result = NFD_OpenDialog(nullptr, nullptr, &out_path);
+
+            if(result == NFD_OKAY)
+            {
+                std::filesystem::path file_path(out_path);
+                std::filesystem::path new_path(m_selected_path);
+
+                try {
+                    std::filesystem::copy(file_path, new_path /= file_path.filename());
+
+                    if (new_path.extension() == ".obj") {
+                        ResourcesManager::get_instance()->load_mesh(new_path.string());
+                    }
+                }
+                catch (std::exception &a_exception) {
+                    LOG_ERROR("Failed to read file: {0}", a_exception.what());
+                }
+            }
+        }
     }
 }

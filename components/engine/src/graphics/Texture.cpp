@@ -4,7 +4,7 @@
 
 #include "Texture.h"
 #include "Macro.h"
-#include "stb_image.h"
+#include "../../../vendor/stbimage/stb_image.h"
 #include "Logger.h"
 
 namespace vis

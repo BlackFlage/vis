@@ -59,11 +59,15 @@ set(SOURCE_FILES_CORE
 set(HEADER_FILES_UTIL
         src/utilities/Timer.h
         src/utilities/BMPLoader.h
-        src/utilities/stb_image.h
+        ${VENDOR_PATH}/nativefiledialog/src/common.h
+        ${VENDOR_PATH}/nativefiledialog/src/nfd_common.h
+        ${VENDOR_PATH}/stbimage/stb_image.h
         )
 
 set(SOURCE_FILES_UTIL
-        src/utilities/BMPLoader.cpp)
+        src/utilities/BMPLoader.cpp
+        ${VENDOR_PATH}/nativefiledialog/src/nfd_win.cpp
+        ${VENDOR_PATH}/nativefiledialog/src/nfd_common.c)
 
 set(HEADER_FILES_GRAPHICS
         ${GRAPHICS_PATH}/Model.h
@@ -110,3 +114,8 @@ add_subdirectory(${VENDOR_PATH}/ImGui ${VENDOR_PATH}/ImGui)
 target_link_libraries(${PROJECT_NAME} ImGui)
 target_include_directories(${PROJECT_NAME} PRIVATE ${VENDOR_PATH}/ImGui)
 
+#stb_image
+target_include_directories(${PROJECT_NAME} PRIVATE ${VENDOR_PATH}/stbimage)
+
+#nativefiledialog
+target_include_directories(${PROJECT_NAME} PRIVATE ${VENDOR_PATH}/nativefiledialog/src/include)

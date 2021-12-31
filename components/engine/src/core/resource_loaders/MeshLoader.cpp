@@ -6,6 +6,7 @@
 
 #include <fstream>
 #include <string>
+#include <filesystem>
 
 #include "Logger.h"
 #include "GL/glew.h"
@@ -18,6 +19,7 @@ namespace vis
     {
         m_path_to_index = {};
         m_mesh_array = std::make_unique<ResourceArray<Mesh>>();
+        load_default_meshes();
     }
 
     std::uint16_t MeshLoader::load_mesh(const std::string& a_path)
@@ -41,6 +43,9 @@ namespace vis
         std::vector<unsigned int> vertexNormalIndices;
         std::vector<unsigned int> textureCoordsIndices;
         std::string line;
+        int faces_on_line;
+        GLuint geometry_type = GL_TRIANGLES;
+        bool found_geometry = false;
         float x, y, z;
         while (std::getline(file, line))
         {
@@ -80,8 +85,14 @@ namespace vis
                 }
 
                 size_t pos = 0;
+                faces_on_line = 0;
                 while(data.size() > 0)
                 {
+                    if(!found_geometry)
+                    {
+                        faces_on_line++;
+                    }
+
                     while(data.at(0) == ' ' || data.at(0) == 'f')
                     {
                         data = data.erase(0, 1);
@@ -129,6 +140,16 @@ namespace vis
                         }
                     }
                 }
+
+                if(!found_geometry)
+                {
+                    found_geometry = true;
+
+                    if(faces_on_line > 3)
+                    {
+                        geometry_type = GL_QUADS;
+                    }
+                }
             }
         }
 
@@ -143,28 +164,101 @@ namespace vis
 
         LOG_INFO("Successfully loaded file: {0}.", a_path.c_str());
 
-        Mesh* mesh = new Mesh(outVertices, indices, GL_TRIANGLES);
+        Mesh* mesh = new Mesh(outVertices, indices, geometry_type);
+
+        std::string file_name = std::filesystem::path(a_path).filename().string();
 
         std::uint16_t id = m_mesh_array->add_resource(mesh);
         m_path_to_index.insert({a_path, id});
+        m_name_to_index.insert({file_name, id});
+        m_index_to_name.insert({id, file_name});
 
         return id;
     }
 
-    void MeshLoader::delete_mesh(const char *a_path)
+    void MeshLoader::delete_mesh(const std::string& a_path)
     {
         if(m_path_to_index.find(a_path) == m_path_to_index.end())
         {
-            LOG_WARNING("Trying to delete non existing mesh: {0}", a_path);
+            LOG_WARNING("Trying to delete non existing mesh: {0}", a_path.c_str());
             return;
         }
 
         m_mesh_array->delete_resource(m_path_to_index.at(a_path));
+        m_name_to_index.erase(m_index_to_name.at(m_path_to_index.at(a_path)));
+        m_index_to_name.erase(m_path_to_index.at(a_path));
         m_path_to_index.erase(a_path);
     }
 
     Mesh *MeshLoader::get_mesh(std::uint16_t a_id)
     {
         return m_mesh_array->get_resource(a_id);
+    }
+
+    std::string MeshLoader::get_name(std::uint16_t a_id)
+    {
+        if(m_index_to_name.find(a_id) == m_index_to_name.end())
+        {
+            LOG_WARNING("Trying to get name of non exisisting mesh, id: {0}", a_id);
+            return "";
+        }
+
+        return m_index_to_name.at(a_id);
+    }
+
+    std::vector<const char*> MeshLoader::get_available_meshes()
+    {
+        std::vector<const char*> out;
+        for(const auto& pair : m_index_to_name)
+        {
+            out.push_back(pair.second.c_str());
+        }
+
+        return out;
+    }
+
+    void MeshLoader::load_default_meshes()
+    {
+        load_mesh("..\\engine_assets\\meshes\\cube.obj");
+        load_mesh("..\\engine_assets\\meshes\\sphere.obj");
+    }
+
+    int MeshLoader::get_id(const std::string &a_name)
+    {
+        if(m_name_to_index.find(a_name) == m_name_to_index.end())
+        {
+            LOG_WARNING("Trying to get name of non exisisting mesh, id: {0}", a_name.c_str());
+            return -1;
+        }
+
+        return m_name_to_index.at(a_name);
+    }
+
+    void MeshLoader::load_meshes_in_folders(const std::filesystem::path& a_path)
+    {
+        if(!a_path.empty())
+        {
+            try
+            {
+                for(const auto& entry : std::filesystem::directory_iterator(a_path))
+                {
+                    if(std::filesystem::is_regular_file(entry.path()))
+                    {
+                        if(entry.path().extension() == ".obj")
+                        {
+                            load_mesh(entry.path().string());
+                        }
+                    }
+                    else if(std::filesystem::is_directory(entry))
+                    {
+                        load_meshes_in_folders(entry);
+                    }
+                }
+            }
+            catch(std::exception& a_exception)
+            {
+                LOG_ERROR("Error loading files from folder: {0}", a_exception.what());
+            }
+        }
     }
 }
