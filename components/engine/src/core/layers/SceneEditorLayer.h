@@ -17,6 +17,7 @@
 #include "scene/SceneManager.h"
 #include "Camera.h"
 #include "Texture.h"
+#include "Grid.h"
 
 namespace vis
 {
@@ -63,12 +64,14 @@ namespace vis
         GLuint get_icon_texture_id(const std::filesystem::directory_entry& a_entry);
 
         void on_window_resize_event(WindowResizeEvent& a_event);
+        void move_camera(float dt);
     private:
         std::shared_ptr<PhysicsSystem>   m_physics_system;
         std::shared_ptr<RendererSystem>  m_renderer_system;
         std::unique_ptr<SceneManager>    m_scene_manager;
         std::vector<const char*>         m_components_names;
 
+        Grid                             m_grid;
         Camera*                          m_editor_camera;
         Shader*                          m_editor_shader;
         std::string                      m_default_mesh_path;

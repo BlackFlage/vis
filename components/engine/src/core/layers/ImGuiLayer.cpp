@@ -2,6 +2,8 @@
 // Created by BlackFlage on 03.12.2021.
 //
 
+#include <Windows.h>
+
 #include "ImGuiLayer.h"
 #include "ImGui/imgui_impl_opengl3.h"
 #include "Application.h"
@@ -117,7 +119,10 @@ namespace vis
     void ImGuiLayer::update_mouse_pos()
     {
         ImGuiIO& io = ImGui::GetIO();
-        io.MousePos = ImVec2(INPUT->get_mouse_pos_x(), INPUT->get_mouse_pos_y());
+
+        POINT to_convert = {INPUT->get_mouse_pos_x(), INPUT->get_mouse_pos_y()};
+        ScreenToClient(Application::get_window_instance()->get_context()->m_hwnd, &to_convert);
+        io.MousePos = ImVec2(to_convert.x, to_convert.y);
     }
 
     void ImGuiLayer::on_window_resize_event(WindowResizeEvent &a_event)

@@ -211,16 +211,17 @@ namespace vis
         POINT cursor_pos;
         GetCursorPos(&cursor_pos);
 
-        m_input = new Input((float)cursor_pos.x, (float)cursor_pos.y);
+        m_input = new Input(0.0f, 0.0f);
         m_running = true;
 
         LOG_INFO("Successfully initialized application!");
+
+        INPUT->reset_states();
     }
 
     void Application::on_event(Event& a_event)
     {
         EventDispatcher dispatcher(a_event);
-        dispatcher.dispatch<MouseMoveEvent>([this](auto&& event) { update_input_data(std::forward<decltype(event)>(event)); });
         dispatcher.dispatch<KeyPressEvent>([this](auto&& event) { on_key_press_event(std::forward<decltype(event)>(event)); });
 
         if(m_opengl_initialized)
@@ -236,6 +237,12 @@ namespace vis
     {
         float delta_time = m_timer.get_delta_time();
         while(delta_time > m_refresh_interval) {
+            POINT cursor_pos;
+            if(GetCursorPos(&cursor_pos))
+            {
+                m_input->set_mouse_pos(cursor_pos.x, cursor_pos.y);
+            }
+
             m_window->set_title(std::to_string(delta_time).c_str());
 
             m_layer_stack.update_all_layers(delta_time);
@@ -416,11 +423,6 @@ namespace vis
     {
         m_resize_event = a_event;
         m_gl_context_should_resize = true;
-    }
-
-    void Application::update_input_data(MouseMoveEvent &a_event)
-    {
-        m_input->set_mouse_pos(a_event.get_x_pos(), a_event.get_y_pos());
     }
 
     void Application::on_imgui_render()

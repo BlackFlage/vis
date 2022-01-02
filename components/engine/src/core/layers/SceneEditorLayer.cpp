@@ -4,6 +4,8 @@
 
 #include <algorithm>
 
+#include <Windows.h>
+
 #include "SceneEditorLayer.h"
 #include "Application.h"
 #include "nfd.h"
@@ -18,13 +20,15 @@ namespace vis
         initialize_scene_hierarchy();
         initialize_assets_panel();
 
-        m_editor_camera = new Camera(glm::vec3(-5.0f, 5.0f, 10.0f));
+        m_editor_camera = new Camera(glm::vec3(0.0f, 2.0f, 10.0f));
         m_editor_shader = Shader::create_shader(R"(..\engine_assets\shaders\vertex.glsl)",
                                                 R"(..\engine_assets\shaders\fragmentNoTex.glsl)");
         m_default_mesh_path = R"(..\engine_assets\meshes\)";
 
         Renderer::set_camera(m_editor_camera);
         Renderer::set_shader(m_editor_shader);
+
+        m_grid.create(20, 20);
     }
 
     void SceneEditorLayer::on_detach()
@@ -44,10 +48,12 @@ namespace vis
     void SceneEditorLayer::on_update(float a_dt)
     {
         m_physics_system->on_update(a_dt);
+        move_camera(a_dt);
     }
 
     void SceneEditorLayer::on_render()
     {
+        Renderer::render_grid(m_grid);
         m_renderer_system->on_render();
     }
 
@@ -62,6 +68,11 @@ namespace vis
 
         ImVec2 dimensions = ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
         ImGui::Image((void *) Application::get_instance()->get_framebuffer_texture_id(), dimensions);
+
+        if(ImGui::IsWindowHovered() && INPUT->is_mouse_button_clicked(1))
+        {
+            m_editor_camera->recalculate_direction_vector(INPUT->get_mouse_delta_x(), INPUT->get_mouse_delta_y());
+        }
 
         ImGui::End();
 
@@ -640,6 +651,34 @@ namespace vis
                     LOG_ERROR("Failed to read file: {0}", a_exception.what());
                 }
             }
+        }
+    }
+
+    void SceneEditorLayer::move_camera(float dt)
+    {
+        if(GetKeyState('W') & 0x8000)
+        {
+            m_editor_camera->move(Direction::FRONT, dt);
+        }
+        if(GetKeyState('S') & 0x8000)
+        {
+            m_editor_camera->move(Direction::BACK, dt);
+        }
+        if(GetKeyState('A') & 0x8000)
+        {
+            m_editor_camera->move(Direction::LEFT, dt);
+        }
+        if(GetKeyState('D') & 0x8000)
+        {
+            m_editor_camera->move(Direction::RIGHT, dt);
+        }
+        if(GetKeyState('U') & 0x8000)
+        {
+            m_editor_camera->move(Direction::DOWN, dt);
+        }
+        if(GetKeyState('J') & 0x8000)
+        {
+            m_editor_camera->move(Direction::UP, dt);
         }
     }
 }

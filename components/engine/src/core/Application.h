@@ -60,7 +60,6 @@ namespace vis
         Application();
 
         void start_opengl_thread();
-        void update_input_data(MouseMoveEvent& a_event);
         void on_key_press_event(KeyPressEvent& a_event);
 
         static DWORD WINAPI opengl_thread(LPVOID a_param);

@@ -20,7 +20,7 @@ namespace vis
         m_position = a_position;
 
         m_front = glm::vec3(0.0f, 0.0f, -1.0f);
-        m_up = glm::vec3 (0.0f, 1.0f, 0.0f);
+        m_up = glm::vec3 (0.0f, -1.0f, 0.0f);
 
         m_yaw = -90.0f;
         m_pitch = 0.0f;
@@ -42,6 +42,9 @@ namespace vis
 
     void Camera::recalculate_direction_vector(float m_x_offset, float m_y_offset)
     {
+        if(m_x_offset == 0.0f && m_y_offset == 0.0f)
+            return;
+
         m_x_offset *= m_sensitivity;
         m_y_offset *= m_sensitivity;
 
