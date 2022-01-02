@@ -53,14 +53,55 @@ namespace vis
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec3) * 2));
 
         m_shader->set_uniform_3f("u_light_color", 1.0f, 1.0f, 1.0f);
-        m_shader->set_uniform_3f("u_light_position", 0.0f, 10.0f, -10.0f);
+        m_shader->set_uniform_3f("u_light_position", 0.0f, 10.0f, 10.0f);
         m_shader->set_uniform_mat4("u_projection", m_camera->get_projection());
         m_shader->set_uniform_mat4("u_view", m_camera->get_view());
         m_shader->set_uniform_mat4("u_model", a_mesh.m_model);
         m_shader->set_uniform_3f("u_color", a_mesh.m_color.x, a_mesh.m_color.y, a_mesh.m_color.z);
 
         m_shader->bind();
+
         glDrawArrays(a_mesh.m_geometry_type, 0, a_mesh.m_vertices.size());
+
+        m_shader->unbind();
+
+        clean_buffers();
+    }
+
+    void Renderer::render_grid(const Grid &grid)
+    {
+        Shader* shader = grid.get_shader();
+
+        glGenVertexArrays(1, &vertex_array);
+        glGenBuffers(1, &vertex_buffer);
+
+        glBindVertexArray(vertex_array);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+        glBufferData(GL_ARRAY_BUFFER, grid.get_vertices().size() * sizeof(Vertex), &(grid.get_vertices()[0]), GL_STATIC_DRAW);
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)sizeof(glm::vec3));
+
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec3) * 2));
+
+        glm::mat4 model = grid.get_model_mat();
+        model = glm::translate(model, glm::vec3((int)m_camera->get_position().x - (grid.get_width() / 2), 0, (int)m_camera->get_position().z - (grid.get_height() / 2)));
+
+        shader->set_uniform_mat4("u_proj", m_camera->get_projection());
+        shader->set_uniform_mat4("u_view", m_camera->get_view());
+        shader->set_uniform_mat4("u_model", model);
+        shader->set_uniform_3f("u_color", 0.2f, 0.2f, 0.2f);
+
+        shader->bind();
+
+        glDrawArrays(GL_LINES, 0, grid.get_vertices().size());
+
+        shader->unbind();
 
         clean_buffers();
     }
@@ -69,10 +110,8 @@ namespace vis
     {
         glDeleteVertexArrays(1, &vertex_array);
         glDeleteBuffers(1, &vertex_buffer);
-        glDeleteBuffers(1, &index_buffer);
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     void Renderer::submit_data(const MeshRender &a_mesh)

@@ -28,7 +28,7 @@ namespace vis
         Renderer::set_camera(m_editor_camera);
         Renderer::set_shader(m_editor_shader);
 
-        m_grid.create(20, 20);
+        m_grid.create(120, 120);
     }
 
     void SceneEditorLayer::on_detach()
@@ -76,6 +76,11 @@ namespace vis
 
         ImGui::End();
 
+        ImGui::Begin("Fast af");
+
+        ImGui::DragFloat3("Move", &(m_grid.m_pos[0]));
+
+        ImGui::End();
     }
 
     void SceneEditorLayer::initialize_ecs_system()

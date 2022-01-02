@@ -76,6 +76,7 @@ set(HEADER_FILES_GRAPHICS
         ${GRAPHICS_PATH}/Camera.h
         ${GRAPHICS_PATH}/Texture.h
         ${GRAPHICS_PATH}/Framebuffer.h
+        ${GRAPHICS_PATH}/Grid.h
         )
 
 set(SOURCE_FILES_GRAPHICS
@@ -85,6 +86,7 @@ set(SOURCE_FILES_GRAPHICS
         ${GRAPHICS_PATH}/Camera.cpp
         ${GRAPHICS_PATH}/Texture.cpp
         ${GRAPHICS_PATH}/Framebuffer.cpp
+        ${GRAPHICS_PATH}/Grid.cpp
         )
 
 

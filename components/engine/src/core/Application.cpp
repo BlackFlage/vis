@@ -349,6 +349,9 @@ namespace vis
 
         wglSwapIntervalEXT(1);
 
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(0.2f);
+
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
 
@@ -370,7 +373,7 @@ namespace vis
         Application::get_instance()->m_layer_stack.on_attach_layers();
         Application::m_opengl_initialized = true;
         Application::m_layers_attached = true;
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 
         Application::get_instance()->m_scene_framebuffer = std::make_unique<Framebuffer>(contextRect.right, contextRect.bottom);
         CheckGLError();
@@ -383,7 +386,6 @@ namespace vis
             }
 
             Application::get_instance()->m_scene_framebuffer->bind();
-            glEnable(GL_DEPTH_TEST);
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -395,6 +397,8 @@ namespace vis
             glDisable(GL_DEPTH_TEST);
 
             Application::get_instance()->on_imgui_render();
+
+            glEnable(GL_DEPTH_TEST);
 
             //Flush and swap buffers
             glFlush();
