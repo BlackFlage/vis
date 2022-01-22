@@ -10,6 +10,7 @@
 #include "GL/glew.h"
 #include "ecs/components/BasicComponents.h"
 #include "Grid.h"
+#include "Skybox.h"
 
 namespace vis
 {
@@ -18,13 +19,14 @@ namespace vis
     public:
         static void change_background_color(float r, float g, float b, float alpha);
         static void render(MeshRender& a_mesh);
-        static void render_grid(const Grid& grid);
+        static void render_grid(const Grid& grid, Shader* shader);
+        static void render_skybox(const Skybox* skybox, Shader* shader);
 
         static void begin();
         static void end();
 
         static void set_camera(Camera* m_camera);
-        static void set_shader(Shader* m_shader);
+        static void set_shader(Shader* shader);
 
         static void submit_data(const MeshRender& a_mesh);
     private:

@@ -9,6 +9,7 @@
 #include "SceneEditorLayer.h"
 #include "Application.h"
 #include "nfd.h"
+#include "ColorSchemeEditor.h"
 
 namespace vis
 {
@@ -20,10 +21,21 @@ namespace vis
         initialize_scene_hierarchy();
         initialize_assets_panel();
 
-        m_editor_camera = new Camera(glm::vec3(0.0f, 2.0f, 10.0f));
-        m_editor_shader = Shader::create_shader(R"(..\engine_assets\shaders\vertex.glsl)",
-                                                R"(..\engine_assets\shaders\fragmentNoTex.glsl)");
+        std::vector<std::string> skybox_textures = { R"(..\engine_assets\skyboxes\default\right.jpg)",
+                                                     R"(..\engine_assets\skyboxes\default\left.jpg)",
+                                                     R"(..\engine_assets\skyboxes\default\top.jpg)",
+                                                     R"(..\engine_assets\skyboxes\default\bottom.jpg)",
+                                                     R"(..\engine_assets\skyboxes\default\front.jpg)",
+                                                     R"(..\engine_assets\skyboxes\default\back.jpg)"};
+
+        m_skybox            = new Skybox(skybox_textures);
+        m_editor_camera     = new Camera(glm::vec3(0.0f, 2.0f, 10.0f));
+        m_editor_shader     = Shader::create_shader(R"(..\engine_assets\shaders\vertex.glsl)",R"(..\engine_assets\shaders\fragmentNoTex.glsl)");
+        m_grid_shader       = Shader::create_shader(R"(..\engine_assets\shaders\vertex_grid.glsl)", R"(..\engine_assets\shaders\fragment_grid.glsl)");
+        m_skybox_shader     = Shader::create_shader(R"(..\engine_assets\shaders\vertex_skybox.glsl)", R"(..\engine_assets\shaders\fragment_skybox.glsl)");
         m_default_mesh_path = R"(..\engine_assets\meshes\)";
+
+        CheckGLError();
 
         Renderer::set_camera(m_editor_camera);
         Renderer::set_shader(m_editor_shader);
@@ -36,6 +48,11 @@ namespace vis
         for (auto it = m_icons.begin(); it != m_icons.end(); it++) {
             delete it->second;
         }
+
+        delete m_editor_camera;
+        delete m_grid_shader;
+        delete m_editor_shader;
+        delete m_skybox_shader;
     }
 
     void SceneEditorLayer::on_event(vis::Event &a_event)
@@ -53,7 +70,8 @@ namespace vis
 
     void SceneEditorLayer::on_render()
     {
-        Renderer::render_grid(m_grid);
+        //Renderer::render_skybox(m_skybox, m_skybox_shader);
+        Renderer::render_grid(m_grid, m_grid_shader);
         m_renderer_system->on_render();
     }
 
@@ -66,6 +84,8 @@ namespace vis
         bool open = true;
         ImGui::Begin("Scene viewport", &open, ImGuiWindowFlags_NoBackground);
 
+        render_menu_bar();
+
         ImVec2 dimensions = ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
         ImGui::Image((void *) Application::get_instance()->get_framebuffer_texture_id(), dimensions);
 
@@ -73,12 +93,6 @@ namespace vis
         {
             m_editor_camera->recalculate_direction_vector(INPUT->get_mouse_delta_x(), INPUT->get_mouse_delta_y());
         }
-
-        ImGui::End();
-
-        ImGui::Begin("Fast af");
-
-        ImGui::DragFloat3("Move", &(m_grid.m_pos[0]));
 
         ImGui::End();
     }
@@ -119,13 +133,13 @@ namespace vis
 
         if (sig[MainManager::get_instance()->get_component_type<Transform>()]) {
             if (ImGui::CollapsingHeader("Transform")) {
+                ImGui::Separator();
                 auto &transform = MainManager::get_instance()->get_component<Transform>(a_id);
 
-                ImGui::DragFloat3("Position", &transform.m_position[0], 0.1f);
-
-                ImGui::DragFloat3("Rotation", &transform.m_rotation[0]);
-
-                ImGui::DragFloat3("Scale", &transform.m_scale[0], 0.01f, 0.0f);
+                float pos_to_add = ImGui::CalcTextSize("Position").x;
+                render_transform_slider("Position", &transform.m_position, pos_to_add, 0.1f);
+                render_transform_slider("Rotation", &transform.m_rotation, pos_to_add, 0.1f);
+                render_transform_slider("Scale", &transform.m_scale, pos_to_add, 0.05f, 0.0f);
             }
         }
     }
@@ -136,6 +150,7 @@ namespace vis
 
         if (sig[MainManager::get_instance()->get_component_type<Color>()]) {
             if (ImGui::CollapsingHeader("Color")) {
+                ImGui::Separator();
                 auto &color = MainManager::get_instance()->get_component<Color>(a_id);
 
                 ImGui::ColorEdit3("Mesh color", &color.m_color[0]);
@@ -149,6 +164,7 @@ namespace vis
 
         if (sig[MainManager::get_instance()->get_component_type<MeshComponent>()]) {
             if (ImGui::CollapsingHeader("Mesh")) {
+                ImGui::Separator();
                 std::vector<const char *> available_meshes = ResourcesManager::get_instance()->get_available_meshes();
 
                 int &mesh_id = MainManager::get_instance()->get_component<MeshComponent>(a_id).m_id;
@@ -174,8 +190,9 @@ namespace vis
 
     void SceneEditorLayer::render_add_component_button(std::uint16_t a_id)
     {
-        ImVec2 button_size = ImVec2(-FLT_MIN, ImGui::GetWindowHeight() * 0.025f);
+        ImVec2 button_size = ImVec2(ImGui::GetWindowWidth() * 0.8f, ImGui::GetTextLineHeight() * 1.4f);
 
+        ImGui::SetCursorPosX((ImGui::GetWindowWidth() - button_size.x) / 2.0f);
         if (ImGui::Button("Add Component", button_size))
             ImGui::OpenPopup("Components list");
 
@@ -199,7 +216,7 @@ namespace vis
                     .m_scale = glm::vec3(1.0f)
             });
         } else if (std::strcmp(a_component_name, "Color") == 0) {
-            MainManager::get_instance()->add_component(a_id, Color{.m_color = glm::vec3(0.3f)});
+            MainManager::get_instance()->add_component(a_id, Color{.m_color = glm::vec3(0.7f)});
         } else if (std::strcmp(a_component_name, "Mesh") == 0) {
             MeshComponent mesh_comp = {.m_id = ResourcesManager::get_instance()->load_mesh(
                     m_default_mesh_path + "cube.obj")};
@@ -224,9 +241,22 @@ namespace vis
         ImGui::Begin("Properties");
 
         if (id != MAX_ENTITIES) {
+            Theme current_theme = ColorSchemeEditor::get_current_theme();
+
+            ImGui::PushStyleColor(ImGuiCol_Header, ColorSchemeEditor::get_color(current_theme.background, ColorSchemeEditor::m_alpha_100));
+            ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ColorSchemeEditor::get_color(current_theme.background, ColorSchemeEditor::m_alpha_100));
+            ImGui::PushStyleColor(ImGuiCol_HeaderActive, ColorSchemeEditor::get_color(current_theme.background, ColorSchemeEditor::m_alpha_100));
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+
+            ImGui::Separator();
             render_transform_component(id);
+            ImGui::Separator();
             render_color_component(id);
+            ImGui::Separator();
             render_mesh_component(id);
+
+            ImGui::PopStyleVar(1);
+            ImGui::PopStyleColor(3);
 
             render_add_component_button(id);
         }
@@ -406,8 +436,15 @@ namespace vis
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem("Console")) {
-                    if (ImGui::Button("Clear")) {
+                    if (ImGui::Button("Clear"))
+                    {
                         SceneConsole::get_instance()->clear();
+                    }
+
+                    ImGui::SameLine();
+                    if(ImGui::Button("Add xd"))
+                    {
+                        SceneConsole::get_instance()->log_info("XDDDDD");
                     }
 
                     ImGui::Separator();
@@ -429,6 +466,7 @@ namespace vis
         m_icons.insert({"closed_dir", new Texture(R"(..\engine_assets\textures\closed_folder_icon.png)")});
         m_icons.insert({"opened_dir", new Texture(R"(..\engine_assets\textures\opened_folder_icon.png)")});
         m_icons.insert({"full_dir", new Texture(R"(..\engine_assets\textures\full_folder_icon.png)")});
+        m_icons.insert({"right_arrow", new Texture(R"(..\engine_assets\textures\right_arrow.png)")});
         m_icons.insert({"default", new Texture(R"(..\engine_assets\textures\file_icon.png)")});
     }
 
@@ -592,6 +630,8 @@ namespace vis
 
     void SceneEditorLayer::render_directories_buttons()
     {
+        GLuint arrow_id = (m_icons.find("right_arrow") == m_icons.end()) ? m_icons.at("default")->get_id() : m_icons.at("right_arrow")->get_id();
+
         if (std::filesystem::exists(m_selected_path)) {
             std::vector<std::string> paths;
             std::filesystem::path current_path(m_selected_path);
@@ -603,15 +643,23 @@ namespace vis
             std::reverse(paths.begin(), paths.end());
 
             std::uint8_t index = 0;
-            for (auto it = paths.begin(); it != paths.end(); it++, index++) {
+            auto it = paths.begin();
+            for (;it + 1 != paths.end(); it++, index++) {
                 if (ImGui::Button(it->c_str())) {
                     set_path_from_buttons(m_selected_path, paths, index);
                     return;
                 }
 
+                ImGui::SameLine();
+                ImGui::Image((void*)arrow_id, ImVec2(16.0f, 16.0f));
+
                 if (index != paths.size() - 1) {
                     ImGui::SameLine();
                 }
+            }
+
+            if (ImGui::Button(it->c_str())) {
+                set_path_from_buttons(m_selected_path, paths, index);
             }
         }
     }
@@ -685,5 +733,67 @@ namespace vis
         {
             m_editor_camera->move(Direction::UP, dt);
         }
+    }
+
+    void SceneEditorLayer::render_menu_bar()
+    {
+        ImGui::PushClipRect(ImVec2(0.0f, 0.0f), ImVec2(1920.0f, 32.0f), false);
+        if(ImGui::BeginMainMenuBar())
+        {
+            ImGui::Image((void*)m_icons.at("right_arrow")->get_id(), ImVec2(16.0f, 16.0f));
+
+            if(ImGui::BeginMenu("File"))
+            {
+                ImGui::MenuItem("XD");
+                ImGui::EndMenu();
+            }
+
+            ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 72.0f);
+
+            if(ImGui::Button("_"))
+            {
+                PostMessage(Application::get_window_instance()->get_context()->m_hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+            }
+
+            if(ImGui::Button("O"))
+            {
+                PostMessage(Application::get_window_instance()->get_context()->m_hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+            }
+
+            if(ImGui::Button("X"))
+            {
+                PostMessage(Application::get_window_instance()->get_context()->m_hwnd, WM_SYSCOMMAND, SC_CLOSE, 0);
+            }
+
+            ImGui::EndMainMenuBar();
+        }
+
+        ImGui::PopClipRect();
+    }
+
+    void SceneEditorLayer::render_transform_slider(const std::string& label,glm::vec3* data, float pos_to_add, float speed, float min)
+    {
+        float tag_padding = ImGui::GetWindowWidth() / 20.0f;
+        float tag_slider_padding = ImGui::GetWindowWidth() / 2.5f;
+        float slider_size = (ImGui::GetWindowWidth() - tag_padding - tag_slider_padding) / 7.0f;
+
+        ImGui::SetCursorPosX(tag_padding);
+        ImGui::Text("%s", label.c_str()); ImGui::SameLine();
+
+        ImGui::PushItemWidth(slider_size);
+
+        ImGui::SetCursorPosX(pos_to_add + tag_slider_padding + tag_padding);
+        ImGui::Text("X"); ImGui::SameLine();
+        ImGui::DragFloat(("##" + label + "x").c_str(), &(data->x), speed, min, FLT_MAX, "%.3f", ImGuiSliderFlags_None); ImGui::SameLine();
+
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + tag_padding / 2.0f);
+        ImGui::Text("Y"); ImGui::SameLine();
+        ImGui::DragFloat(("##" + label + "y").c_str(), &(data->y), speed, min, FLT_MAX, "%.3f", ImGuiSliderFlags_None); ImGui::SameLine();
+
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + tag_padding / 2.0f);
+        ImGui::Text("Z"); ImGui::SameLine();
+        ImGui::DragFloat(("##" + label + "z").c_str(), &(data->z), speed, min, FLT_MAX, "%.3f", ImGuiSliderFlags_None);
+
+        ImGui::PopItemWidth();
     }
 }

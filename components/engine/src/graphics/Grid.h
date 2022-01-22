@@ -19,7 +19,6 @@ namespace vis
 
         const std::vector<Vertex>&       get_vertices()  const;
         const std::vector<unsigned int>& get_indices()   const;
-        Shader*                          get_shader()    const;
         std::uint16_t                    get_width()     const;
         std::uint16_t                    get_height()    const;
         glm::mat4                        get_model_mat() const;
@@ -29,7 +28,6 @@ namespace vis
         std::uint16_t             m_height;
         std::vector<Vertex>       m_vertices;
         std::vector<unsigned int> m_indices;
-        Shader*                   m_shader;
     };
 }
 

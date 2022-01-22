@@ -17,5 +17,4 @@ using ComponentType = std::uint8_t;
 
 using Signature = std::bitset<MAX_COMPONENTS>;
 
-
 #endif //MAIN_TYPES_H

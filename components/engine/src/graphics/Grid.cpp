@@ -20,11 +20,6 @@ namespace vis
         return m_vertices;
     }
 
-    Shader *Grid::get_shader() const
-    {
-        return m_shader;
-    }
-
     bool Grid::create(std::uint16_t width, std::uint16_t height)
     {
         int index = 0;
@@ -44,16 +39,11 @@ namespace vis
             m_indices.push_back(index++);
         }
 
-        /*m_vertices.push_back(Vertex{.m_position = glm::vec3(-1.0f, 1.0f, 0.0f), .m_normals = glm::vec3(0.0f), .m_textureCoords = glm::vec2(0.0f)});
-        m_vertices.push_back(Vertex{.m_position = glm::vec3(-1.0f, -1.0f, 0.0f), .m_normals = glm::vec3(0.0f), .m_textureCoords = glm::vec2(0.0f)});
-        m_vertices.push_back(Vertex{.m_position = glm::vec3(1.0f, -1.0f, 0.0f), .m_normals = glm::vec3(0.0f), .m_textureCoords = glm::vec2(0.0f)});*/
-
-        m_shader = Shader::create_shader("../engine_assets/shaders/vertex_grid.glsl", "../engine_assets/shaders/fragment_grid.glsl");
         m_pos = glm::vec3(0.0f, 0.0f, 0.0f);
         m_width = width;
         m_height = height;
 
-        return m_shader != nullptr;
+        return true;
     }
 
     glm::mat4 Grid::get_model_mat() const

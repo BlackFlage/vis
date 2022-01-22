@@ -36,6 +36,7 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/resource_loaders/ResourceArray.h
         ${CORE_PATH}/resource_loaders/MeshLoader.h
         ${CORE_PATH}/resource_loaders/resource_types/Mesh.h
+        ${CORE_PATH}/ColorSchemeEditor.h
         )
 
 set(SOURCE_FILES_CORE
@@ -54,6 +55,7 @@ set(SOURCE_FILES_CORE
         ${CORE_PATH}/resource_loaders/MeshLoader.cpp
         ${CORE_PATH}/resource_loaders/ResourcesManager.cpp
         ${CORE_PATH}/resource_loaders/resource_types/Mesh.cpp
+        ${CORE_PATH}/ColorSchemeEditor.cpp
         )
 
 set(HEADER_FILES_UTIL
@@ -77,6 +79,7 @@ set(HEADER_FILES_GRAPHICS
         ${GRAPHICS_PATH}/Texture.h
         ${GRAPHICS_PATH}/Framebuffer.h
         ${GRAPHICS_PATH}/Grid.h
+        ${GRAPHICS_PATH}/Skybox.h
         )
 
 set(SOURCE_FILES_GRAPHICS
@@ -87,6 +90,7 @@ set(SOURCE_FILES_GRAPHICS
         ${GRAPHICS_PATH}/Texture.cpp
         ${GRAPHICS_PATH}/Framebuffer.cpp
         ${GRAPHICS_PATH}/Grid.cpp
+        ${GRAPHICS_PATH}/Skybox.cpp
         )
 
 

@@ -68,6 +68,7 @@ namespace vis
         glDeleteShader(fragment_id);
 
         LOG_INFO("Shader compiled successfully!");
+        glUseProgram(0);
 
         return shader;
     }

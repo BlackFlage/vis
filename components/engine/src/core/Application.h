@@ -48,7 +48,9 @@ namespace vis
         inline static Window* get_window_instance() { return m_window; }
         inline static Application* get_instance() { return m_instance; }
         inline static bool is_running() { return m_running; }
+        inline static bool is_minimized() { return m_minimized; }
 
+        inline static void set_minimized(bool minimized) { m_minimized = minimized; }
         inline static void set_running(bool a_running) { m_running = a_running; }
         inline float get_delta_time() { return m_timer.get_delta_time(); }
         inline float get_time_passed() { return m_timer.get_time_passed();}
@@ -70,6 +72,7 @@ namespace vis
         static Input*                m_input;
         static WindowResizeEvent*    m_resize_event;
         static bool                  m_running;
+        static bool                  m_minimized;
         static bool                  m_opengl_initialized;
         static bool                  m_gl_context_should_resize;
         static bool                  m_layers_attached;

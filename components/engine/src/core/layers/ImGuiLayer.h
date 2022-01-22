@@ -33,6 +33,8 @@ namespace vis
         void on_mouse_button_press_event(MouseButtonPressEvent& a_event);
         void on_mouse_button_release_event(MouseButtonReleaseEvent& a_event);
         void update_mouse_pos();
+
+        ImFont* m_current_font;
     };
 }
 

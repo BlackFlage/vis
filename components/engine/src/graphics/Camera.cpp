@@ -16,7 +16,7 @@ namespace vis
     {
         RECT client_area = Application::get_window_instance()->get_client_rect();
 
-        m_projection = glm::perspective(glm::radians(45.0f), (float)client_area.right / (float)client_area.bottom, 0.1f, 100.0f);
+        m_projection = glm::perspective(glm::radians(45.0f), (float)client_area.right / (float)client_area.bottom, 0.1f, 500.0f);
         m_position = a_position;
 
         m_front = glm::vec3(0.0f, 0.0f, -1.0f);

@@ -7,6 +7,7 @@
 #include "ImGuiLayer.h"
 #include "ImGui/imgui_impl_opengl3.h"
 #include "Application.h"
+#include "ColorSchemeEditor.h"
 
 namespace vis
 {
@@ -18,9 +19,6 @@ namespace vis
         IMGUI_CHECKVERSION();
         ImGuiContext* im_gui_context = ImGui::CreateContext();
         ImGui::SetCurrentContext(im_gui_context);
-
-        ImGui::StyleColorsDark();
-        ImGui::GetStyle().Alpha = 1.0f;
 
         ImGui_ImplOpenGL3_Init(glsl_version);
 
@@ -53,11 +51,38 @@ namespace vis
         io.KeyMap[ImGuiKey_X] = 0x58;
         io.KeyMap[ImGuiKey_Y] = 0x59;
         io.KeyMap[ImGuiKey_Z] = 0x5A;
+
+        ImGui::StyleColorsDark();
+        auto& style = ImGui::GetStyle();
+
+        ColorSchemeEditor::set_theme(themes::DEFAULT);
+
+        style.Alpha = 1.0f;
+
+        style.FrameBorderSize = 1.0f;
+        style.ChildBorderSize = 4.0f;
+        style.ScrollbarSize = 13.0f;
+        style.TabBorderSize = 1.0f;
+        style.GrabMinSize = 7.0f;
+
+        style.ScrollbarRounding = 12.0f;
+        style.FrameRounding = 0.0f;
+        style.PopupRounding = 0.5f;
+        style.TabRounding = 0.0f;
+        style.WindowRounding = 0.0f;
+
+        style.ItemSpacing = ImVec2(6.0f, 2.0f);
+        style.FramePadding = ImVec2(6.0f, 4.0f);
+        style.WindowPadding = ImVec2(4.0f, 4.0f);
+
+        m_current_font = io.Fonts->AddFontFromFileTTF("..\\engine_assets\\fonts\\TwCenMTStd-Light.ttf", 12.0f);
+        io.Fonts->Build();
     }
 
     void ImGuiLayer::on_detach()
     {
         ImGui_ImplOpenGL3_Shutdown();
+        delete m_current_font;
     }
 
     void ImGuiLayer::on_event(Event &a_event)
@@ -85,7 +110,7 @@ namespace vis
 
     void ImGuiLayer::on_imgui_render()
     {
-
+        ImGui::PushFont(m_current_font);
     }
 
     void ImGuiLayer::on_char_input(CharInputEvent &a_event)

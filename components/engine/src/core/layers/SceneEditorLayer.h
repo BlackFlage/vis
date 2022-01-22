@@ -18,6 +18,7 @@
 #include "Camera.h"
 #include "Texture.h"
 #include "Grid.h"
+#include "Skybox.h"
 
 namespace vis
 {
@@ -40,6 +41,7 @@ namespace vis
         void render_add_component_button(std::uint16_t a_id);
         void add_component_to_entity(std::uint16_t a_id, const char* a_component_name);
         void render_imgui_ecs_window();
+        void render_transform_slider(const std::string& label, glm::vec3* data, float pos_to_add, float speed = 0.01f, float min = -FLT_MAX);
 
         //Scene hierarchy
         void initialize_scene_hierarchy();
@@ -63,8 +65,10 @@ namespace vis
         void set_path_from_buttons(std::filesystem::path& path_to_set, const std::vector<std::string>& a_to_set_from, std::uint8_t a_index);
         GLuint get_icon_texture_id(const std::filesystem::directory_entry& a_entry);
 
+        //other
         void on_window_resize_event(WindowResizeEvent& a_event);
         void move_camera(float dt);
+        void render_menu_bar();
     private:
         std::shared_ptr<PhysicsSystem>   m_physics_system;
         std::shared_ptr<RendererSystem>  m_renderer_system;
@@ -72,8 +76,11 @@ namespace vis
         std::vector<const char*>         m_components_names;
 
         Grid                             m_grid;
+        Skybox*                          m_skybox;
         Camera*                          m_editor_camera;
         Shader*                          m_editor_shader;
+        Shader*                          m_grid_shader;
+        Shader*                          m_skybox_shader;
         std::string                      m_default_mesh_path;
         std::uint16_t                    m_selected_entity;
         std::uint16_t                    m_id_to_perform_action;

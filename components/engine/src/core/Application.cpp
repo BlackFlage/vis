@@ -20,6 +20,7 @@ namespace vis
     bool Application::m_gl_context_should_resize = false;
     bool Application::m_opengl_initialized = false;
     bool Application::m_layers_attached = false;
+    bool Application::m_minimized = false;
 
     LRESULT CALLBACK win_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
@@ -29,7 +30,6 @@ namespace vis
             {
                 KeyPressEvent event((int)wParam);
                 Application::get_instance()->on_event(event);
-                LOG_INFO(event.get_name().c_str());
                 break;
             }
             case WM_KEYUP:
@@ -81,7 +81,7 @@ namespace vis
                 MouseMoveEvent event(mouse_point.x, mouse_point.y);
                 Application::get_instance()->on_event(event);
 
-                if(!Application::get_window_instance()->get_show_cursor())
+                if(Application::get_window_instance() && !Application::get_window_instance()->get_show_cursor())
                 {
                     POINT client_center = Application::get_window_instance()->get_client_center();
                     if(!SetCursorPos(client_center.x, client_center.y))
@@ -131,13 +131,29 @@ namespace vis
             }
             case WM_SIZE:
             {
+                if(wParam == SIZE_MAXIMIZED)
+                {
+                    ShowWindow(hwnd, SW_SHOWMAXIMIZED);
+                }
+
+                if(wParam == SIZE_MINIMIZED)
+                {
+                    ShowWindow(hwnd, SW_SHOWMINIMIZED);
+                    Application::set_minimized(true);
+                    break;
+                }
+
                 RECT new_client_rect;
 
-                GetClientRect(Application::get_window_instance()->get_context()->m_hwnd, &new_client_rect);
+                if(Application::get_window_instance())
+                {
+                    GetClientRect(Application::get_window_instance()->get_context()->m_hwnd, &new_client_rect);
 
-                WindowResizeEvent* event = new WindowResizeEvent(new_client_rect);
-                Application::get_instance()->on_event(*event);
-                Application::set_resize_event(event);
+                    WindowResizeEvent* event = new WindowResizeEvent(new_client_rect);
+                    Application::get_instance()->on_event(*event);
+                    Application::set_resize_event(event);
+                    Application::set_minimized(false);
+                }
 
                 break;
             }
@@ -185,7 +201,7 @@ namespace vis
         std::optional<int> windowRetValue;
 
         start_opengl_thread();
-        while(windowRetValue != APPLICATION_CLOSED)
+        while(windowRetValue != APPLICATION_CLOSED && m_running)
         {
             windowRetValue = m_window->pull_events();
 
@@ -243,8 +259,6 @@ namespace vis
                 m_input->set_mouse_pos(cursor_pos.x, cursor_pos.y);
             }
 
-            m_window->set_title(std::to_string(delta_time).c_str());
-
             m_layer_stack.update_all_layers(delta_time);
 
             delta_time -= m_refresh_interval;
@@ -254,9 +268,12 @@ namespace vis
 
     void Application::on_render()
     {
-        for(const auto& layer : m_layer_stack.get_layers())
+        if(!m_minimized)
         {
-            layer->on_render();
+            for(const auto& layer : m_layer_stack.get_layers())
+            {
+                layer->on_render();
+            }
         }
     }
 
@@ -385,24 +402,28 @@ namespace vis
                 on_resize_event(*m_resize_event);
             }
 
-            Application::get_instance()->m_scene_framebuffer->bind();
+            if(!Application::get_instance()->is_minimized())
+            {
+                Application::get_instance()->m_scene_framebuffer->bind();
 
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+                glEnable(GL_DEPTH_TEST);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-            //Render
-            Application::get_instance()->on_render();
+                //Render
+                Application::get_instance()->on_render();
 
-            Application::get_instance()->m_scene_framebuffer->unbind();
+                Application::get_instance()->m_scene_framebuffer->unbind();
 
-            glDisable(GL_DEPTH_TEST);
+                glDisable(GL_DEPTH_TEST);
 
-            Application::get_instance()->on_imgui_render();
+                Application::get_instance()->on_imgui_render();
 
-            glEnable(GL_DEPTH_TEST);
+                glEnable(GL_DEPTH_TEST);
 
-            //Flush and swap buffers
-            glFlush();
-            SwapBuffers(context->m_hdc);
+                //Flush and swap buffers
+                glFlush();
+                SwapBuffers(context->m_hdc);
+            }
         }
 
         return 0;
@@ -448,6 +469,8 @@ namespace vis
 
         const auto& layers = m_layer_stack.get_layers();
         std::for_each(layers.begin(), layers.end(), [](Layer* a_layer) { a_layer->on_imgui_render(); });
+
+        ImGui::PopFont();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

@@ -90,7 +90,7 @@ namespace vis
         MeshComponent mesh = { .m_id = ResourcesManager::get_instance()->load_mesh(m_default_mesh_path + suffix + ".obj")};
 
         MainManager::get_instance()->add_component(e, Color{
-            .m_color = glm::vec3(0.3f, 0.3f, 0.3f)
+            .m_color = glm::vec3(0.7f)
         });
 
         MainManager::get_instance()->add_component(e, mesh);

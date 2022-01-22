@@ -64,6 +64,9 @@ namespace vis
     void SceneConsole::draw()
     {
         ImVec4 text_color;
+
+        ImGui::BeginChild("Console child", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
         for(auto it = m_buffer.begin(); it != m_buffer.end(); it++)
         {
             text_color = get_color_from_debug_level(it->first);
@@ -72,6 +75,11 @@ namespace vis
             ImGui::TextUnformatted(it->second.c_str());
             ImGui::PopStyleColor();
         }
+
+        if(ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+            ImGui::SetScrollHereY(1.0f);
+
+        ImGui::EndChild();
     }
 
     ImVec4 SceneConsole::get_color_from_debug_level(LOG_LEVEL a_level)
