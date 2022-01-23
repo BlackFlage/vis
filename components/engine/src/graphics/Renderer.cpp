@@ -127,37 +127,38 @@ namespace vis
         m_shader = shader;
     }
 
-    void Renderer::render_skybox(const Skybox* skybox, Shader* shader)
+    void Renderer::render_skybox(Skybox* skybox, Shader* skybox_shader)
     {
-        glDepthMask(GL_FALSE);
+        GLuint vao, vbo;
 
-        glGenVertexArrays(1, &vertex_array);
-        glGenBuffers(1, &vertex_buffer);
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo);
 
-        glBindVertexArray(vertex_array);
+        glBindVertexArray(vao);
 
-        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-        glBufferData(GL_ARRAY_BUFFER, skybox->get_vertices().size() * sizeof(Vertex), &(skybox->get_vertices()[0]), GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, skybox->get_vertices().size() * sizeof(float), &(skybox->get_vertices()[0]), GL_STATIC_DRAW);
 
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-
-        shader->bind();
-        skybox->bind();
-
-        shader->set_uniform_mat4("u_proj", m_camera->get_projection());
-        shader->set_uniform_mat4("u_view", m_camera->get_view());
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
         CheckGLError();
 
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        skybox->bind();
 
-        shader->unbind();
-        skybox->unbind();
+        skybox_shader->set_uniform_mat4("u_proj", m_camera->get_projection());
+        skybox_shader->set_uniform_mat4("u_view", glm::mat4(glm::mat3(m_camera->get_view())));
+
+        skybox_shader->bind();
+
+        glDepthMask(GL_FALSE);
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glDepthMask(GL_TRUE);
 
-        clean_buffers();
+        skybox->unbind();
+        skybox_shader->unbind();
     }
 }
 

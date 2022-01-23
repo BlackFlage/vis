@@ -40,7 +40,7 @@ namespace vis
         Renderer::set_camera(m_editor_camera);
         Renderer::set_shader(m_editor_shader);
 
-        m_grid.create(120, 120);
+        m_grid.create(200, 200);
     }
 
     void SceneEditorLayer::on_detach()
@@ -58,8 +58,7 @@ namespace vis
     void SceneEditorLayer::on_event(vis::Event &a_event)
     {
         EventDispatcher dispatcher(a_event);
-        dispatcher.dispatch<WindowResizeEvent>(
-                [this](auto &&event) { on_window_resize_event(std::forward<decltype(event)>(event)); });
+        dispatcher.dispatch<WindowResizeEvent>([this](auto &&event) { on_window_resize_event(std::forward<decltype(event)>(event)); });
     }
 
     void SceneEditorLayer::on_update(float a_dt)
@@ -70,7 +69,7 @@ namespace vis
 
     void SceneEditorLayer::on_render()
     {
-        //Renderer::render_skybox(m_skybox, m_skybox_shader);
+        Renderer::render_skybox(m_skybox, m_skybox_shader);
         Renderer::render_grid(m_grid, m_grid_shader);
         m_renderer_system->on_render();
     }
@@ -212,7 +211,7 @@ namespace vis
         if (std::strcmp(a_component_name, "Transform") == 0) {
             MainManager::get_instance()->add_component(a_id, Transform{
                     .m_position = glm::vec3(0.0f),
-                    .m_rotation = glm::vec3(1.0f),
+                    .m_rotation = glm::vec3(0.0f),
                     .m_scale = glm::vec3(1.0f)
             });
         } else if (std::strcmp(a_component_name, "Color") == 0) {
@@ -377,7 +376,6 @@ namespace vis
 
     void SceneEditorLayer::initialize_assets_panel()
     {
-
         m_max_items_in_row = 6;
         m_selected_path = "";
         m_default_icon_size = ImVec2(64, 64);

@@ -28,10 +28,10 @@ namespace vis
     class ColorSchemeEditor
     {
     public:
-        static float get_R(unsigned int color = m_black);
-        static float get_G(unsigned int color = m_black);
-        static float get_B(unsigned int color = m_black);
-        static float get_alpha(unsigned int alpha = 0xFF);
+        static float  get_R(unsigned int color = m_black);
+        static float  get_G(unsigned int color = m_black);
+        static float  get_B(unsigned int color = m_black);
+        static float  get_alpha(unsigned int alpha = 0xFF);
         static ImVec4 lighten(ImVec4 color, float p);
         static ImVec4 mix(ImVec4 c1, ImVec4 c2);
         static ImVec4 get_color(unsigned int color = m_black, unsigned int alpha = m_alpha_100);

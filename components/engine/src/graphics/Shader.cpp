@@ -113,7 +113,7 @@ namespace vis
         glUseProgram(m_id);
 
         GLuint location = glGetUniformLocation(m_id, a_name);
-        glUniform1f(location, i1);
+        glUniform1i(location, i1);
 
         glUseProgram(0);
     }

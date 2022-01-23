@@ -20,7 +20,7 @@ namespace vis
         static void change_background_color(float r, float g, float b, float alpha);
         static void render(MeshRender& a_mesh);
         static void render_grid(const Grid& grid, Shader* shader);
-        static void render_skybox(const Skybox* skybox, Shader* shader);
+        static void render_skybox(Skybox* skybox, Shader* skybox_shader);
 
         static void begin();
         static void end();

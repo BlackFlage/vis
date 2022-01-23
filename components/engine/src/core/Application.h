@@ -29,18 +29,14 @@ namespace vis
     public:
         ~Application();
 
-        //App run management
         void run();
         void initialize();
-
         void on_event(Event& a_event);
         void on_update();
         void on_render();
         void on_imgui_render();
-
         void push_layer(Layer* a_layer);
         void detach_layer(Layer* a_layer);
-
         void recalculate_refresh_interval();
         void set_refresh_interval(int a_refresh_rate);
 
