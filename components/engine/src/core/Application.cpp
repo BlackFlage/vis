@@ -6,6 +6,7 @@
 #include <windowsx.h>
 #include <GL/wglew.h>
 #include <exception>
+#include <dwmapi.h>
 
 #include "resource_loaders/ResourcesManager.h"
 #include "ImGui/imgui_impl_opengl3.h"
@@ -169,6 +170,27 @@ namespace vis
                 WindowFocusEvent event(true);
                 Application::get_instance()->on_event(event);
 
+                break;
+            }
+            case WM_NCCALCSIZE:
+            {
+                if(wParam)
+                    return 0;
+                break;
+            }
+            case WM_CREATE:
+            {
+                RECT rcClient;
+                GetWindowRect(hwnd, &rcClient);
+
+                SetWindowPos(hwnd,
+                             nullptr,
+                             rcClient.left, rcClient.top,
+                             rcClient.right - rcClient.left, rcClient.bottom - rcClient.top,
+                             SWP_FRAMECHANGED);
+            }
+            case WM_ACTIVATE:
+            {
                 break;
             }
         }

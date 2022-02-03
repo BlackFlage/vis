@@ -94,6 +94,7 @@ namespace vis
         std::filesystem::path            m_selected_path;
         std::filesystem::path            m_assets_path;
 
+        bool                             m_mouse_move_mode_enabled;
         ImGuiTreeNodeFlags               m_scene_hierarchy_flags;
     };
 }

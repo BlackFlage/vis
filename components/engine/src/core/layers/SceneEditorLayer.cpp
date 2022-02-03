@@ -34,6 +34,7 @@ namespace vis
         m_grid_shader       = Shader::create_shader(R"(..\engine_assets\shaders\vertex_grid.glsl)", R"(..\engine_assets\shaders\fragment_grid.glsl)");
         m_skybox_shader     = Shader::create_shader(R"(..\engine_assets\shaders\vertex_skybox.glsl)", R"(..\engine_assets\shaders\fragment_skybox.glsl)");
         m_default_mesh_path = R"(..\engine_assets\meshes\)";
+        m_mouse_move_mode_enabled = false;
 
         CheckGLError();
 
@@ -64,7 +65,12 @@ namespace vis
     void SceneEditorLayer::on_update(float a_dt)
     {
         m_physics_system->on_update(a_dt);
-        move_camera(a_dt);
+
+        if(m_mouse_move_mode_enabled)
+        {
+            move_camera(a_dt);
+            m_editor_camera->recalculate_direction_vector(INPUT->get_mouse_delta_x(), INPUT->get_mouse_delta_y());
+        }
     }
 
     void SceneEditorLayer::on_render()
@@ -88,9 +94,13 @@ namespace vis
         ImVec2 dimensions = ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
         ImGui::Image((void *) Application::get_instance()->get_framebuffer_texture_id(), dimensions);
 
-        if(ImGui::IsWindowHovered() && INPUT->is_mouse_button_clicked(1))
+        if((m_mouse_move_mode_enabled || ImGui::IsWindowHovered()) && INPUT->is_mouse_button_clicked(1))
         {
-            m_editor_camera->recalculate_direction_vector(INPUT->get_mouse_delta_x(), INPUT->get_mouse_delta_y());
+            m_mouse_move_mode_enabled = true;
+        }
+        else
+        {
+            m_mouse_move_mode_enabled = false;
         }
 
         ImGui::End();
@@ -295,7 +305,7 @@ namespace vis
                     m_selected_entity = i;
                     m_id_to_perform_action = MAX_ENTITIES;
                 }
-                if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+                if (!m_mouse_move_mode_enabled && ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
                     m_id_to_perform_action = *it;
                 }
             }
@@ -310,7 +320,7 @@ namespace vis
 
     void SceneEditorLayer::render_hierarchy_popup()
     {
-        if (ImGui::IsWindowHovered(ImGuiFocusedFlags_RootWindow)
+        if (!m_mouse_move_mode_enabled && ImGui::IsWindowHovered(ImGuiFocusedFlags_RootWindow)
             && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
             ImGui::OpenPopup("Options");
 
@@ -541,7 +551,7 @@ namespace vis
 
     void SceneEditorLayer::render_assets_popup(const std::filesystem::directory_entry &a_entry)
     {
-        if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+        if (!m_mouse_move_mode_enabled && ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
             ImGui::OpenPopup(a_entry.path().string().c_str(), ImGuiPopupFlags_NoOpenOverExistingPopup);
 
         if (ImGui::BeginPopup(a_entry.path().string().c_str())) {

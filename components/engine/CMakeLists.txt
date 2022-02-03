@@ -18,7 +18,6 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/Types.h
         ${CORE_PATH}/layers/Layer.h
         ${CORE_PATH}/layers/LayerStack.h
-        ${CORE_PATH}/layers/Sandbox.h
         ${CORE_PATH}/layers/ImGuiLayer.h
         ${CORE_PATH}/layers/SceneEditorLayer.h
         ${CORE_PATH}/ecs/EntityManager.h
@@ -125,3 +124,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${VENDOR_PATH}/stbimage)
 
 #nativefiledialog
 target_include_directories(${PROJECT_NAME} PRIVATE ${VENDOR_PATH}/nativefiledialog/src/include)
+
+IF(WIN32)
+    target_link_libraries(${PROJECT_NAME} "Dwmapi.lib")
+ENDIF()
