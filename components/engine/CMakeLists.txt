@@ -36,6 +36,7 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/resource_loaders/MeshLoader.h
         ${CORE_PATH}/resource_loaders/resource_types/Mesh.h
         ${CORE_PATH}/ColorSchemeEditor.h
+        ${CORE_PATH}/TPool.h
         )
 
 set(SOURCE_FILES_CORE
@@ -55,6 +56,7 @@ set(SOURCE_FILES_CORE
         ${CORE_PATH}/resource_loaders/ResourcesManager.cpp
         ${CORE_PATH}/resource_loaders/resource_types/Mesh.cpp
         ${CORE_PATH}/ColorSchemeEditor.cpp
+        ${CORE_PATH}/TPool.cpp
         )
 
 set(HEADER_FILES_UTIL

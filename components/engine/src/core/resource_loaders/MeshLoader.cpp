@@ -11,6 +11,7 @@
 #include "Logger.h"
 #include "GL/glew.h"
 #include "Types.h"
+#include "TPool.h"
 
 namespace vis
 {
@@ -35,6 +36,7 @@ namespace vis
             return MAX_RESOURCES;
         }
 
+        LOG_INFO("Starting to load mesh: {0}", a_path.c_str());
         std::vector<glm::vec3> vertices;
         std::vector<glm::vec2> texture_coords;
         std::vector<glm::vec3> normals;
@@ -76,6 +78,7 @@ namespace vis
         m_path_to_index.insert({a_path, mesh_id});
         m_name_to_index.insert({name, mesh_id});
         m_index_to_name.insert({mesh_id, name});
+        LOG_INFO("Finished loading mesh: {0}", a_path.c_str());
 
         return mesh_id;
     }
@@ -103,7 +106,7 @@ namespace vis
     {
         if(m_index_to_name.find(a_id) == m_index_to_name.end())
         {
-            LOG_WARNING("Trying to get name of non exisisting mesh, id: {0}", a_id);
+            LOG_WARNING("Trying to get name of non existing mesh, id: {0}", a_id);
             return "";
         }
 
@@ -150,7 +153,7 @@ namespace vis
                     {
                         if(entry.path().extension() == ".obj")
                         {
-                            load_mesh(entry.path().string());
+                            TPool::get_instance()->add_job(std::bind(&MeshLoader::load_mesh, this, entry.path().string()));
                         }
                     }
                     else if(std::filesystem::is_directory(entry))

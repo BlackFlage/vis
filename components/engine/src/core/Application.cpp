@@ -9,6 +9,7 @@
 #include <dwmapi.h>
 #include <Uxtheme.h>
 
+#include "TPool.h"
 #include "resource_loaders/ResourcesManager.h"
 #include "ImGui/imgui_impl_opengl3.h"
 
@@ -193,8 +194,9 @@ namespace vis
     Application::~Application()
     {
         m_layer_stack.clear_stack();
-        delete m_window;
+        TPool::shutdown();
 
+        delete m_window;
         delete m_resize_event;
     }
 
@@ -235,6 +237,8 @@ namespace vis
         LOG_INFO("Successfully initialized application!");
 
         INPUT->reset_states();
+
+        TPool::initialize();
     }
 
     void Application::on_event(Event& a_event)
