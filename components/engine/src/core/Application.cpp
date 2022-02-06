@@ -7,6 +7,7 @@
 #include <GL/wglew.h>
 #include <exception>
 #include <dwmapi.h>
+#include <Uxtheme.h>
 
 #include "resource_loaders/ResourcesManager.h"
 #include "ImGui/imgui_impl_opengl3.h"
@@ -170,27 +171,6 @@ namespace vis
                 WindowFocusEvent event(true);
                 Application::get_instance()->on_event(event);
 
-                break;
-            }
-            case WM_NCCALCSIZE:
-            {
-                if(wParam)
-                    return 0;
-                break;
-            }
-            case WM_CREATE:
-            {
-                RECT rcClient;
-                GetWindowRect(hwnd, &rcClient);
-
-                SetWindowPos(hwnd,
-                             nullptr,
-                             rcClient.left, rcClient.top,
-                             rcClient.right - rcClient.left, rcClient.bottom - rcClient.top,
-                             SWP_FRAMECHANGED);
-            }
-            case WM_ACTIVATE:
-            {
                 break;
             }
         }
@@ -504,5 +484,12 @@ namespace vis
         {
             m_window->set_show_cursor(!m_window->get_show_cursor());
         }
+    }
+
+    void Application::paint_custom_caption(HWND m_hwnd, HDC m_hdc)
+    {
+        RECT rcClient;
+        GetClientRect(m_hwnd, &rcClient);
+        //HTHEME hTheme = OpenThemeData(nullptr, L"CompositedWindow::Window");
     }
 }

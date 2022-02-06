@@ -53,6 +53,7 @@ namespace vis
         inline GLuint get_framebuffer_texture_id() const { return m_scene_framebuffer->get_texture_id(); }
 
         static Application* create_instance();
+        static void paint_custom_caption(HWND m_hwnd, HDC m_hdc);
         static void set_resize_event(WindowResizeEvent* a_event);
     private:
         Application();

@@ -87,7 +87,7 @@ namespace vis
         render_assets_panel();
 
         bool open = true;
-        ImGui::Begin("Scene viewport", &open, ImGuiWindowFlags_NoBackground);
+        ImGui::Begin("Scene viewport", &open, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoScrollbar);
 
         render_menu_bar();
 
@@ -745,7 +745,6 @@ namespace vis
 
     void SceneEditorLayer::render_menu_bar()
     {
-        ImGui::PushClipRect(ImVec2(0.0f, 0.0f), ImVec2(1920.0f, 32.0f), false);
         if(ImGui::BeginMainMenuBar())
         {
             ImGui::Image((void*)m_icons.at("right_arrow")->get_id(), ImVec2(16.0f, 16.0f));
@@ -756,27 +755,8 @@ namespace vis
                 ImGui::EndMenu();
             }
 
-            ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 72.0f);
-
-            if(ImGui::Button("_"))
-            {
-                PostMessage(Application::get_window_instance()->get_context()->m_hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
-            }
-
-            if(ImGui::Button("O"))
-            {
-                PostMessage(Application::get_window_instance()->get_context()->m_hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
-            }
-
-            if(ImGui::Button("X"))
-            {
-                PostMessage(Application::get_window_instance()->get_context()->m_hwnd, WM_SYSCOMMAND, SC_CLOSE, 0);
-            }
-
             ImGui::EndMainMenuBar();
         }
-
-        ImGui::PopClipRect();
     }
 
     void SceneEditorLayer::render_transform_slider(const std::string& label,glm::vec3* data, float pos_to_add, float speed, float min)
