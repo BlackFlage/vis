@@ -11,6 +11,10 @@
 #include "nfd.h"
 #include "ColorSchemeEditor.h"
 
+#define DEFAULT_RIGHT_PADDING 10
+#define DEFAULT_LEFT_PADDING 2 * DEFAULT_RIGHT_PADDING
+#define TEXT_LEFT(LABEL, FUNC) ImGui::Text(LABEL); ImGui::SameLine(); FUNC
+
 namespace vis
 {
     std::shared_ptr<MainManager> MainManager::m_instance;
@@ -115,6 +119,7 @@ namespace vis
         MainManager::get_instance()->register_component<Color>();
         MainManager::get_instance()->register_component<RigidBody>();
         MainManager::get_instance()->register_component<MeshComponent>();
+        MainManager::get_instance()->register_component<SceneCamera>();
 
         //Register all system
         m_physics_system = MainManager::get_instance()->register_system<PhysicsSystem>();
@@ -140,7 +145,10 @@ namespace vis
     {
         Signature sig = MainManager::get_instance()->get_entity_signature(a_id);
 
-        if (sig[MainManager::get_instance()->get_component_type<Transform>()]) {
+        if (sig[MainManager::get_instance()->get_component_type<Transform>()])
+        {
+            ImGui::Separator();
+
             if (ImGui::CollapsingHeader("Transform")) {
                 ImGui::Separator();
                 auto &transform = MainManager::get_instance()->get_component<Transform>(a_id);
@@ -157,7 +165,10 @@ namespace vis
     {
         Signature sig = MainManager::get_instance()->get_entity_signature(a_id);
 
-        if (sig[MainManager::get_instance()->get_component_type<Color>()]) {
+        if (sig[MainManager::get_instance()->get_component_type<Color>()])
+        {
+            ImGui::Separator();
+
             if (ImGui::CollapsingHeader("Color")) {
                 ImGui::Separator();
                 auto &color = MainManager::get_instance()->get_component<Color>(a_id);
@@ -171,7 +182,10 @@ namespace vis
     {
         Signature sig = MainManager::get_instance()->get_entity_signature(a_id);
 
-        if (sig[MainManager::get_instance()->get_component_type<MeshComponent>()]) {
+        if (sig[MainManager::get_instance()->get_component_type<MeshComponent>()])
+        {
+            ImGui::Separator();
+
             if (ImGui::CollapsingHeader("Mesh")) {
                 ImGui::Separator();
                 std::vector<const char *> available_meshes = ResourcesManager::get_instance()->get_available_meshes();
@@ -197,6 +211,32 @@ namespace vis
         }
     }
 
+    void SceneEditorLayer::render_camera_component(std::uint16_t a_id)
+    {
+        Signature sig = MainManager::get_instance()->get_entity_signature(a_id);
+
+        if(sig[MainManager::get_instance()->get_component_type<SceneCamera>()])
+        {
+            ImGui::Separator();
+
+            if(ImGui::CollapsingHeader("Camera"))
+            {
+                ImGui::Separator();
+                auto& camera = MainManager::get_instance()->get_component<SceneCamera>(a_id);
+
+                ImGui::Text("Use skybox"); ImGui::SameLine();
+                ImGui::Checkbox("##Use skybox", &camera.get_use_skybox());
+
+                ImGui::Text("Clear color"); ImGui::SameLine();
+                ImGui::ColorEdit3("##Clear color", &(camera.get_clear_color()[0]));
+
+                TEXT_LEFT("zNear", ImGui::InputFloat("##zNear", &camera.get_z_near()));
+                TEXT_LEFT("zFar", ImGui::InputFloat("##zFar", &camera.get_z_far()));
+                TEXT_LEFT("FOV", ImGui::InputFloat("##FOV", &camera.get_fov()));
+            }
+        }
+    }
+
     void SceneEditorLayer::render_add_component_button(std::uint16_t a_id)
     {
         ImVec2 button_size = ImVec2(ImGui::GetWindowWidth() * 0.8f, ImGui::GetTextLineHeight() * 1.4f);
@@ -218,23 +258,34 @@ namespace vis
 
     void SceneEditorLayer::add_component_to_entity(std::uint16_t a_id, const char *a_component_name)
     {
-        if (std::strcmp(a_component_name, "Transform") == 0) {
+        if (std::strcmp(a_component_name, "Transform") == 0)
+        {
             MainManager::get_instance()->add_component(a_id, Transform{
                     .m_position = glm::vec3(0.0f),
                     .m_rotation = glm::vec3(0.0f),
                     .m_scale = glm::vec3(1.0f)
             });
-        } else if (std::strcmp(a_component_name, "Color") == 0) {
+        }
+        else if (std::strcmp(a_component_name, "Color") == 0)
+        {
             MainManager::get_instance()->add_component(a_id, Color{.m_color = glm::vec3(0.7f)});
-        } else if (std::strcmp(a_component_name, "Mesh") == 0) {
+        }
+        else if (std::strcmp(a_component_name, "Mesh") == 0)
+        {
             MeshComponent mesh_comp = {.m_id = ResourcesManager::get_instance()->load_mesh(
                     m_default_mesh_path + "cube.obj")};
 
             if (mesh_comp.m_id != MAX_COMPONENTS) {
                 MainManager::get_instance()->add_component(a_id, mesh_comp);
             }
-        } else if (std::strcmp(a_component_name, "RigidBody") == 0) {
+        }
+        else if (std::strcmp(a_component_name, "RigidBody") == 0)
+        {
             MainManager::get_instance()->add_component(a_id, RigidBody{.vel_x = 0.0f, .vel_y = 0.0f, .vel_z = 0.0f});
+        }
+        else if(std::strcmp(a_component_name, "Camera") == 0)
+        {
+            MainManager::get_instance()->add_component(a_id, SceneCamera());
         }
     }
 
@@ -257,16 +308,15 @@ namespace vis
             ImGui::PushStyleColor(ImGuiCol_HeaderActive, ColorSchemeEditor::get_color(current_theme.background, ColorSchemeEditor::m_alpha_100));
             ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 
-            ImGui::Separator();
             render_transform_component(id);
-            ImGui::Separator();
             render_color_component(id);
-            ImGui::Separator();
             render_mesh_component(id);
+            render_camera_component(id);
 
             ImGui::PopStyleVar(1);
             ImGui::PopStyleColor(3);
 
+            ImGui::Separator();
             render_add_component_button(id);
         }
 

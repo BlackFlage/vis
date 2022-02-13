@@ -153,7 +153,7 @@ namespace vis
                     {
                         if(entry.path().extension() == ".obj")
                         {
-                            TPool::get_instance()->add_job(std::bind(&MeshLoader::load_mesh, this, entry.path().string()));
+                            TPool::get_instance()->add_job([this, capture0 = entry.path().string()] { load_mesh(capture0); });
                         }
                     }
                     else if(std::filesystem::is_directory(entry))

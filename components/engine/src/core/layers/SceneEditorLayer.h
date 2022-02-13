@@ -14,6 +14,7 @@
 #include "ecs/MainManager.h"
 #include "ecs/systems/BasicSystems.h"
 #include "ecs/components/BasicComponents.h"
+#include "ecs/components/SceneCamera.h"
 #include "scene/SceneManager.h"
 #include "Camera.h"
 #include "Texture.h"
@@ -38,6 +39,7 @@ namespace vis
         void render_mesh_component(std::uint16_t a_id);
         void render_transform_component(std::uint16_t a_id);
         void render_color_component(std::uint16_t a_id);
+        void render_camera_component(std::uint16_t a_id);
         void render_add_component_button(std::uint16_t a_id);
         void add_component_to_entity(std::uint16_t a_id, const char* a_component_name);
         void render_imgui_ecs_window();

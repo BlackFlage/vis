@@ -23,6 +23,7 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/ecs/EntityManager.h
         ${CORE_PATH}/ecs/ComponentManager.h
         ${CORE_PATH}/ecs/ComponentArray.h
+        ${CORE_PATH}/ecs/components/SceneCamera.h
         ${CORE_PATH}/ecs/System.h
         ${CORE_PATH}/ecs/Entity.h
         ${CORE_PATH}/ecs/SystemManager.h
@@ -48,6 +49,7 @@ set(SOURCE_FILES_CORE
         ${CORE_PATH}/Input.cpp
         ${CORE_PATH}/ecs/Entity.cpp
         ${CORE_PATH}/ecs/EntityManager.cpp
+        ${CORE_PATH}/ecs/components/SceneCamera.cpp
         ${CORE_PATH}/layers/ImGuiLayer.cpp
         ${CORE_PATH}/layers/SceneEditorLayer.cpp
         ${CORE_PATH}/scene/SceneManager.cpp

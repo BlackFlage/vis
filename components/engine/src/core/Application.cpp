@@ -7,7 +7,6 @@
 #include <GL/wglew.h>
 #include <exception>
 #include <dwmapi.h>
-#include <Uxtheme.h>
 
 #include "TPool.h"
 #include "resource_loaders/ResourcesManager.h"
