@@ -2,14 +2,17 @@
 // Created by BlackFlage on 01.10.2021.
 //
 
-#include "Window.h"
+#include <dwmapi.h>
 #include <chrono>
 #include <thread>
 #include <strsafe.h>
+#include <windowsx.h>
+
+#include "Window.h"
 #include "Macro.h"
 #include "Logger.h"
 #include "GL/wglew.h"
-#include <dwmapi.h>
+#include "Application.h"
 
 #define WGL_DRAW_TO_WINDOW_ARB                    0x2001
 #define WGL_ACCELERATION_ARB                      0x2003
@@ -41,6 +44,171 @@ namespace vis
         }
 
         return DefWindowProcA(a_hwnd, a_msg, a_wparam, a_lparam);
+    }
+
+    LRESULT CALLBACK win_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    {
+        switch(uMsg)
+        {
+            case WM_KEYDOWN:
+            {
+                KeyPressEvent event((int)wParam);
+                Application::get_instance()->on_event(event);
+
+                break;
+            }
+            case WM_KEYUP:
+            {
+                KeyReleaseEvent event((int)wParam);
+                Application::get_instance()->on_event(event);
+
+                break;
+            }
+            case WM_CHAR:
+            {
+                CharInputEvent event((char)wParam);
+                Application::get_instance()->on_event(event);
+
+                break;
+            }
+            case WM_LBUTTONUP:
+            {
+                MouseButtonReleaseEvent event(MK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+                Application::get_instance()->on_event(event);
+                INPUT->set_button_state(0, false);
+
+                break;
+            }
+            case WM_RBUTTONUP:
+            {
+                MouseButtonReleaseEvent event(MK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+                Application::get_instance()->on_event(event);
+                INPUT->set_button_state(1, false);
+
+                break;
+            }
+            case WM_LBUTTONDOWN:
+            {
+                MouseButtonPressEvent event(MK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+                Application::get_instance()->on_event(event);
+                INPUT->set_button_state(0, true);
+
+                LOG_INFO("Press lol {0}, {1}", INPUT->get_mouse_pos_x(), INPUT->get_mouse_pos_y());
+
+                break;
+            }
+            case WM_RBUTTONDOWN:
+            {
+                MouseButtonPressEvent event(MK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+                Application::get_instance()->on_event(event);
+                INPUT->set_button_state(1, true);
+
+                break;
+            }
+            case WM_MOUSEMOVE:
+            {
+                POINT mouse_point = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+
+                MouseMoveEvent event(mouse_point.x, mouse_point.y);
+                Application::get_instance()->on_event(event);
+
+                if(Application::get_window_instance() && !Application::get_window_instance()->get_show_cursor())
+                {
+                    POINT client_center = Application::get_window_instance()->get_client_center();
+                    if(!SetCursorPos(client_center.x, client_center.y))
+                    {
+                        LOG_ERROR("Failed to set cursor position!");
+                        break;
+                    }
+                }
+
+                break;
+            }
+            case WM_MBUTTONUP:
+            {
+                MouseButtonReleaseEvent event(MK_MBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+                Application::get_instance()->on_event(event);
+                break;
+            }
+            case WM_MBUTTONDOWN:
+            {
+                MouseButtonPressEvent event(MK_MBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+                Application::get_instance()->on_event(event);
+                break;
+            }
+            case WM_XBUTTONDOWN:
+            {
+                MouseButtonPressEvent event(GET_XBUTTON_WPARAM(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+                Application::get_instance()->on_event(event);
+                break;
+            }
+            case WM_XBUTTONUP:
+            {
+                MouseButtonReleaseEvent event(GET_XBUTTON_WPARAM(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+                Application::get_instance()->on_event(event);
+                break;
+            }
+            case WM_MOUSEWHEEL:
+            {
+                MouseScrollEvent event(GET_WHEEL_DELTA_WPARAM(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+                Application::get_instance()->on_event(event);
+                break;
+            }
+            case WM_CLOSE:
+            {
+                Application::set_running(false);
+                PostQuitMessage(APPLICATION_CLOSED);
+                break;
+            }
+            case WM_SIZE:
+            {
+                if(wParam == SIZE_MAXIMIZED)
+                {
+                    ShowWindow(hwnd, SW_SHOWMAXIMIZED);
+                }
+
+                if(wParam == SIZE_MINIMIZED)
+                {
+                    ShowWindow(hwnd, SW_SHOWMINIMIZED);
+                    Application::set_minimized(true);
+                    break;
+                }
+
+                RECT new_client_rect;
+
+                if(Application::get_window_instance())
+                {
+                    GetClientRect(Application::get_window_instance()->get_context()->m_hwnd, &new_client_rect);
+
+                    WindowResizeEvent* event = new WindowResizeEvent(new_client_rect);
+                    Application::get_instance()->on_event(*event);
+                    Application::set_resize_event(event);
+                    Application::set_minimized(false);
+                }
+
+                break;
+            }
+            case WM_SETFOCUS:
+            {
+                WindowFocusEvent event(false);
+                Application::get_instance()->on_event(event);
+
+                break;
+            }
+            case WM_KILLFOCUS:
+            {
+                WindowFocusEvent event(true);
+                Application::get_instance()->on_event(event);
+
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        }
+
+        return DefWindowProcA(hwnd, uMsg, wParam, lParam);
     }
 
     void retrieve_last_error(LPTSTR lpsz_function_name)
@@ -88,7 +256,7 @@ namespace vis
         delete m_context;
     }
 
-    Window *Window::create_window(WNDPROC a_win_proc, const Settings& a_settings)
+    Window *Window::create_window(const Settings& a_settings)
     {
         if(!initialize_opengl())
         {
@@ -96,7 +264,7 @@ namespace vis
             return nullptr;
         }
 
-        Context* context = create_permanent_window(a_win_proc, a_settings.m_width, a_settings.m_height, a_settings.m_name.c_str());
+        Context* context = create_permanent_window(a_settings.m_width, a_settings.m_height, a_settings.m_name.c_str());
         if(!context)
         {
             LOG_ERROR("Failed to create Window Context!");
@@ -219,14 +387,14 @@ namespace vis
         return true;
     }
 
-    Context* Window::create_permanent_window(WNDPROC a_win_proc, int a_width, int a_height, const char* a_name)
+    Context* Window::create_permanent_window(int a_width, int a_height, const char* a_name)
     {
         HINSTANCE h_instance = GetModuleHandle(nullptr);
 
         WNDCLASSEX wc;
         wc.cbSize = sizeof(WNDCLASSEX);
         wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
-        wc.lpfnWndProc = a_win_proc;
+        wc.lpfnWndProc = win_proc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 0;
         wc.hInstance = h_instance;

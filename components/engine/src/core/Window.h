@@ -41,7 +41,7 @@ namespace vis
     public:
         ~Window();
 
-        static Window* create_window(WNDPROC a_win_proc, const Settings& a_settings);
+        static Window* create_window(const Settings& a_settings);
 
         inline void show_window() const { ShowWindow(m_context->m_hwnd, 5); }
         inline void hide_window() const { ShowWindow(m_context->m_hwnd,  0); }
@@ -62,7 +62,7 @@ namespace vis
     private:
         Window(Context* a_context, Settings a_settings);
         static bool initialize_opengl();
-        static Context* create_permanent_window(WNDPROC a_win_proc, int a_width, int a_height, const char* a_name);
+        static Context* create_permanent_window(int a_width, int a_height, const char* a_name);
     private:
         Context* m_context;
         Settings m_settings;

@@ -3,10 +3,8 @@
 //
 
 #include "Application.h"
-#include <windowsx.h>
 #include <GL/wglew.h>
 #include <exception>
-#include <dwmapi.h>
 
 #include "managers/ResourcesManager.h"
 #include "TPool.h"
@@ -14,176 +12,15 @@
 
 namespace vis
 {
-    Application* Application::m_instance = nullptr;
-    Window* Application::m_window = nullptr;
-    WindowResizeEvent* Application::m_resize_event = nullptr;
-    Input* Application::m_input = nullptr;
-    bool Application::m_running = false;
-    bool Application::m_gl_context_should_resize = false;
-    bool Application::m_opengl_initialized = false;
-    bool Application::m_layers_attached = false;
-    bool Application::m_minimized = false;
-
-    LRESULT CALLBACK win_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-    {
-        switch(uMsg)
-        {
-            case WM_KEYDOWN:
-            {
-                KeyPressEvent event((int)wParam);
-                Application::get_instance()->on_event(event);
-                break;
-            }
-            case WM_KEYUP:
-            {
-                KeyReleaseEvent event((int)wParam);
-                Application::get_instance()->on_event(event);
-                break;
-            }
-            case WM_CHAR:
-            {
-                CharInputEvent event((char)wParam);
-                Application::get_instance()->on_event(event);
-                break;
-            }
-            case WM_LBUTTONUP:
-            {
-                MouseButtonReleaseEvent event(MK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Application::get_instance()->on_event(event);
-                INPUT->set_button_state(0, false);
-                break;
-            }
-            case WM_RBUTTONUP:
-            {
-                MouseButtonReleaseEvent event(MK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Application::get_instance()->on_event(event);
-                INPUT->set_button_state(1, false);
-                break;
-            }
-            case WM_LBUTTONDOWN:
-            {
-                MouseButtonPressEvent event(MK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Application::get_instance()->on_event(event);
-                INPUT->set_button_state(0, true);
-
-                break;
-            }
-            case WM_RBUTTONDOWN:
-            {
-                MouseButtonPressEvent event(MK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Application::get_instance()->on_event(event);
-                INPUT->set_button_state(1, true);
-
-                break;
-            }
-            case WM_MOUSEMOVE:
-            {
-                POINT mouse_point = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-                MouseMoveEvent event(mouse_point.x, mouse_point.y);
-                Application::get_instance()->on_event(event);
-
-                if(Application::get_window_instance() && !Application::get_window_instance()->get_show_cursor())
-                {
-                    POINT client_center = Application::get_window_instance()->get_client_center();
-                    if(!SetCursorPos(client_center.x, client_center.y))
-                    {
-                        LOG_ERROR("Failed to set cursor position!");
-                        break;
-                    }
-                }
-
-                break;
-            }
-            case WM_MBUTTONUP:
-            {
-                MouseButtonReleaseEvent event(MK_MBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Application::get_instance()->on_event(event);
-                break;
-            }
-            case WM_MBUTTONDOWN:
-            {
-                MouseButtonPressEvent event(MK_MBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Application::get_instance()->on_event(event);
-                break;
-            }
-            case WM_XBUTTONDOWN:
-            {
-                MouseButtonPressEvent event(GET_XBUTTON_WPARAM(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Application::get_instance()->on_event(event);
-                break;
-            }
-            case WM_XBUTTONUP:
-            {
-                MouseButtonReleaseEvent event(GET_XBUTTON_WPARAM(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Application::get_instance()->on_event(event);
-                break;
-            }
-            case WM_MOUSEWHEEL:
-            {
-                MouseScrollEvent event(GET_WHEEL_DELTA_WPARAM(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-                Application::get_instance()->on_event(event);
-                break;
-            }
-            case WM_CLOSE:
-            {
-                Application::set_running(false);
-                PostQuitMessage(APPLICATION_CLOSED);
-                break;
-            }
-            case WM_SIZE:
-            {
-                if(wParam == SIZE_MAXIMIZED)
-                {
-                    ShowWindow(hwnd, SW_SHOWMAXIMIZED);
-                }
-
-                if(wParam == SIZE_MINIMIZED)
-                {
-                    ShowWindow(hwnd, SW_SHOWMINIMIZED);
-                    Application::set_minimized(true);
-                    break;
-                }
-
-                RECT new_client_rect;
-
-                if(Application::get_window_instance())
-                {
-                    GetClientRect(Application::get_window_instance()->get_context()->m_hwnd, &new_client_rect);
-
-                    WindowResizeEvent* event = new WindowResizeEvent(new_client_rect);
-                    Application::get_instance()->on_event(*event);
-                    Application::set_resize_event(event);
-                    Application::set_minimized(false);
-                }
-
-                break;
-            }
-            case WM_SETFOCUS:
-            {
-                WindowFocusEvent event(false);
-                Application::get_instance()->on_event(event);
-
-                break;
-            }
-            case WM_KILLFOCUS:
-            {
-                WindowFocusEvent event(true);
-                Application::get_instance()->on_event(event);
-
-                break;
-            }
-        }
-
-        return DefWindowProcA(hwnd, uMsg, wParam, lParam);
-    }
-
-    void GLAPIENTRY opengl_error_callback( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam )
-    {
-        fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-                (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
-                type, severity, message);
-    }
+    Application*       Application::m_instance;
+    Window*            Application::m_window;
+    WindowResizeEvent* Application::m_resize_event;
+    Input*             Application::m_input;
+    bool               Application::m_running;
+    bool               Application::m_gl_context_should_resize;
+    bool               Application::m_opengl_initialized;
+    bool               Application::m_layers_attached;
+    bool               Application::m_minimized;
 
     Application::Application()
     {
@@ -218,11 +55,20 @@ namespace vis
 
     void Application::initialize()
     {
-        m_window           = Window::create_window(win_proc, {1920, 1080, "Shark"});
-        m_main_window_open = true;
+        m_window                   = nullptr;
+        m_resize_event             = nullptr;
+        m_running                  = false;
+        m_gl_context_should_resize = false;
+        m_opengl_initialized       = false;
+        m_layers_attached          = false;
+        m_minimized                = false;
+        m_main_window_open         = true;
+        m_refresh_rate             = 60.0f;
+        m_refresh_interval         = 0.0f;
+
+        m_window           = Window::create_window({1920, 1080, "Shark"});
         m_global_register  = std::make_unique<GlobalRegister>();
         m_input            = new Input(0.0f, 0.0f);
-        m_running          = true;
 
         if(!m_window)
         {
@@ -230,16 +76,15 @@ namespace vis
             return;
         }
 
-        POINT cursor_pos;
-        GetCursorPos(&cursor_pos);
-
-        INPUT->reset_states();
-
         TPool::initialize();
 
+        INPUT->reset_states();
+        recalculate_refresh_interval();
         m_global_register->register_manager(ResourcesManager::get());
 
         m_global_register->start_up_managers();
+
+        m_running = true;
     }
 
     void Application::on_event(Event& a_event)
@@ -310,7 +155,7 @@ namespace vis
 
     void Application::recalculate_refresh_interval()
     {
-        m_refresh_interval = 1.0 / m_refresh_rate;
+        m_refresh_interval = 1.0f / m_refresh_rate;
     }
 
     void Application::set_refresh_interval(int a_refresh_rate)
@@ -325,14 +170,14 @@ namespace vis
     {
         if(m_instance != nullptr)
         {
-            return nullptr;
+            LOG_WARNING("Trying to create instance of application more than once!");
+            return m_instance;
         }
 
-        Application* app = new Application();
-        Application::m_instance = app;
+        Application::m_instance = new Application();
         Logger::initialize();
 
-        return app;
+        return m_instance;
     }
 
     void Application::start_opengl_thread()
@@ -369,7 +214,6 @@ namespace vis
                  profile_mask);
 
         glEnable(GL_DEBUG_OUTPUT);
-        //glDebugMessageCallback(opengl_error_callback, 0);
 
         wglSwapIntervalEXT(1);
 
@@ -469,8 +313,6 @@ namespace vis
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui::NewFrame();
-
-        ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
 
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 

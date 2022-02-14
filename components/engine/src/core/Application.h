@@ -80,8 +80,8 @@ namespace vis
 
         std::unique_ptr<Framebuffer> m_scene_framebuffer;
 
-        double                       m_refresh_rate = 120.0; //frames per second
-        double                       m_refresh_interval;
+        float                        m_refresh_rate; //frames per second
+        float                        m_refresh_interval;
         bool                         m_main_window_open;
 
         std::unique_ptr<GlobalRegister> m_global_register;
