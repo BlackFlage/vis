@@ -32,12 +32,14 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/ecs/components/BasicComponents.h
         ${CORE_PATH}/scene/SceneManager.h
         ${CORE_PATH}/scene/Scene.h
-        ${CORE_PATH}/resource_loaders/ResourcesManager.h
         ${CORE_PATH}/resource_loaders/ResourceArray.h
-        ${CORE_PATH}/resource_loaders/MeshLoader.h
         ${CORE_PATH}/resource_loaders/resource_types/Mesh.h
         ${CORE_PATH}/ColorSchemeEditor.h
         ${CORE_PATH}/TPool.h
+        ${CORE_PATH}/managers/Manager.h
+        ${CORE_PATH}/managers/ResourcesManager.h
+        ${CORE_PATH}/managers/MeshManager.h
+        ${CORE_PATH}/managers/GlobalRegister.h
         )
 
 set(SOURCE_FILES_CORE
@@ -54,11 +56,11 @@ set(SOURCE_FILES_CORE
         ${CORE_PATH}/layers/SceneEditorLayer.cpp
         ${CORE_PATH}/scene/SceneManager.cpp
         ${CORE_PATH}/scene/Scene.cpp
-        ${CORE_PATH}/resource_loaders/MeshLoader.cpp
-        ${CORE_PATH}/resource_loaders/ResourcesManager.cpp
         ${CORE_PATH}/resource_loaders/resource_types/Mesh.cpp
         ${CORE_PATH}/ColorSchemeEditor.cpp
         ${CORE_PATH}/TPool.cpp
+        ${CORE_PATH}/managers/ResourcesManager.cpp
+        ${CORE_PATH}/managers/MeshManager.cpp
         )
 
 set(HEADER_FILES_UTIL

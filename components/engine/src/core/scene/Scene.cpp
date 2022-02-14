@@ -6,7 +6,7 @@
 
 #include <ecs/components/BasicComponents.h>
 #include "ecs/MainManager.h"
-#include "resource_loaders/ResourcesManager.h"
+#include "../managers/MeshManager.h"
 #include "Types.h"
 
 namespace vis
@@ -87,7 +87,7 @@ namespace vis
         }
 
         std::string suffix = get_suffix_from_type(a_type);
-        MeshComponent mesh = { .m_id = ResourcesManager::get_instance()->load_mesh(m_default_mesh_path + suffix + ".obj")};
+        MeshComponent mesh = { .m_id = MeshManager::get()->load_mesh(m_default_mesh_path + suffix + ".obj")};
 
         MainManager::get_instance()->add_component(e, Color{
             .m_color = glm::vec3(0.7f)

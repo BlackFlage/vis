@@ -10,6 +10,8 @@
 #include "Application.h"
 #include "nfd.h"
 #include "ColorSchemeEditor.h"
+#include "managers/MeshManager.h"
+#include "managers/ResourcesManager.h"
 
 #define DEFAULT_RIGHT_PADDING 10
 #define DEFAULT_LEFT_PADDING 2 * DEFAULT_RIGHT_PADDING
@@ -138,7 +140,6 @@ namespace vis
         MainManager::get_instance()->set_system_signature<RendererSystem>(rend_signature);
 
         m_components_names = {"Transform", "Color", "Mesh", "RigidBody", "Camera"};
-        ResourcesManager::get_instance()->load_meshes_in_folders(std::filesystem::path(DEFAULT_ASSETS_PATH));
     }
 
     void SceneEditorLayer::render_transform_component(std::uint16_t a_id)
@@ -188,11 +189,11 @@ namespace vis
 
             if (ImGui::CollapsingHeader("Mesh")) {
                 ImGui::Separator();
-                std::vector<const char *> available_meshes = ResourcesManager::get_instance()->get_available_meshes();
+                std::vector<const char *> available_meshes = MeshManager::get()->get_all_meshes_names();
 
                 int &mesh_id = MainManager::get_instance()->get_component<MeshComponent>(a_id).m_id;
                 int selection = 0;
-                std::string name = ResourcesManager::get_instance()->get_mesh_name_from_id(mesh_id);
+                std::string name = MeshManager::get()->get_name(mesh_id);
 
                 for (int i = 0; i < available_meshes.size(); i++) {
                     if (available_meshes.at(i) == name) {
@@ -202,8 +203,8 @@ namespace vis
                 }
                 ImGui::Combo("Meshes combo", &selection, &(available_meshes[0]), available_meshes.size());
 
-                mesh_id = ResourcesManager::get_instance()->get_mesh_id(available_meshes.at(selection));
-                auto mesh = ResourcesManager::get_instance()->get_mesh(mesh_id);
+                mesh_id = MeshManager::get()->get_id(available_meshes.at(selection));
+                auto mesh = MeshManager::get()->get_mesh(mesh_id);
                 ImGui::Text("Mesh id: %d", mesh_id);
                 ImGui::Text("Vertices: %d", (int) mesh->get_vertices().size());
                 ImGui::Text("Indices: %d", (int) mesh->get_indices().size());
@@ -272,8 +273,7 @@ namespace vis
         }
         else if (std::strcmp(a_component_name, "Mesh") == 0)
         {
-            MeshComponent mesh_comp = {.m_id = ResourcesManager::get_instance()->load_mesh(
-                    m_default_mesh_path + "cube.obj")};
+            MeshComponent mesh_comp = {.m_id =  MeshManager::get()->load_mesh(m_default_mesh_path + "cube.obj")};
 
             if (mesh_comp.m_id != MAX_COMPONENTS) {
                 MainManager::get_instance()->add_component(a_id, mesh_comp);
@@ -452,6 +452,8 @@ namespace vis
         }
 
         load_icons();
+
+        ResourcesManager::get()->load_meshes_in_folders(m_assets_path);
     }
 
     void SceneEditorLayer::render_assets_panel()
@@ -755,7 +757,7 @@ namespace vis
                     std::filesystem::copy(file_path, new_path /= file_path.filename());
 
                     if (new_path.extension() == ".obj") {
-                        ResourcesManager::get_instance()->load_mesh(new_path.string());
+                        MeshManager::get()->load_mesh(new_path.string());
                     }
                 }
                 catch (std::exception &a_exception) {

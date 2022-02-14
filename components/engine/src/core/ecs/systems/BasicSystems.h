@@ -11,7 +11,7 @@
 #include "ecs/MainManager.h"
 #include "ecs/components/BasicComponents.h"
 #include "glm/gtc/matrix_transform.hpp"
-#include "resource_loaders/ResourcesManager.h"
+#include "managers/MeshManager.h"
 #include "Renderer.h"
 
 namespace vis
@@ -46,7 +46,7 @@ namespace vis
                 auto &transform = MainManager::get_instance()->get_component<Transform>(*it);
                 auto &color = MainManager::get_instance()->get_component<Color>(*it);
                 std::uint16_t mesh_id = MainManager::get_instance()->get_component<MeshComponent>(*it).m_id;
-                auto mesh = ResourcesManager::get_instance()->get_mesh(mesh_id);
+                auto mesh = MeshManager::get()->get_mesh(mesh_id);
 
                 glm::mat4 transform_mat = glm::mat4(1.0f);
                 transform_mat = glm::translate(transform_mat, transform.m_position);

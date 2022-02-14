@@ -8,8 +8,8 @@
 #include <exception>
 #include <dwmapi.h>
 
+#include "managers/ResourcesManager.h"
 #include "TPool.h"
-#include "resource_loaders/ResourcesManager.h"
 #include "ImGui/imgui_impl_opengl3.h"
 
 namespace vis
@@ -193,6 +193,7 @@ namespace vis
     Application::~Application()
     {
         m_layer_stack.clear_stack();
+        m_global_register->shut_down_managers();
         TPool::shutdown();
 
         delete m_window;
@@ -219,7 +220,9 @@ namespace vis
     {
         m_window           = Window::create_window(win_proc, {1920, 1080, "Shark"});
         m_main_window_open = true;
-        ResourcesManager::init();
+        m_global_register  = std::make_unique<GlobalRegister>();
+        m_input            = new Input(0.0f, 0.0f);
+        m_running          = true;
 
         if(!m_window)
         {
@@ -230,14 +233,13 @@ namespace vis
         POINT cursor_pos;
         GetCursorPos(&cursor_pos);
 
-        m_input = new Input(0.0f, 0.0f);
-        m_running = true;
-
-        LOG_INFO("Successfully initialized application!");
-
         INPUT->reset_states();
 
         TPool::initialize();
+
+        m_global_register->register_manager(ResourcesManager::get());
+
+        m_global_register->start_up_managers();
     }
 
     void Application::on_event(Event& a_event)
