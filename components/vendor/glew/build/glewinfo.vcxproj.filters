@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\C++\visual\components\vendor\glew\src\glewinfo.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\C++\visual\components\vendor\glew\build\cmake\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\C++\visual\components\vendor\glew\build\glewinfo.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{F1982620-DE0F-3B22-82BD-93D5FE9FF2A2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

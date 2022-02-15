@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\BlackFlage\OneDrive - Politechnika Wroclawska\C++\visual\release\CMakeFiles\a6c1f03ee64a9df84cac2c7820806acc\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{3CBC5D67-C1F0-3C99-96EA-290DD8978F8A}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

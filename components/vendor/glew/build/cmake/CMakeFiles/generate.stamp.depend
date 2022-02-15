@@ -1,0 +1,8 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-3.22/Modules/FindOpenGL.cmake
+C:/Program Files/CMake/share/cmake-3.22/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake/share/cmake-3.22/Modules/FindPackageMessage.cmake
+C:/Program Files/CMake/share/cmake-3.22/Modules/GNUInstallDirs.cmake
+C:/Users/BlackFlage/OneDrive - Politechnika Wroclawska/C++/visual/components/vendor/glew/build/cmake/CMakeLists.txt
+C:/Users/BlackFlage/OneDrive - Politechnika Wroclawska/C++/visual/components/vendor/glew/build/cmake/cmake_uninstall.cmake.in
+C:/Users/BlackFlage/OneDrive - Politechnika Wroclawska/C++/visual/components/vendor/glew/glew.pc.in
