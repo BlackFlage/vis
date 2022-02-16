@@ -27,7 +27,7 @@ namespace vis
         void add_entity(EntityType a_type = EntityType::EMPTY);
 
         std::set<std::uint16_t>& get_entities();
-        const std::string& get_name() const;
+        const std::string&       get_name() const;
     private:
         std::string get_suffix_from_type(EntityType a_type);
     private:

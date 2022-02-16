@@ -17,6 +17,7 @@ namespace vis
         void set_use_skybox(bool use_skybox);
         void set_clear_color(float v1, float v2, float v3);
 
+        bool& get_use_perspective_view();
         bool& get_use_skybox();
         std::array<float, 3>& get_clear_color();
         float& get_z_near();

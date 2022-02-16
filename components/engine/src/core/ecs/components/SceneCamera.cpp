@@ -56,4 +56,9 @@ namespace vis
     {
         return m_FOV;
     }
+
+    bool &SceneCamera::get_use_perspective_view()
+    {
+        return m_perspective_view;
+    }
 }

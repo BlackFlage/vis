@@ -53,6 +53,9 @@ namespace vis
             delete s;
         }
 
+        delete m_instance;
+        m_instance = nullptr;
+
         return ret_val;
     }
 

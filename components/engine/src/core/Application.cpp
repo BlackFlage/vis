@@ -8,6 +8,7 @@
 
 #include "managers/ResourcesManager.h"
 #include "managers/SceneManager.h"
+#include "managers/SerializationManager.h"
 #include "TPool.h"
 #include "ImGui/imgui_impl_opengl3.h"
 
@@ -30,7 +31,10 @@ namespace vis
 
     Application::~Application()
     {
+        SerializationManager::get()->serialize_scene(SceneManager::get()->get_current_scene(), "scene.txt");
         m_layer_stack.clear_stack();
+
+        LOG_INFO("Shutting down managers");
         m_global_register->shut_down_managers();
         TPool::shutdown();
 
@@ -81,9 +85,12 @@ namespace vis
 
         INPUT->reset_states();
         recalculate_refresh_interval();
+
         m_global_register->register_manager(ResourcesManager::get());
         m_global_register->register_manager(SceneManager::get());
+        m_global_register->register_manager(SerializationManager::get());
 
+        LOG_INFO("Starting up managers");
         m_global_register->start_up_managers();
 
         m_running = true;

@@ -64,6 +64,9 @@ namespace vis
             LOG_ERROR("Failed to shut down dependencies of ResourcesManager");
         }
 
+        delete m_instance;
+        m_instance = nullptr;
+
         return ret_val;
     }
 

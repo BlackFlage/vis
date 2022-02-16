@@ -40,6 +40,7 @@ set(HEADER_FILES_CORE
         ${CORE_PATH}/managers/MeshManager.h
         ${CORE_PATH}/managers/GlobalRegister.h
         ${CORE_PATH}/managers/SceneManager.h
+        ${CORE_PATH}/managers/SerializationManager.h
         )
 
 set(SOURCE_FILES_CORE
@@ -61,6 +62,7 @@ set(SOURCE_FILES_CORE
         ${CORE_PATH}/managers/ResourcesManager.cpp
         ${CORE_PATH}/managers/MeshManager.cpp
         ${CORE_PATH}/managers/SceneManager.cpp
+        ${CORE_PATH}/managers/SerializationManager.cpp
         )
 
 set(HEADER_FILES_UTIL
