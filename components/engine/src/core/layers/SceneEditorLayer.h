@@ -15,7 +15,7 @@
 #include "ecs/systems/BasicSystems.h"
 #include "ecs/components/BasicComponents.h"
 #include "ecs/components/SceneCamera.h"
-#include "scene/SceneManager.h"
+#include "managers/SceneManager.h"
 #include "Camera.h"
 #include "Texture.h"
 #include "Grid.h"
@@ -74,7 +74,6 @@ namespace vis
     private:
         std::shared_ptr<PhysicsSystem>   m_physics_system;
         std::shared_ptr<RendererSystem>  m_renderer_system;
-        std::unique_ptr<SceneManager>    m_scene_manager;
         std::vector<const char*>         m_components_names;
 
         Grid                             m_grid;

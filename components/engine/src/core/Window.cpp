@@ -93,8 +93,6 @@ namespace vis
                 Application::get_instance()->on_event(event);
                 INPUT->set_button_state(0, true);
 
-                LOG_INFO("Press lol {0}, {1}", INPUT->get_mouse_pos_x(), INPUT->get_mouse_pos_y());
-
                 break;
             }
             case WM_RBUTTONDOWN:

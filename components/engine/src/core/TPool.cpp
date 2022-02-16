@@ -35,7 +35,7 @@ namespace vis
         }
     }
 
-    [[noreturn]] void TPool::thread_default_function()
+    void TPool::thread_default_function()
     {
         while(true)
         {

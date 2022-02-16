@@ -7,6 +7,7 @@
 #include <exception>
 
 #include "managers/ResourcesManager.h"
+#include "managers/SceneManager.h"
 #include "TPool.h"
 #include "ImGui/imgui_impl_opengl3.h"
 
@@ -81,6 +82,7 @@ namespace vis
         INPUT->reset_states();
         recalculate_refresh_interval();
         m_global_register->register_manager(ResourcesManager::get());
+        m_global_register->register_manager(SceneManager::get());
 
         m_global_register->start_up_managers();
 
@@ -205,13 +207,6 @@ namespace vis
 
         GLint profile_mask = 0;
         glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &profile_mask);
-
-        LOG_INFO("\nGL_RENDERER: {0}\nGL_VENDOR: {1}\nGL_VERSION: {2}\nGL_SHADING_LANGUAGE_VERSION: {3}\nProfile mask: {4}\n\n",
-                 glGetString(GL_RENDERER),
-                 glGetString(GL_VENDOR),
-                 glGetString(GL_VERSION),
-                 glGetString(GL_SHADING_LANGUAGE_VERSION),
-                 profile_mask);
 
         glEnable(GL_DEBUG_OUTPUT);
 

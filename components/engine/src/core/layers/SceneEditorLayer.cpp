@@ -329,7 +329,6 @@ namespace vis
 
     void SceneEditorLayer::initialize_scene_hierarchy()
     {
-        m_scene_manager = std::make_unique<SceneManager>();
         m_scene_hierarchy_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
         m_selected_entity = MAX_ENTITIES;
         m_id_to_perform_action = MAX_ENTITIES;
@@ -342,8 +341,8 @@ namespace vis
         ImGuiTreeNodeFlags flags = m_scene_hierarchy_flags;
         std::uint16_t i = 0;
 
-        if (ImGui::TreeNode(m_scene_manager->get_current_scene()->get_name().c_str())) {
-            auto &m_scene_entities = m_scene_manager->get_current_scene()->get_entities();
+        if (ImGui::TreeNode(SceneManager::get()->get_current_scene()->get_name().c_str())) {
+            auto &m_scene_entities = SceneManager::get()->get_current_scene()->get_entities();
             for (auto it = m_scene_entities.begin(); it != m_scene_entities.end(); it++, i++) {
                 if (m_selected_entity == i) {
                     selected = true;
@@ -392,13 +391,13 @@ namespace vis
 
             if (ImGui::BeginMenu("3D")) {
                 if (ImGui::MenuItem("Empty")) {
-                    m_scene_manager->get_current_scene()->add_entity(EntityType::EMPTY);
+                    SceneManager::get()->get_current_scene()->add_entity(EntityType::EMPTY);
                 }
                 if (ImGui::MenuItem("Cube")) {
-                    m_scene_manager->get_current_scene()->add_entity(EntityType::CUBE);
+                    SceneManager::get()->get_current_scene()->add_entity(EntityType::CUBE);
                 }
                 if (ImGui::MenuItem("Sphere")) {
-                    m_scene_manager->get_current_scene()->add_entity(EntityType::SPHERE);
+                    SceneManager::get()->get_current_scene()->add_entity(EntityType::SPHERE);
                 }
 
                 ImGui::EndMenu();
@@ -426,7 +425,7 @@ namespace vis
     void SceneEditorLayer::delete_entity(std::uint16_t a_id)
     {
         if (a_id != MAX_ENTITIES) {
-            m_scene_manager->get_current_scene()->remove_entity(a_id);
+            SceneManager::get()->get_current_scene()->remove_entity(a_id);
             MainManager::get_instance()->destroy_entity(a_id);
             MainManager::get_instance()->set_current_entity(MAX_ENTITIES);
             m_id_to_perform_action = MAX_ENTITIES;

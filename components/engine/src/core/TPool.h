@@ -29,7 +29,7 @@ namespace vis
     private:
         TPool();
 
-        [[noreturn]] void thread_default_function();
+        void thread_default_function();
     private:
         bool m_threads_available;
         bool m_terminate_pool;

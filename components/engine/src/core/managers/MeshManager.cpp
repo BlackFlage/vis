@@ -18,6 +18,7 @@ namespace vis
     {
         if(m_instance == nullptr)
         {
+            LOG_INFO("Creating MeshManager");
             m_instance = new MeshManager();
         }
 
@@ -28,6 +29,7 @@ namespace vis
     {
         if(!Manager::start_up())
         {
+            LOG_ERROR("Failed to start up dependencies of MeshManager");
             return false;
         }
 
@@ -38,7 +40,13 @@ namespace vis
 
     bool MeshManager::shut_down()
     {
-        return Manager::shut_down();
+        bool ret_val;
+        if(!(ret_val = Manager::shut_down()))
+        {
+            LOG_ERROR("Failed to shut down dependencies of MeshManager");
+        }
+
+        return ret_val;
     }
 
     std::uint16_t MeshManager::load_mesh(const std::string &path)

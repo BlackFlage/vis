@@ -19,6 +19,7 @@ namespace vis
     {
         if(m_instance == nullptr)
         {
+            LOG_INFO("Creating ResourcesManager");
             m_instance = new ResourcesManager();
         }
 
@@ -31,6 +32,7 @@ namespace vis
 
         if(!Manager::start_up())
         {
+            LOG_ERROR("Failed to start up dependencies of ResourcesManager");
             return false;
         }
 
@@ -56,7 +58,13 @@ namespace vis
 
     bool ResourcesManager::shut_down()
     {
-        return Manager::shut_down();
+        bool ret_val;
+        if(!(ret_val = Manager::shut_down()))
+        {
+            LOG_ERROR("Failed to shut down dependencies of ResourcesManager");
+        }
+
+        return ret_val;
     }
 
     void ResourcesManager::load_meshes_in_folders(const std::filesystem::path& a_path)
